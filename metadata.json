@@ -1,0 +1,6 @@
+{
+  "name": "VerifDiplôme AI - Vérification Intelligente de Diplômes",
+  "description": "Plateforme web intelligente d'OCR et de vérification automatisée de diplômes par intelligence artificielle, analyse médico-légale et contrôle cryptographique.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
