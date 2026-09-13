@@ -417,6 +417,56 @@ const authenticIaiCameroonSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox
   </g>
 </svg>`;
 
+// 6. Certificat Médical (Rejet Strict pour Non-Conformité Académique)
+const medicalCertificateSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
+  <defs>
+    <linearGradient id="medBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#F8FAFC" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1000" height="700" fill="url(#medBg)" />
+  <rect x="25" y="25" width="950" height="650" fill="none" stroke="#0284C7" stroke-width="2" />
+  <rect x="32" y="32" width="936" height="636" fill="none" stroke="#E2E8F0" stroke-width="1" />
+
+  <!-- En-tête Cabinet Médical -->
+  <g transform="translate(80, 70)">
+    <rect x="0" y="8" width="30" height="10" fill="#0284C7" rx="2" />
+    <rect x="10" y="-2" width="10" height="30" fill="#0284C7" rx="2" />
+    <text x="45" y="16" font-family="'Times New Roman', serif" font-size="18" font-weight="bold" fill="#0F172A">CABINET MÉDICAL DE CONSULTATION GÉNÉRALE</text>
+    <text x="45" y="34" font-family="sans-serif" font-size="12" fill="#475569">Dr. Antoine DELACROIX — Docteur en Médecine • Ordre des Médecins N° 75/48912</text>
+    <text x="45" y="50" font-family="sans-serif" font-size="11" fill="#64748B">14, Rue de la Santé • 75013 Paris • Tél : 01 42 68 00 19</text>
+  </g>
+
+  <line x1="80" y1="140" x2="920" y2="140" stroke="#0284C7" stroke-width="2" />
+
+  <!-- Titre Document -->
+  <text x="500" y="200" text-anchor="middle" font-family="'Times New Roman', serif" font-size="28" font-weight="bold" fill="#0369A1" letter-spacing="2">CERTIFICAT MÉDICAL</text>
+  <text x="500" y="225" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748B">Dispensé en application du Code de la Santé Publique</text>
+
+  <!-- Corps de texte médical -->
+  <g transform="translate(100, 280)">
+    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="16" fill="#1E293B">Je soussigné, Docteur Antoine DELACROIX, certifie avoir examiné ce jour :</text>
+    <text x="0" y="45" font-family="'Times New Roman', serif" font-size="18" font-weight="bold" fill="#0F172A">Monsieur Éric DUMONT</text>
+    <text x="0" y="70" font-family="sans-serif" font-size="14" fill="#334155">Né le 12 mai 1994, domicilié à Paris.</text>
+    <text x="0" y="120" font-family="'Times New Roman', serif" font-size="16" fill="#1E293B">Et constate que son état de santé nécessite un :</text>
+    <text x="0" y="155" font-family="'Times New Roman', serif" font-size="20" font-weight="bold" fill="#DC2626">REPOS MÉDICAL STRICT DE QUINZE (15) JOURS</text>
+    <text x="0" y="190" font-family="'Times New Roman', serif" font-size="15" fill="#334155">avec arrêt de travail et contre-indication absolue à toute activité sportive ou professionnelle.</text>
+    <text x="0" y="230" font-family="'Times New Roman', serif" font-size="14" font-style="italic" fill="#64748B">Certificat délivré à la demande de l'intéressé pour faire valoir ce que de droit.</text>
+  </g>
+
+  <!-- Tampon et signature du médecin -->
+  <g transform="translate(680, 520)">
+    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="14" fill="#1E293B">Fait à Paris, le 18 octobre 2024</text>
+    <circle cx="80" cy="65" r="50" fill="none" stroke="#0369A1" stroke-width="2" stroke-dasharray="4,2" />
+    <text x="80" y="55" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="bold" fill="#0369A1">DR. A. DELACROIX</text>
+    <text x="80" y="70" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#0369A1">MÉDECINE GÉNÉRALE</text>
+    <text x="80" y="83" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#0369A1">RPPS : 10003892812</text>
+    <path d="M40,75 Q80,25 110,65 T140,55" fill="none" stroke="#0F172A" stroke-width="2.2" />
+  </g>
+</svg>`;
+
 export const SAMPLE_DIPLOMAS: SampleDiploma[] = [
   {
     id: 'sample-iai-cameroun',
@@ -465,6 +515,18 @@ export const SAMPLE_DIPLOMAS: SampleDiploma[] = [
     badgeLabel: 'Test Grande École',
     svgDataUrl: svgToDataUrl(authenticPolytechniqueSvg),
     rawSvg: authenticPolytechniqueSvg,
+  },
+  {
+    id: 'sample-5-medical',
+    name: 'Document Médical (Certificat Médical)',
+    institution: 'Non applicable (Cabinet Médical)',
+    degreeTitle: 'Aucun diplôme (Santé)',
+    studentName: 'Éric DUMONT (Patient)',
+    expectedStatus: 'NON_CONFORME',
+    scenarioDescription: 'Certificat médical de repos. Permet de vérifier que la plateforme rejette formellement tout document non académique conformément à son périmètre exclusif.',
+    badgeLabel: 'Test Exclusion (Certificat Médical)',
+    svgDataUrl: svgToDataUrl(medicalCertificateSvg),
+    rawSvg: medicalCertificateSvg,
   },
   {
     id: 'sample-4-car-vehicle',

@@ -12,6 +12,7 @@ import { SecurityStatsView } from './components/SecurityStatsView';
 import { RealtimeAlertsDashboard } from './components/RealtimeAlertsDashboard';
 import { RealtimeAlertBanner } from './components/RealtimeAlertBanner';
 import { ProjectDocumentationView } from './components/ProjectDocumentationView';
+import { AdminConsole } from './components/AdminConsole';
 import { useRealtimeAlerts } from './hooks/useRealtimeAlerts';
 import { VerificationResult, RegisteredDiploma, VerificationStats } from './types';
 
@@ -174,7 +175,7 @@ export default function App() {
   } = useRealtimeAlerts();
 
   // Fetch registry from backend on mount
-  useEffect(() => {
+  const fetchRegistry = () => {
     fetch('/api/registry')
       .then((res) => res.json())
       .then((data) => {
@@ -185,6 +186,10 @@ export default function App() {
       .catch((err) => {
         console.warn('Using local fallback registry:', err);
       });
+  };
+
+  useEffect(() => {
+    fetchRegistry();
   }, []);
 
   // Handle File or Preset Selection & Trigger Automated Verification
@@ -423,7 +428,16 @@ export default function App() {
           />
         )}
 
-        {/* Tab 6: Complete Project Specifications & Analysis */}
+        {/* Tab 6: Central Administration & Institution Console */}
+        {activeTab === 'admin' && (
+          <AdminConsole
+            registry={registry}
+            onAddDiplomaToRegistry={handleAddDiploma}
+            onRefreshRegistry={fetchRegistry}
+          />
+        )}
+
+        {/* Tab 7: Complete Project Specifications & Analysis */}
         {activeTab === 'documentation' && (
           <ProjectDocumentationView />
         )}

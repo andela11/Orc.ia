@@ -177,6 +177,46 @@ export interface RegisteredDiploma {
   honors?: string;
   sha256?: string;
   accredited: boolean;
+  isRevoked?: boolean;
+  revocationReason?: string;
+  revokedAt?: string;
+  revokedBy?: string;
+}
+
+export interface AccreditedInstitution {
+  id: string;
+  code: string;
+  name: string;
+  country: string;
+  accreditationNumber: string;
+  accreditationStatus: 'ACTIVE' | 'SUSPENDUE' | 'AUDIT_EN_COURS';
+  contactEmail: string;
+  officialRectoratUrl?: string;
+  registeredDiplomasCount: number;
+  authorizedSignatories: { name: string; title: string }[];
+  officialSealDescription?: string;
+  createdAt: string;
+}
+
+export interface AdminSystemConfig {
+  minConfidenceThreshold: number;
+  strictAcademicFilter: boolean;
+  autoBlacklistFalsified: boolean;
+  autoNotifyRectorat: boolean;
+  forensicFontSensitivity: 'BASSE' | 'NORMALE' | 'ELEVEE';
+  maintenanceMode: boolean;
+}
+
+export interface AdminAuditEntry {
+  id: string;
+  timestamp: string;
+  actor: string;
+  actorRole: UserRole;
+  action: string;
+  target: string;
+  details: string;
+  ipAddress: string;
+  severity: 'INFO' | 'WARNING' | 'CRITICAL';
 }
 
 export interface VerificationStats {

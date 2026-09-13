@@ -233,119 +233,46 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileSelected, isAnalyz
               Documents d'essai immédiats
             </h3>
             <p className="text-xs text-slate-500">
-              Testez directement les algorithmes d'analyse sur des cas représentatifs sans téléverser de fichier :
+              Testez directement les contrôles d'authenticité et les filtres de conformité académique :
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          {/* Sample 1: Authentic Sorbonne */}
-          <button
-            id="test-sample-authentic-btn"
-            type="button"
-            onClick={() => handleLoadSample(0)}
-            className="rounded-lg border border-slate-200 bg-white p-4 text-left transition-colors hover:border-slate-400 flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-slate-900">
-                  Diplôme officiel
-                </span>
-                <span className="text-[11px] font-mono text-slate-500">Sorbonne</span>
-              </div>
-              <h4 className="text-xs font-semibold text-slate-800">
-                Master en Informatique
-              </h4>
-              <p className="mt-1 text-[11px] text-slate-600 leading-relaxed">
-                Thomas Laurent. Typographie uniforme, sceau officiel intact et concordance avec le registre.
-              </p>
-            </div>
-            <div className="mt-3 pt-2 border-t border-slate-100 text-[11px] font-semibold text-slate-900 flex items-center justify-between">
-              <span>Tester ce document</span>
-              <span>→</span>
-            </div>
-          </button>
-
-          {/* Sample 2: Falsified */}
-          <button
-            id="test-sample-falsified-btn"
-            type="button"
-            onClick={() => handleLoadSample(1)}
-            className="rounded-lg border border-slate-200 bg-white p-4 text-left transition-colors hover:border-slate-400 flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-slate-900">
-                  Document altéré
-                </span>
-                <span className="text-[11px] font-mono text-slate-500">Cas fraude</span>
-              </div>
-              <h4 className="text-xs font-semibold text-slate-800">
-                Nom modifié & conflit registre
-              </h4>
-              <p className="mt-1 text-[11px] text-slate-600 leading-relaxed">
-                Marc Lefebvre. Rupture typographique (Arial au lieu de Times), calque de retouche et matricule usurpé.
-              </p>
-            </div>
-            <div className="mt-3 pt-2 border-t border-slate-100 text-[11px] font-semibold text-slate-900 flex items-center justify-between">
-              <span>Tester ce document</span>
-              <span>→</span>
-            </div>
-          </button>
-
-          {/* Sample 3: Polytechnique */}
-          <button
-            id="test-sample-polytechnique-btn"
-            type="button"
-            onClick={() => handleLoadSample(2)}
-            className="rounded-lg border border-slate-200 bg-white p-4 text-left transition-colors hover:border-slate-400 flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-slate-900">
-                  Diplôme officiel
-                </span>
-                <span className="text-[11px] font-mono text-slate-500">Polytechnique</span>
-              </div>
-              <h4 className="text-xs font-semibold text-slate-800">
-                Titre d'Ingénieur
-              </h4>
-              <p className="mt-1 text-[11px] text-slate-600 leading-relaxed">
-                Camille Dupont. Mention Félicitations du Jury. Sceau d'État net et conformité CTI validée.
-              </p>
-            </div>
-            <div className="mt-3 pt-2 border-t border-slate-100 text-[11px] font-semibold text-slate-900 flex items-center justify-between">
-              <span>Tester ce document</span>
-              <span>→</span>
-            </div>
-          </button>
-
-          {/* Sample 4: Car / Non-Diploma */}
-          <button
-            id="test-sample-car-btn"
-            type="button"
-            onClick={() => handleLoadSample(3)}
-            className="rounded-lg border border-slate-200 bg-white p-4 text-left transition-colors hover:border-slate-400 flex flex-col justify-between"
-          >
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-semibold text-slate-900">
-                  Non-académique
-                </span>
-                <span className="text-[11px] font-mono text-slate-500">Exclusion</span>
-              </div>
-              <h4 className="text-xs font-semibold text-slate-800">
-                Photo de Voiture (Véhicule)
-              </h4>
-              <p className="mt-1 text-[11px] text-slate-600 leading-relaxed">
-                Image d'automobile. Démontre que le système filtre et rejette immédiatement toute image qui n'est pas un diplôme.
-              </p>
-            </div>
-            <div className="mt-3 pt-2 border-t border-slate-100 text-[11px] font-semibold text-slate-900 flex items-center justify-between">
-              <span>Tester le rejet</span>
-              <span>→</span>
-            </div>
-          </button>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+          {SAMPLE_DIPLOMAS.map((sample, idx) => {
+            const isExclusion = sample.expectedStatus === 'NON_CONFORME';
+            const isFraud = sample.expectedStatus === 'FALSIFIE';
+            return (
+              <button
+                key={sample.id}
+                id={`test-${sample.id}-btn`}
+                type="button"
+                onClick={() => handleLoadSample(idx)}
+                className="rounded-lg border border-slate-200 bg-white p-4 text-left transition-colors hover:border-slate-400 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-semibold text-slate-900">
+                      {sample.name}
+                    </span>
+                    <span className="text-[11px] font-mono text-slate-500">
+                      {isExclusion ? 'Exclusion' : isFraud ? 'Fraude' : 'Conforme'}
+                    </span>
+                  </div>
+                  <h4 className="text-xs text-slate-700 font-medium">
+                    {sample.degreeTitle}
+                  </h4>
+                  <p className="mt-1 text-[11px] text-slate-600 leading-relaxed">
+                    {sample.scenarioDescription}
+                  </p>
+                </div>
+                <div className="mt-3 pt-2 border-t border-slate-100 text-[11px] font-semibold text-slate-900 flex items-center justify-between">
+                  <span>{isExclusion ? 'Tester le rejet' : 'Tester ce document'}</span>
+                  <span>→</span>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </div>
 
