@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   User,
   LogIn,
@@ -14,10 +15,14 @@ import {
   Bell,
   FileText,
   Shield,
+  Lock,
+  Sparkles,
+  ArrowRight,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { UserRole } from '../types';
 
-export type ActiveTab = 'verifier' | 'registry' | 'audit' | 'stats' | 'alertes' | 'admin' | 'documentation';
+export type ActiveTab = 'landing' | 'verifier' | 'registry' | 'audit' | 'stats' | 'alertes' | 'admin' | 'documentation';
 
 interface NavbarProps {
   activeTab: ActiveTab;
@@ -34,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   alertsCount = 0,
   onOpenAuthModal,
 }) => {
-  const { user, logout, quickLogin } = useAuth();
+  const { user, logout } = useAuth();
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -50,43 +55,109 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const navItems: { id: ActiveTab; label: string; count?: number; icon: React.ReactNode }[] = [
-    { id: 'verifier', label: 'Vérificateur', icon: <ShieldCheck className="h-4 w-4" /> },
-    { id: 'registry', label: 'Registre', count: registryCount, icon: <Database className="h-4 w-4" /> },
-    { id: 'audit', label: 'Audit', icon: <History className="h-4 w-4" /> },
-    { id: 'stats', label: 'Stats', icon: <BarChart3 className="h-4 w-4" /> },
-    { id: 'alertes', label: 'Alertes', count: alertsCount, icon: <Bell className="h-4 w-4" /> },
-    { id: 'admin', label: 'Administration', icon: <Shield className="h-4 w-4" /> },
-    { id: 'documentation', label: 'Projet & Specs', icon: <FileText className="h-4 w-4" /> },
-  ];
+  // Strict Role-Based Tab Filtering: Each role ONLY gets access to their specialized tabs
+  const getRoleNavItems = () => {
+    if (!user) {
+      return [
+        { id: 'landing' as ActiveTab, label: 'Accueil', icon: <ShieldCheck className="h-4 w-4" /> },
+        { id: 'documentation' as ActiveTab, label: 'Spécifications', icon: <FileText className="h-4 w-4" /> },
+      ];
+    }
+
+    if (user.role === 'ANALYSTE') {
+      return [
+        { id: 'alertes' as ActiveTab, label: 'Cellule Alertes & Fraudes', count: alertsCount, icon: <Bell className="h-4 w-4" /> },
+        { id: 'stats' as ActiveTab, label: 'Statistiques Menaces', icon: <BarChart3 className="h-4 w-4" /> },
+        { id: 'audit' as ActiveTab, label: 'Audit Judiciaire', icon: <History className="h-4 w-4" /> },
+        { id: 'documentation' as ActiveTab, label: 'Spécifications', icon: <FileText className="h-4 w-4" /> },
+      ];
+    }
+
+    if (user.role === 'VERIFICATEUR') {
+      return [
+        { id: 'verifier' as ActiveTab, label: 'Scanner Parchemin', icon: <ShieldCheck className="h-4 w-4" /> },
+        { id: 'registry' as ActiveTab, label: 'Registre Scolarité', count: registryCount, icon: <Database className="h-4 w-4" /> },
+        { id: 'audit' as ActiveTab, label: 'Audits de Scolarité', icon: <History className="h-4 w-4" /> },
+        { id: 'documentation' as ActiveTab, label: 'Spécifications', icon: <FileText className="h-4 w-4" /> },
+      ];
+    }
+
+    // ADMIN
+    return [
+      { id: 'admin' as ActiveTab, label: 'Console Centrale', icon: <Shield className="h-4 w-4" /> },
+      { id: 'registry' as ActiveTab, label: 'Registre National', count: registryCount, icon: <Database className="h-4 w-4" /> },
+      { id: 'alertes' as ActiveTab, label: 'Supervision Fraudes', count: alertsCount, icon: <Bell className="h-4 w-4" /> },
+      { id: 'verifier' as ActiveTab, label: 'Banc Scanner', icon: <ShieldCheck className="h-4 w-4" /> },
+      { id: 'stats' as ActiveTab, label: 'Statistiques', icon: <BarChart3 className="h-4 w-4" /> },
+      { id: 'audit' as ActiveTab, label: 'Journal d’État', icon: <History className="h-4 w-4" /> },
+      { id: 'documentation' as ActiveTab, label: 'Spécifications', icon: <FileText className="h-4 w-4" /> },
+    ];
+  };
+
+  const navItems = getRoleNavItems();
 
   const handleTabClick = (tab: ActiveTab) => {
     setActiveTab(tab);
     setIsMobileMenuOpen(false);
   };
 
+  const getRoleBadgeStyle = (role?: UserRole) => {
+    switch (role) {
+      case 'ANALYSTE':
+        return {
+          bg: 'bg-rose-50 border-rose-200 text-rose-800',
+          dot: 'bg-rose-500',
+          label: 'Cellule Fraude (Analyste)',
+        };
+      case 'VERIFICATEUR':
+        return {
+          bg: 'bg-emerald-50 border-emerald-200 text-emerald-800',
+          dot: 'bg-emerald-500',
+          label: 'Scolarité (Vérificateur)',
+        };
+      case 'ADMIN':
+        return {
+          bg: 'bg-purple-50 border-purple-200 text-purple-800',
+          dot: 'bg-purple-500',
+          label: 'Admin Central',
+        };
+      default:
+        return {
+          bg: 'bg-slate-50 border-slate-200 text-slate-700',
+          dot: 'bg-slate-400',
+          label: 'Visiteur',
+        };
+    }
+  };
+
+  const roleStyle = getRoleBadgeStyle(user?.role);
+
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md transition-all shadow-xs">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Brand */}
-        <div className="flex items-center gap-3 shrink-0">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white text-xs font-semibold tracking-wider">
-            VD
+        <button
+          type="button"
+          onClick={() => setActiveTab(user ? (user.role === 'ANALYSTE' ? 'alertes' : user.role === 'VERIFICATEUR' ? 'verifier' : 'admin') : 'landing')}
+          className="group flex items-center gap-2.5 shrink-0 text-left cursor-pointer transition-all"
+        >
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-800 text-white text-xs font-bold tracking-wider shadow-sm group-hover:scale-105 transition-transform border border-emerald-700/50">
+            <span className="font-serif font-black text-sm">VD</span>
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-base font-semibold tracking-tight text-slate-900">
-                VerifDiplôme<span className="text-slate-500 font-normal">.ai</span>
+              <span className="text-base font-bold tracking-tight text-slate-900 font-serif">
+                VD<span className="text-emerald-700 font-sans font-semibold text-[11px] ml-1.5 px-2 py-0.5 rounded-md bg-emerald-50 border border-emerald-200">d'État</span>
               </span>
             </div>
-            <p className="text-[11px] text-slate-500 hidden xl:block leading-none mt-0.5">
-              Contrôle d'authenticité des diplômes académiques
+            <p className="text-[10px] text-slate-500 hidden sm:block leading-none mt-0.5 font-medium">
+              Vérification Documentaire & Intégrité
             </p>
           </div>
-        </div>
+        </button>
 
-        {/* Desktop Navigation Tabs (Visible on lg+) */}
-        <nav className="hidden lg:flex items-center gap-1 text-xs shrink-0">
+        {/* Desktop Navigation Tabs (Filtered strictly by role) */}
+        <nav className="hidden lg:flex items-center gap-1.5 text-xs shrink-0 p-1 bg-slate-100 rounded-lg border border-slate-200">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             return (
@@ -95,177 +166,22 @@ export const Navbar: React.FC<NavbarProps> = ({
                 id={`tab-${item.id}-btn`}
                 type="button"
                 onClick={() => handleTabClick(item.id)}
-                className={`whitespace-nowrap rounded-lg px-3 py-1.5 font-medium transition-colors flex items-center gap-1.5 ${
+                className={`relative whitespace-nowrap rounded-md px-3 py-1.5 font-medium transition-colors flex items-center gap-1.5 cursor-pointer ${
                   isActive
-                    ? 'bg-slate-900 text-white'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'text-white'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-white/70'
                 }`}
               >
-                <span>{item.label}</span>
-                {item.count !== undefined && (
-                  <span
-                    className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono leading-none ${
-                      isActive ? 'bg-slate-800 text-slate-200' : 'bg-slate-200 text-slate-700'
-                    }`}
-                  >
-                    {item.count}
-                  </span>
+                {isActive && (
+                  <motion.div
+                    layoutId="navbar-active-pill"
+                    className="absolute inset-0 rounded-md bg-slate-950 shadow-xs"
+                    transition={{ type: 'spring', bounce: 0.15, duration: 0.4 }}
+                  />
                 )}
-              </button>
-            );
-          })}
-        </nav>
-
-        {/* Right Section: User Session & Mobile Hamburger */}
-        <div className="flex items-center gap-2 shrink-0">
-          {/* User Authentication & Session Controls */}
-          <div ref={dropdownRef} className="relative">
-            {user ? (
-              <div>
-                <button
-                  id="user-session-menu-btn"
-                  type="button"
-                  onClick={() => setShowUserDropdown(!showUserDropdown)}
-                  className="flex items-center gap-1.5 sm:gap-2 rounded-lg border border-slate-200 bg-white px-2.5 sm:px-3 py-1.5 text-xs text-slate-800 hover:bg-slate-50 transition-colors"
-                >
-                  <span className="font-semibold text-slate-900 truncate max-w-[90px] sm:max-w-[130px]">
-                    {user.fullName}
-                  </span>
-                  <span className="text-slate-500 font-normal hidden sm:inline">
-                    ({user.role})
-                  </span>
-                  <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
-                </button>
-
-                {/* User Dropdown */}
-                {showUserDropdown && (
-                  <div
-                    className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-slate-200 bg-white p-3 shadow-xl z-50 animate-in fade-in duration-150"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="pb-2 mb-2 border-b border-slate-100">
-                      <div className="text-xs font-bold text-slate-900">{user.fullName}</div>
-                      <div className="text-[11px] text-slate-500">{user.email}</div>
-                      <div className="text-[11px] text-slate-500 mt-0.5">{user.department}</div>
-                    </div>
-
-                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
-                      Changer de profil opérateur :
-                    </div>
-                    <div className="space-y-1 mb-2">
-                      <button
-                        type="button"
-                        onClick={() => { quickLogin('admin'); setShowUserDropdown(false); }}
-                        className="w-full text-left px-2 py-1.5 text-xs rounded-md hover:bg-slate-100 flex items-center justify-between"
-                      >
-                        <span className="text-slate-900">Dr. Alexandre Vernier</span>
-                        <span className="text-slate-500 text-[11px]">Admin</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { quickLogin('agent'); setShowUserDropdown(false); }}
-                        className="w-full text-left px-2 py-1.5 text-xs rounded-md hover:bg-slate-100 flex items-center justify-between"
-                      >
-                        <span className="text-slate-900">Claire Fontaine</span>
-                        <span className="text-slate-500 text-[11px]">Agent</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { quickLogin('enqueteur'); setShowUserDropdown(false); }}
-                        className="w-full text-left px-2 py-1.5 text-xs rounded-md hover:bg-slate-100 flex items-center justify-between"
-                      >
-                        <span className="text-slate-900">Marc-Antoine Dupuis</span>
-                        <span className="text-slate-500 text-[11px]">Analyste</span>
-                      </button>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                      <button
-                        type="button"
-                        onClick={() => { onOpenAuthModal('register'); setShowUserDropdown(false); }}
-                        className="text-xs text-slate-700 hover:text-slate-900 flex items-center gap-1 font-medium"
-                      >
-                        <UserPlus className="h-3.5 w-3.5" />
-                        <span>Créer compte</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => { logout(); setShowUserDropdown(false); }}
-                        className="text-xs text-slate-700 hover:text-slate-900 flex items-center gap-1 font-medium"
-                      >
-                        <LogOut className="h-3.5 w-3.5" />
-                        <span>Déconnexion</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <button
-                  id="open-login-btn"
-                  type="button"
-                  onClick={() => onOpenAuthModal('login')}
-                  className="flex items-center gap-1 rounded-lg px-2.5 sm:px-3 py-1.5 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
-                >
-                  <LogIn className="h-3.5 w-3.5" />
-                  <span>Connexion</span>
-                </button>
-                <button
-                  id="open-register-btn"
-                  type="button"
-                  onClick={() => onOpenAuthModal('register')}
-                  className="flex items-center gap-1 rounded-lg bg-slate-900 px-2.5 sm:px-3.5 py-1.5 text-xs font-medium text-white hover:bg-slate-800 transition-colors shadow-xs"
-                >
-                  <UserPlus className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Créer un compte</span>
-                  <span className="sm:hidden">Inscription</span>
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile / Tablet Menu Toggle (Visible on < lg) */}
-          <button
-            id="mobile-menu-toggle-btn"
-            type="button"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden flex items-center justify-center h-9 w-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
-            aria-label="Menu principal"
-          >
-            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Drawer Navigation (Visible on < lg when opened) */}
-      {isMobileMenuOpen && (
-        <div
-          id="mobile-nav-drawer"
-          className="lg:hidden border-t border-slate-200 bg-white px-4 py-3 shadow-lg animate-in slide-in-from-top-2 duration-150"
-        >
-          <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
-            Navigation de la plateforme
-          </div>
-          <div className="grid grid-cols-2 gap-1.5">
-            {navItems.map((item) => {
-              const isActive = activeTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  id={`mobile-tab-${item.id}-btn`}
-                  type="button"
-                  onClick={() => handleTabClick(item.id)}
-                  className={`flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
-                    isActive
-                      ? 'bg-slate-900 text-white'
-                      : 'text-slate-700 bg-slate-50 hover:bg-slate-100'
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    {item.icon}
-                    <span>{item.label}</span>
-                  </div>
+                <span className="relative z-10 flex items-center gap-1.5">
+                  {item.icon}
+                  <span>{item.label}</span>
                   {item.count !== undefined && (
                     <span
                       className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono leading-none ${
@@ -275,13 +191,206 @@ export const Navbar: React.FC<NavbarProps> = ({
                       {item.count}
                     </span>
                   )}
-                </button>
-              );
-            })}
+                </span>
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Right Section: User Session & Role Confinement Tag */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          {user && (
+            <div className={`hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-[11px] font-medium ${roleStyle.bg}`}>
+              <span className={`h-1.5 w-1.5 rounded-full ${roleStyle.dot}`} />
+              <span>{roleStyle.label}</span>
+            </div>
+          )}
+
+          {/* User Session Dropdown */}
+          <div ref={dropdownRef} className="relative">
+            {user ? (
+              <div>
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  type="button"
+                  id="user-menu-btn"
+                  onClick={() => setShowUserDropdown(!showUserDropdown)}
+                  className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-2.5 py-1.5 text-xs text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all shadow-2xs"
+                  aria-expanded={showUserDropdown}
+                >
+                  <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-950 text-white text-[10px] font-bold">
+                    {user.fullName.charAt(0)}
+                  </div>
+                  <span className="hidden sm:inline font-semibold text-slate-800 max-w-[120px] truncate">
+                    {user.fullName.split(' ')[0]}
+                  </span>
+                  <ChevronDown className={`h-3 w-3 text-slate-400 transition-transform duration-200 ${showUserDropdown ? 'rotate-180' : ''}`} />
+                </motion.button>
+
+                {/* Session Popover (STRICTLY SECURE: No account-switching allowed) */}
+                <AnimatePresence>
+                  {showUserDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl z-50 text-xs"
+                    >
+                      <div className="border-b border-slate-100 pb-3 mb-2.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                            Session Opérateur Scellée
+                          </span>
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 border border-emerald-200/60">
+                            <span className="h-1 w-1 rounded-full bg-emerald-500" />
+                            Actif
+                          </span>
+                        </div>
+                        <div className="mt-2 font-bold text-slate-900 text-sm">{user.fullName}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">{user.email}</div>
+                        <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-slate-600">
+                          <span className="font-semibold text-slate-800">Poste :</span>
+                          <span className="truncate">{user.department}</span>
+                        </div>
+                        <div className="mt-1 text-[10px] text-slate-400 font-mono">
+                          Matricule : #{user.badgeNumber || 'ACCR-2026-99'}
+                        </div>
+                      </div>
+
+                      {/* Boundary status badge */}
+                      <div className="rounded-xl bg-slate-50 border border-slate-200/70 p-2.5 mb-2.5">
+                        <div className="flex items-center gap-1.5 text-slate-900 font-semibold text-[11px]">
+                          <Lock className="h-3 w-3 text-emerald-600" />
+                          <span>Périmètre Hermétique Actif</span>
+                        </div>
+                        <p className="mt-1 text-[10px] text-slate-500 leading-relaxed">
+                          Votre session est strictement confinée au profil <strong>{user.role}</strong>. Les consoles étrangères sont inaccessibles.
+                        </p>
+                      </div>
+
+                      {/* User Actions */}
+                      <div className="pt-1 flex flex-col gap-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveTab('landing');
+                            setShowUserDropdown(false);
+                          }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors flex items-center justify-between"
+                        >
+                          <span>Voir la page d'accueil</span>
+                          <ArrowRight className="h-3 w-3 text-slate-400" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            logout();
+                            setShowUserDropdown(false);
+                            setActiveTab('landing');
+                          }}
+                          className="w-full text-left px-2.5 py-1.5 text-xs text-rose-700 hover:text-rose-800 hover:bg-rose-50 rounded-lg font-medium transition-colors flex items-center justify-between mt-1"
+                        >
+                          <span className="flex items-center gap-1.5">
+                            <LogOut className="h-3.5 w-3.5" />
+                            <span>Déconnexion de la session</span>
+                          </span>
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  id="open-login-btn"
+                  type="button"
+                  onClick={() => onOpenAuthModal('login')}
+                  className="flex items-center gap-1.5 rounded-md border border-slate-300 px-3.5 py-1.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 hover:border-slate-400 transition-all cursor-pointer"
+                >
+                  <LogIn className="h-3.5 w-3.5 text-slate-600" />
+                  <span>Connexion</span>
+                </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.97 }}
+                  id="open-register-btn"
+                  type="button"
+                  onClick={() => onOpenAuthModal('register')}
+                  className="flex items-center gap-1.5 rounded-md bg-emerald-700 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-emerald-800 transition-all cursor-pointer shadow-2xs"
+                >
+                  <UserPlus className="h-3.5 w-3.5 text-emerald-100" />
+                  <span className="hidden sm:inline">Créer un compte</span>
+                  <span className="sm:hidden">Inscription</span>
+                </motion.button>
+              </div>
+            )}
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            id="mobile-menu-toggle-btn"
+            type="button"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden flex items-center justify-center h-9 w-9 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
+            aria-label="Menu principal"
+          >
+            {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
-      )}
+      </div>
+
+      {/* Mobile Drawer Navigation (Filtered by role) */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            id="mobile-nav-drawer"
+            className="lg:hidden border-t border-slate-200 bg-white px-4 py-3 shadow-lg overflow-hidden"
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                Espace dédié : {user ? roleStyle.label : 'Navigation générale'}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {navItems.map((item) => {
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    id={`mobile-tab-${item.id}-btn`}
+                    type="button"
+                    onClick={() => handleTabClick(item.id)}
+                    className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-semibold transition-colors ${
+                      isActive
+                        ? 'bg-slate-950 text-white shadow-xs'
+                        : 'text-slate-700 bg-slate-50 hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      {item.icon}
+                      <span className="truncate">{item.label}</span>
+                    </div>
+                    {item.count !== undefined && (
+                      <span
+                        className={`rounded-full px-1.5 py-0.2 text-[10px] font-mono leading-none ${
+                          isActive ? 'bg-slate-800 text-slate-200' : 'bg-slate-200 text-slate-700'
+                        }`}
+                      >
+                        {item.count}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };
-

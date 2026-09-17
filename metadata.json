@@ -1,6 +1,6 @@
 {
-  "name": "VerifDiplôme AI - Vérification Intelligente de Diplômes",
-  "description": "Plateforme web intelligente d'OCR et de vérification automatisée de diplômes par intelligence artificielle, analyse médico-légale et contrôle cryptographique.",
+  "name": "VD",
+  "description": "VD - Plateforme nationale de vérification automatisée et d'intégrité des diplômes par intelligence artificielle, analyse médico-légale et registres cryptographiques.",
   "requestFramePermissions": ["camera"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

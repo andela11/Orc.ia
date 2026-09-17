@@ -56,7 +56,7 @@ export const AnalysisProgress: React.FC = () => {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-slate-900 animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-slate-900" />
             <span>Audit médico-légal en cours</span>
           </h3>
           <p className="text-xs text-slate-500 mt-0.5">

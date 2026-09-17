@@ -103,11 +103,14 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Top Header Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
         <div>
-          <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold font-mono uppercase tracking-wider mb-2">
+            RÉFÉRENTIEL NATIONAL CERTIFIÉ
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             Registre des diplômes accrédités
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl">
@@ -121,12 +124,12 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
             id="open-side-by-side-comparison-btn"
             type="button"
             onClick={() => handleOpenComparison()}
-            className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 transition-colors flex items-center gap-1.5"
+            className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs font-semibold text-slate-800 hover:border-emerald-300 hover:bg-emerald-50/40 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
           >
             <span>Comparateur côte à côte</span>
             {selectedForCompare.length > 0 && (
-              <span className="font-mono text-slate-600">
-                ({selectedForCompare.length})
+              <span className="font-mono px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                {selectedForCompare.length}
               </span>
             )}
           </button>
@@ -135,7 +138,7 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
             id="open-add-diploma-modal-btn"
             type="button"
             onClick={() => setIsAddingOpen(true)}
-            className="rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition-colors"
+            className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 py-2.5 text-xs font-semibold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
           >
             + Enregistrer un titre
           </button>
@@ -143,20 +146,20 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
       </div>
 
       {/* Quick Comparison Presets Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-slate-50/70 px-4 py-2.5 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3.5 text-xs">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-semibold text-slate-700">Analyses comparatives rapides :</span>
           <button
             type="button"
             onClick={() => handleOpenPresetComparison('fraud')}
-            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30 transition-all cursor-pointer shadow-xs"
           >
             Thomas Laurent (Original) vs Marc Lefebvre (Fraude/Usurpation)
           </button>
           <button
             type="button"
             onClick={() => handleOpenPresetComparison('inter-univ')}
-            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30 transition-all cursor-pointer shadow-xs"
           >
             Sorbonne Université vs École Polytechnique
           </button>
@@ -169,15 +172,15 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
 
       {/* Floating or Inline Selection Banner if any items checked */}
       {selectedForCompare.length > 0 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-900 bg-slate-900 text-white p-3.5 text-xs shadow-md">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-900 bg-slate-900 text-white p-4 text-xs shadow-lg">
           <div className="flex items-center gap-2.5">
-            <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-semibold">
               {selectedForCompare.length === 1
                 ? '1 diplôme sélectionné — cochez un second diplôme pour comparer :'
                 : '2 diplômes sélectionnés pour examen côte à côte :'}
             </span>
-            <span className="font-mono text-slate-300">
+            <span className="font-mono text-emerald-300 font-medium">
               {selectedForCompare
                 .map((id) => registry.find((r) => r.id === id)?.studentName)
                 .filter(Boolean)
@@ -188,13 +191,13 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => handleOpenComparison(selectedForCompare[0], selectedForCompare[1])}
-              className="rounded-md bg-white text-slate-900 font-semibold px-3 py-1 text-xs hover:bg-slate-100"
+              className="rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold px-3.5 py-1.5 text-xs cursor-pointer shadow-xs transition-all"
             >
               Ouvrir le comparateur côte à côte
             </button>
             <button
               onClick={() => setSelectedForCompare([])}
-              className="rounded-md text-slate-300 hover:text-white px-2 py-1 text-xs"
+              className="rounded-xl text-slate-300 hover:text-white px-2.5 py-1.5 text-xs cursor-pointer"
             >
               Effacer la sélection
             </button>
@@ -203,18 +206,18 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
       )}
 
       {/* Search Bar */}
-      <div className="flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs">
+      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs shadow-xs">
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Rechercher par titulaire, établissement, spécialité ou numéro de série..."
-          className="w-full bg-transparent text-slate-800 placeholder:text-slate-400 focus:outline-none"
+          className="w-full bg-transparent text-slate-800 placeholder:text-slate-400 focus:outline-hidden"
         />
         {searchTerm && (
           <button
             onClick={() => setSearchTerm('')}
-            className="text-slate-400 hover:text-slate-700 font-medium shrink-0"
+            className="text-slate-400 hover:text-slate-700 font-medium shrink-0 cursor-pointer"
           >
             Effacer
           </button>
@@ -222,20 +225,20 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
       </div>
 
       {/* Table of Registered Diplomas */}
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="rounded-2xl border border-slate-200/90 bg-white overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs min-w-[700px]">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-medium">
-                <th className="w-10 px-3 py-3 text-center">
+              <tr className="border-b border-slate-200/80 bg-slate-50/80 text-slate-600 font-semibold">
+                <th className="w-10 px-3 py-3.5 text-center">
                   <span className="sr-only">Sélectionner</span>
                 </th>
-                <th className="px-4 py-3">Numéro de série</th>
-                <th className="px-4 py-3">Titulaire officiel</th>
-                <th className="px-4 py-3">Grade & Spécialité</th>
-                <th className="px-4 py-3">Établissement</th>
-                <th className="px-4 py-3">Délivrance</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th className="px-4 py-3.5">Numéro de série</th>
+                <th className="px-4 py-3.5">Titulaire officiel</th>
+                <th className="px-4 py-3.5">Grade & Spécialité</th>
+                <th className="px-4 py-3.5">Établissement</th>
+                <th className="px-4 py-3.5">Délivrance</th>
+                <th className="px-4 py-3.5 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -245,47 +248,48 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
                   <tr
                     key={dip.id}
                     className={`transition-colors ${
-                      isSelected ? 'bg-slate-50/90 font-medium' : 'hover:bg-slate-50/70'
+                      isSelected ? 'bg-emerald-50/40 font-medium' : 'hover:bg-slate-50/70'
                     }`}
                   >
-                    <td className="w-10 px-3 py-3 text-center">
+                    <td className="w-10 px-3 py-3.5 text-center">
                       <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleToggleCompare(dip.id)}
-                        className="rounded border-slate-300 text-slate-900 focus:ring-0 cursor-pointer"
+                        className="rounded border-slate-300 text-emerald-600 focus:ring-0 cursor-pointer"
                         title="Sélectionner pour comparer"
                       />
                     </td>
-                    <td className="px-4 py-3 font-mono font-medium text-slate-900">
+                    <td className="px-4 py-3.5 font-mono font-medium text-slate-900">
                       {dip.documentId}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <div className="font-semibold text-slate-900">{dip.studentName}</div>
                       {dip.honors && (
-                        <span className="text-[10px] text-slate-500 font-medium">{dip.honors}</span>
+                        <span className="text-[10px] text-emerald-700 font-medium">{dip.honors}</span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3.5">
                       <div className="text-slate-900 font-medium">{dip.degreeTitle}</div>
                       <div className="text-[11px] text-slate-500">{dip.fieldOfStudy}</div>
                     </td>
-                    <td className="px-4 py-3 text-slate-700">
+                    <td className="px-4 py-3.5 text-slate-700">
                       {dip.institution}
                     </td>
-                    <td className="px-4 py-3 text-slate-600 font-mono">
+                    <td className="px-4 py-3.5 text-slate-600 font-mono">
                       {dip.issueDate}
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3.5 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <span className="text-[11px] font-medium text-slate-600">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                           Accrédité
                         </span>
 
                         <button
                           type="button"
                           onClick={() => handleOpenComparison(dip.id)}
-                          className="rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+                          className="rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/40 transition-all cursor-pointer shadow-2xs"
                           title="Comparer ce diplôme avec un autre"
                         >
                           Comparer

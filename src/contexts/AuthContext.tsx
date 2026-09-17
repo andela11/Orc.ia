@@ -6,7 +6,7 @@ interface AuthContextType {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (usernameOrEmail: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (usernameOrEmail: string, password: string) => Promise<{ success: boolean; error?: string; user?: UserProfile }>;
   register: (userData: {
     username: string;
     email: string;
@@ -14,9 +14,9 @@ interface AuthContextType {
     fullName: string;
     role: UserRole;
     department: string;
-  }) => Promise<{ success: boolean; error?: string }>;
+  }) => Promise<{ success: boolean; error?: string; user?: UserProfile }>;
   logout: () => Promise<void>;
-  quickLogin: (username: string) => Promise<void>;
+  quickLogin: (username: string) => Promise<{ success: boolean; user?: UserProfile }>;
   demoUsers: UserProfile[];
 }
 
@@ -75,21 +75,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             setToken(null);
           }
         } else {
-          // If no user is logged in, auto-login as the default security auditor for a smooth experience
-          const autoRes = await fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: 'admin', password: 'Admin2026!' }),
-          });
-          if (autoRes.ok) {
-            const autoData = await autoRes.json();
-            if (autoData.token && autoData.user) {
-              setToken(autoData.token);
-              setUser(autoData.user);
-              localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, autoData.token);
-              localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(autoData.user));
-            }
-          }
+          // No stored session: user starts unauthenticated on the landing page
+          setUser(null);
+          setToken(null);
         }
       } catch (err) {
         console.warn('Erreur initialisation auth:', err);
@@ -101,12 +89,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     initAuth();
   }, []);
 
-  const login = async (usernameOrEmail: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (usernameOrEmail: string, password: string): Promise<{ success: boolean; error?: string; user?: UserProfile }> => {
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: usernameOrEmail, password }),
+        body: JSON.stringify({ username: usernameOrEmail, email: usernameOrEmail, password }),
       });
 
       const data = await res.json();
@@ -118,7 +106,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(data.user);
       localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, data.token);
       localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(data.user));
-      return { success: true };
+      return { success: true, user: data.user };
     } catch (err: any) {
       return { success: false, error: err.message || 'Erreur réseau de connexion' };
     }
@@ -131,7 +119,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     fullName: string;
     role: UserRole;
     department: string;
-  }): Promise<{ success: boolean; error?: string }> => {
+  }): Promise<{ success: boolean; error?: string; user?: UserProfile }> => {
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -148,7 +136,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(data.user);
       localStorage.setItem(LOCAL_STORAGE_TOKEN_KEY, data.token);
       localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(data.user));
-      return { success: true };
+      return { success: true, user: data.user };
     } catch (err: any) {
       return { success: false, error: err.message || 'Erreur réseau' };
     }
@@ -172,14 +160,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const quickLogin = async (username: string) => {
+  const quickLogin = async (username: string): Promise<{ success: boolean; user?: UserProfile }> => {
     const passwords: Record<string, string> = {
       admin: 'Admin2026!',
       agent: 'Agent2026!',
+      verificateur: 'Agent2026!',
       enqueteur: 'Fraude2026!',
+      analyste: 'Fraude2026!',
     };
-    const password = passwords[username] || 'Admin2026!';
-    await login(username, password);
+    const password = passwords[username.toLowerCase()] || 'Admin2026!';
+    return await login(username, password);
   };
 
   return (

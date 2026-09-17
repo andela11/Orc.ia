@@ -12,10 +12,13 @@ export const SecurityStatsView: React.FC<SecurityStatsViewProps> = ({ stats }) =
       : 88;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Top Banner */}
-      <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-        <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
+        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold font-mono uppercase tracking-wider mb-2">
+          SURVEILLANCE FORENSIQUE EN TEMPS RÉEL
+        </div>
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
           Observatoire de l'authenticité académique
         </h2>
         <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-2xl leading-relaxed">
@@ -24,61 +27,62 @@ export const SecurityStatsView: React.FC<SecurityStatsViewProps> = ({ stats }) =
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm hover:border-emerald-300 transition-all">
           <div className="text-xs font-medium text-slate-500 mb-1">
             Total des diplômes audités
           </div>
-          <div className="text-2xl sm:text-3xl font-semibold font-mono text-slate-900">
+          <div className="text-2xl sm:text-3xl font-extrabold font-serif text-slate-900">
             {stats.totalVerifications}
           </div>
-          <div className="text-[11px] text-slate-500 mt-1">
-            Scans optiques et contrôles de registre
+          <div className="text-[11px] text-slate-500 mt-1.5 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            Scans optiques et contrôles registre
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm hover:border-emerald-300 transition-all">
           <div className="text-xs font-medium text-slate-500 mb-1">
             Taux d'authenticité validé
           </div>
-          <div className="text-2xl sm:text-3xl font-semibold font-mono text-slate-900">
+          <div className="text-2xl sm:text-3xl font-extrabold font-serif text-emerald-600">
             {authenticRate}%
           </div>
-          <div className="text-[11px] text-slate-500 mt-1">
+          <div className="text-[11px] text-emerald-700 font-medium mt-1.5">
             {stats.authenticCount} diplômes conformes
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm hover:border-rose-300 transition-all">
           <div className="text-xs font-medium text-slate-500 mb-1">
-            Anomalies et fraudes interceptées
+            Anomalies & fraudes interceptées
           </div>
-          <div className="text-2xl sm:text-3xl font-semibold font-mono text-slate-900">
+          <div className="text-2xl sm:text-3xl font-extrabold font-serif text-rose-600">
             {stats.falsifiedCount + stats.suspiciousCount}
           </div>
-          <div className="text-[11px] text-slate-500 mt-1">
-            {stats.falsifiedCount} falsifiés • {stats.suspiciousCount} suspects
+          <div className="text-[11px] text-slate-500 mt-1.5">
+            <span className="text-rose-600 font-semibold">{stats.falsifiedCount} falsifiés</span> • <span className="text-amber-600 font-semibold">{stats.suspiciousCount} suspects</span>
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-4 sm:p-5">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-sm hover:border-emerald-300 transition-all">
           <div className="text-xs font-medium text-slate-500 mb-1">
-            Temps moyen de traitement
+            Temps moyen d'analyse
           </div>
-          <div className="text-2xl sm:text-3xl font-semibold font-mono text-slate-900">
+          <div className="text-2xl sm:text-3xl font-extrabold font-serif text-emerald-600">
             {(stats.averageProcessingTimeMs / 1000).toFixed(2)}s
           </div>
-          <div className="text-[11px] text-slate-500 mt-1">
+          <div className="text-[11px] text-slate-500 mt-1.5">
             OCR vision et empreinte SHA-256
           </div>
         </div>
       </div>
 
       {/* Fraud Vectors Breakdown & Security Architecture */}
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Fraud Breakdown */}
-        <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-1">
             Motifs de falsification observés
           </h3>
           <p className="text-xs text-slate-500 mb-5">
@@ -89,48 +93,48 @@ export const SecurityStatsView: React.FC<SecurityStatsViewProps> = ({ stats }) =
             <div>
               <div className="flex justify-between text-xs mb-1.5">
                 <span className="text-slate-700 font-medium">Usurpation de numéro de série / Faux matricule</span>
-                <span className="font-mono text-slate-900 font-semibold">44%</span>
+                <span className="font-mono text-emerald-700 font-bold">44%</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                <div className="bg-slate-900 h-full rounded-full w-[44%]" />
+                <div className="bg-emerald-600 h-full rounded-full w-[44%]" />
               </div>
             </div>
 
             <div>
               <div className="flex justify-between text-xs mb-1.5">
                 <span className="text-slate-700 font-medium">Altération typographique (remplacement nom ou note)</span>
-                <span className="font-mono text-slate-900 font-semibold">32%</span>
+                <span className="font-mono text-teal-700 font-bold">32%</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                <div className="bg-slate-700 h-full rounded-full w-[32%]" />
+                <div className="bg-teal-600 h-full rounded-full w-[32%]" />
               </div>
             </div>
 
             <div>
               <div className="flex justify-between text-xs mb-1.5">
                 <span className="text-slate-700 font-medium">Sceau académique absent ou contrefait</span>
-                <span className="font-mono text-slate-900 font-semibold">16%</span>
+                <span className="font-mono text-amber-700 font-bold">16%</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                <div className="bg-slate-500 h-full rounded-full w-[16%]" />
+                <div className="bg-amber-500 h-full rounded-full w-[16%]" />
               </div>
             </div>
 
             <div>
               <div className="flex justify-between text-xs mb-1.5">
                 <span className="text-slate-700 font-medium">Incohérences de dates ou chronologie</span>
-                <span className="font-mono text-slate-900 font-semibold">8%</span>
+                <span className="font-mono text-rose-700 font-bold">8%</span>
               </div>
               <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                <div className="bg-slate-400 h-full rounded-full w-[8%]" />
+                <div className="bg-rose-500 h-full rounded-full w-[8%]" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Security Architecture Specifications */}
-        <div className="rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-700 mb-1">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-1">
             Protocole de sécurité et intégrité
           </h3>
           <p className="text-xs text-slate-500 mb-4">
@@ -138,16 +142,17 @@ export const SecurityStatsView: React.FC<SecurityStatsViewProps> = ({ stats }) =
           </p>
 
           <div className="space-y-3">
-            <div className="rounded-lg bg-slate-50 p-3.5 border border-slate-200/80">
-              <div className="text-xs font-semibold text-slate-900">
+            <div className="rounded-xl bg-slate-50/80 p-4 border border-slate-200/80">
+              <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 Empreinte cryptographique immuable
               </div>
-              <p className="text-[11px] text-slate-600 leading-relaxed mt-0.5">
+              <p className="text-[11px] text-slate-600 leading-relaxed mt-1">
                 Chaque document analysé se voit attribuer un hash SHA-256 certifié empêchant toute modification a posteriori.
               </p>
             </div>
 
-            <div className="rounded-lg bg-slate-50 p-3.5 border border-slate-200/80">
+            <div className="rounded-xl bg-slate-50/80 p-4 border border-slate-200/80">
               <div className="text-xs font-semibold text-slate-900">
                 Vision multimodale et contrôle de polices
               </div>

@@ -147,7 +147,7 @@ export const OfficialAttestationModal: React.FC<OfficialAttestationModalProps> =
             {/* Footer */}
             <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-200 text-xs">
               <div className="text-[10px] text-slate-500">
-                Document certifié électroniquement • VerifDiplôme.AI
+                Document certifié électroniquement • VD Souverain d'État
               </div>
               <div className="text-right">
                 <div className="font-medium text-slate-800">Cachet de conformité</div>

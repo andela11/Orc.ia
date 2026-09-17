@@ -145,6 +145,10 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
 
   // Initial Load of all Admin Data
   const loadAdminData = async () => {
+    if (user && user.role !== 'ADMIN') {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     try {
       // 1. Overview
@@ -540,6 +544,27 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     return l.severity === logFilterSeverity;
   });
 
+  if (user && user.role !== 'ADMIN') {
+    return (
+      <div className="p-8 max-w-xl mx-auto my-12 bg-white border border-rose-200 rounded-xl shadow-md text-center space-y-4">
+        <div className="w-14 h-14 bg-rose-50 text-rose-600 rounded-lg border border-rose-200 flex items-center justify-center mx-auto shadow-xs">
+          <Lock className="w-7 h-7" />
+        </div>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold">
+          <AlertTriangle className="w-3.5 h-3.5" />
+          <span>Accès Réservé à l'Administration Centrale</span>
+        </div>
+        <h3 className="text-xl font-serif font-bold text-slate-950">
+          Console d'Administration Verrouillée
+        </h3>
+        <p className="text-xs text-slate-600 leading-relaxed">
+          Votre compte est accrédité en tant que <strong>{user.fullName}</strong> ({user.roleLabel || user.role}).
+          Cette console est strictement réservée aux Administrateurs Centraux de la plateforme d'État.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Admin Header Banner */}
@@ -563,7 +588,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
             </p>
           </div>
 
-          {/* User Session Switcher for Easy Testing */}
+          {/* User Session Info */}
           <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 p-2 rounded-lg shrink-0">
             <div className="text-right">
               <div className="text-[11px] font-semibold text-slate-900 flex items-center gap-1 justify-end">
@@ -574,25 +599,15 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 Rôle : <span className="font-bold text-slate-700">{user?.role || 'ADMIN'}</span>
               </div>
             </div>
-            <div className="border-l border-slate-200 pl-2 flex flex-col gap-1">
-              {user?.role !== 'ADMIN' ? (
-                <button
-                  type="button"
-                  onClick={() => quickLogin('admin')}
-                  className="rounded bg-slate-900 px-2 py-1 text-[10px] font-medium text-white hover:bg-slate-800 whitespace-nowrap"
-                >
-                  Activer profil Admin
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => loadAdminData()}
-                  className="flex items-center gap-1 rounded border border-slate-300 bg-white px-2 py-1 text-[10px] font-medium text-slate-700 hover:bg-slate-100 whitespace-nowrap"
-                >
-                  <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
-                  Actualiser
-                </button>
-              )}
+            <div className="border-l border-slate-200 pl-2">
+              <button
+                type="button"
+                onClick={() => loadAdminData()}
+                className="flex items-center gap-1 rounded border border-slate-300 bg-white px-2 py-1 text-[10px] font-medium text-slate-700 hover:bg-slate-100 whitespace-nowrap"
+              >
+                <RefreshCw className={`h-3 w-3 ${isLoading ? 'animate-spin' : ''}`} />
+                Actualiser
+              </button>
             </div>
           </div>
         </div>
@@ -2123,7 +2138,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                   RÉPUBLIQUE • MINISTÈRE DE LA JUSTICE & ENSEIGNEMENT SUPÉRIEUR
                 </div>
                 <div className="text-[11px] text-slate-500 mt-0.5">
-                  Plateforme Nationale d'Authentification Documentaire (VerifDiplôme.ai)
+                  Plateforme Nationale d'Authentification Documentaire (VD)
                 </div>
                 <div className="text-xs font-mono font-bold text-slate-900 mt-2">
                   Dossier Référence : {pvTransmissionData.numeroPV}

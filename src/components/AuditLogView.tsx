@@ -43,22 +43,44 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ auditLogs }) => {
   const getStatusBadge = (status: VerificationStatus) => {
     switch (status) {
       case 'AUTHENTIQUE':
-        return <span className="text-[11px] font-medium text-slate-800">Authentique</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            Authentique
+          </span>
+        );
       case 'FALSIFIE':
-        return <span className="text-[11px] font-medium text-slate-800">Falsifié</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+            Falsifié
+          </span>
+        );
       case 'SUSPECT':
-        return <span className="text-[11px] font-medium text-slate-800">Suspect</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            Suspect
+          </span>
+        );
       default:
-        return <span className="text-[11px] font-medium text-slate-800">Non conforme</span>;
+        return (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+            Non conforme
+          </span>
+        );
     }
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white p-5 sm:p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-sm">
         <div>
-          <h2 className="text-xl sm:text-2xl font-semibold text-slate-900 tracking-tight">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[11px] font-semibold font-mono uppercase tracking-wider mb-2">
+            REGISTRE IMMUABLE SHA-256
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
             Journal d'audit des vérifications
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl">
@@ -69,25 +91,25 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ auditLogs }) => {
         <button
           id="export-audit-json-btn"
           onClick={exportAsJson}
-          className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-50 shrink-0 self-start sm:self-auto"
+          className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-4 py-2.5 text-xs font-semibold shadow-md shadow-emerald-600/20 transition-all cursor-pointer shrink-0 self-start sm:self-auto"
         >
           Exporter le journal JSON
         </button>
       </div>
 
       {/* Filter and Search controls */}
-      <div className="flex flex-col sm:flex-row items-center gap-2.5">
+      <div className="flex flex-col sm:flex-row items-center gap-3">
         <div className="w-full sm:flex-1">
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Filtrer par titulaire, établissement, référence d'audit ou empreinte..."
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-none"
+            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-hidden shadow-xs"
           />
         </div>
 
-        <div className="flex items-center gap-1 w-full sm:w-auto overflow-x-auto">
+        <div className="flex items-center gap-1.5 w-full sm:w-auto overflow-x-auto">
           {[
             { id: 'ALL', label: 'Tous' },
             { id: 'AUTHENTIQUE', label: 'Authentiques' },
@@ -97,9 +119,9 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ auditLogs }) => {
             <button
               key={st.id}
               onClick={() => setFilterStatus(st.id)}
-              className={`rounded-md px-3 py-1.5 text-xs font-medium whitespace-nowrap transition-colors ${
+              className={`rounded-xl px-3.5 py-2 text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 filterStatus === st.id
-                  ? 'bg-slate-900 text-white'
+                  ? 'bg-emerald-600 text-white shadow-sm'
                   : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50'
               }`}
             >
@@ -110,18 +132,18 @@ export const AuditLogView: React.FC<AuditLogViewProps> = ({ auditLogs }) => {
       </div>
 
       {/* Audit Log Table */}
-      <div className="rounded-xl border border-slate-200 bg-white overflow-hidden">
+      <div className="rounded-2xl border border-slate-200/90 bg-white overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs min-w-[650px]">
             <thead>
-              <tr className="border-b border-slate-200 bg-slate-50 text-slate-600 font-medium">
-                <th className="px-4 py-3">Réf. Audit</th>
-                <th className="px-4 py-3">Horodatage</th>
-                <th className="px-4 py-3">Titulaire</th>
-                <th className="px-4 py-3">Établissement</th>
-                <th className="px-4 py-3">Empreinte SHA-256</th>
-                <th className="px-4 py-3 text-center">Score</th>
-                <th className="px-4 py-3 text-right">Verdict</th>
+              <tr className="border-b border-slate-200/80 bg-slate-50/80 text-slate-600 font-semibold">
+                <th className="px-4 py-3.5">Réf. Audit</th>
+                <th className="px-4 py-3.5">Horodatage</th>
+                <th className="px-4 py-3.5">Titulaire</th>
+                <th className="px-4 py-3.5">Établissement</th>
+                <th className="px-4 py-3.5">Empreinte SHA-256</th>
+                <th className="px-4 py-3.5 text-center">Score</th>
+                <th className="px-4 py-3.5 text-right">Verdict</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">

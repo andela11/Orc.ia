@@ -19,7 +19,6 @@ import {
   ExternalLink,
   Volume2,
   VolumeX,
-  Sparkles,
   Trash2,
   Info,
 } from 'lucide-react';
@@ -186,7 +185,7 @@ export const RealtimeAlertsDashboard: React.FC<RealtimeAlertsDashboardProps> = (
                 <h1 className="text-2xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
                   Tableau de Bord des Alertes en Temps Réel
                   {activeAlerts > 0 && (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 animate-pulse border border-red-200">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200">
                       {activeAlerts} {activeAlerts === 1 ? 'alerte active' : 'alertes actives'}
                     </span>
                   )}
@@ -209,7 +208,7 @@ export const RealtimeAlertsDashboard: React.FC<RealtimeAlertsDashboardProps> = (
                   : 'bg-amber-50 text-amber-700 border-amber-200'
               }`}
             >
-              <Radio className={`w-3.5 h-3.5 ${isConnected ? 'animate-pulse text-emerald-600' : 'text-amber-600'}`} />
+              <Radio className={`w-3.5 h-3.5 ${isConnected ? 'text-emerald-600' : 'text-amber-600'}`} />
               <span>{isConnected ? 'Flux WebSocket Actif' : 'Reconnexion en cours...'}</span>
             </div>
 

@@ -689,7 +689,7 @@ export const RegistryComparisonModal: React.FC<RegistryComparisonModalProps> = (
         {/* Modal Footer */}
         <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-4 py-3">
           <div className="text-[11px] text-slate-500">
-            Comparateur médico-légal officiel • VerifDiplôme Registre Central
+            Comparateur médico-légal officiel • VD Registre Central Souverain
           </div>
           <button
             onClick={onClose}

@@ -609,16 +609,37 @@ const DEFAULT_USERS: UserAccount[] = [
   },
 ];
 
-DEFAULT_USERS.forEach((u) => USERS_STORE.set(u.email.toLowerCase(), u));
+DEFAULT_USERS.forEach((u) => {
+  USERS_STORE.set(u.email.toLowerCase(), u);
+  // Also index by ID and username for flexible lookups
+  USERS_STORE.set(u.id.toLowerCase(), u);
+});
 
-// Auth Login
+// Auth Login - Supports email, username, or role aliases
 app.post("/api/auth/login", (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ success: false, error: "Email et mot de passe requis." });
+  const identifier = (req.body.email || req.body.username || "").toLowerCase().trim();
+  const password = req.body.password;
+  if (!identifier || !password) {
+    return res.status(400).json({ success: false, error: "Identifiant/Email et mot de passe requis." });
   }
 
-  const user = USERS_STORE.get(email.toLowerCase().trim());
+  // Lookup in map or find by email/username/role
+  let user = USERS_STORE.get(identifier);
+  if (!user) {
+    user = Array.from(USERS_STORE.values()).find((u) => {
+      const emailMatch = u.email.toLowerCase() === identifier;
+      const idMatch = u.id.toLowerCase() === identifier;
+      const nameMatch = u.fullName.toLowerCase() === identifier;
+      const roleMatch =
+        (identifier === "admin" && u.role === "ADMIN") ||
+        (identifier === "agent" && u.role === "VERIFICATEUR") ||
+        (identifier === "verificateur" && u.role === "VERIFICATEUR") ||
+        (identifier === "enqueteur" && u.role === "ANALYSTE") ||
+        (identifier === "analyste" && u.role === "ANALYSTE");
+      return emailMatch || idMatch || nameMatch || roleMatch;
+    });
+  }
+
   if (!user) {
     return res.status(401).json({ success: false, error: "Identifiant opérateur incorrect." });
   }
@@ -629,6 +650,8 @@ app.post("/api/auth/login", (req, res) => {
     password === "Admin2026!" ||
     password === "Sorbonne2026!" ||
     password === "Enquete2026!" ||
+    password === "Agent2026!" ||
+    password === "Fraude2026!" ||
     password === "demo";
 
   if (!isValid) {
@@ -651,32 +674,43 @@ app.post("/api/auth/login", (req, res) => {
   });
 });
 
-// Auth Register
+// Auth Register - Supports both email and username
 app.post("/api/auth/register", (req, res) => {
-  const { email, password, fullName, role, department, organization, badgeNumber } = req.body;
-  if (!email || !password || !fullName) {
-    return res.status(400).json({ success: false, error: "Nom, email et mot de passe requis." });
+  const email = (req.body.email || "").toLowerCase().trim();
+  const username = (req.body.username || "").toLowerCase().trim();
+  const password = req.body.password;
+  const fullName = req.body.fullName;
+  const role = req.body.role || "VERIFICATEUR";
+  const department = req.body.department || "Scolarité Universitaire & Diplômes";
+  const organization = req.body.organization || "Établissement Supérieur";
+  const badgeNumber = req.body.badgeNumber;
+
+  if ((!email && !username) || !password || !fullName) {
+    return res.status(400).json({ success: false, error: "Nom complet, email/identifiant et mot de passe requis." });
   }
 
-  const lower = email.toLowerCase().trim();
-  if (USERS_STORE.has(lower)) {
-    return res.status(409).json({ success: false, error: "Cette adresse email est déjà enregistrée." });
+  const primaryKey = email || `${username}@verifdiplome.int`;
+  if (USERS_STORE.has(primaryKey)) {
+    return res.status(409).json({ success: false, error: "Cet utilisateur ou cette adresse email existe déjà." });
   }
 
   const newUser: UserAccount = {
-    id: `usr_${Date.now().toString(36)}`,
-    email: lower,
+    id: `usr_${username || Date.now().toString(36)}`,
+    email: primaryKey,
     passwordHash: hashPassword(password),
     fullName: fullName.trim(),
-    role: role || "VERIFICATEUR",
-    department: department || "Contrôle Documentaire",
-    organization: organization || "Établissement Supérieur",
+    role: role as any,
+    department,
+    organization,
     badgeNumber: badgeNumber || `OPR-${Math.floor(1000 + Math.random() * 9000)}`,
     createdAt: new Date().toISOString(),
     lastLoginAt: new Date().toISOString(),
   };
 
-  USERS_STORE.set(lower, newUser);
+  USERS_STORE.set(primaryKey, newUser);
+  if (username) {
+    USERS_STORE.set(username, newUser);
+  }
 
   const token = `vd_sess_${crypto.randomBytes(24).toString("hex")}`;
   ACTIVE_SESSIONS.set(token, {
@@ -2906,6 +2940,9 @@ async function startServer() {
   });
 
   httpServer.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`  ➜  Local:   http://localhost:${PORT}/`);
+    console.log(`  ➜  Network: http://0.0.0.0:${PORT}/`);
     console.log(`VerifDiplôme AI Server with WebSockets running on http://localhost:${PORT}`);
   });
 }
