@@ -20,7 +20,7 @@ interface LandingPageProps {
 
 type SimulatorScenario = 'authentic' | 'falsified' | 'rejected';
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLoginModal }) => {
   const { user, quickLogin } = useAuth();
 
   // Simulator State
@@ -121,149 +121,148 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp }) => {
   return (
     <div className="bg-[#fafaf8] text-slate-950 min-h-screen font-sans selection:bg-slate-900 selection:text-white">
       {/* ------------------------------------------------------------------- */}
-      {/* 1. GRAND COVER HERO SECTION (ETHEREAL BLURRED BACKGROUND) */}
+      {/* 1. GRAND COVER HERO SECTION (PLEIN ÉCRAN ~85vh, BACKGROUND BLUR 18px & SCALE 1.12) */}
       {/* ------------------------------------------------------------------- */}
-      <section className="relative overflow-hidden pt-8 pb-16 sm:pt-14 sm:pb-24 border-b border-slate-200">
-        {/* Soft, Ethereal Blurred Background */}
-        <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
-          <div
-            className="absolute -top-32 -left-20 w-[140%] h-[150%] opacity-15 filter blur-[90px] scale-110"
-            style={{
-              backgroundImage: `url(${coverHeroImg})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
+      <section className="relative min-h-[85vh] flex flex-col justify-between overflow-hidden border-b border-slate-900/60 bg-slate-950 text-white">
+        {/* Parchemin en fond : fortement flouté (blur(18px), scale(1.12)) et assombri */}
+        <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
+          <img
+            src={coverHeroImg}
+            alt="Parchemin officiel d'État sous numérisation haute résolution"
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-center brightness-60 filter blur-[18px] scale-[1.12]"
           />
-          <div className="absolute top-10 right-1/4 w-96 h-96 bg-amber-100/30 rounded-full filter blur-[100px]" />
-          <div className="absolute -bottom-20 left-1/3 w-[32rem] h-[32rem] bg-slate-200/40 rounded-full filter blur-[120px]" />
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
-            {/* Left Column: Editorial Statement */}
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-7 space-y-6 text-left"
+        {/* Dégradé sombre par-dessus (haut vers bas, plus foncé en bas) pour garantir la lisibilité du texte blanc */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/70 via-slate-950/85 to-slate-950/98 pointer-events-none" />
+
+        {/* Contenu centré */}
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 pt-16 sm:pt-24 pb-12 text-center flex-1 flex flex-col items-center justify-center">
+          {/* Badge de statut */}
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs font-mono tracking-wider uppercase mb-6 backdrop-blur-md shadow-sm"
+          >
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span>Authentification médico-légale d'État</span>
+          </motion.div>
+
+          {/* Titre principal en serif (police Newsreader) avec un mot-clé en italique vert clair */}
+          <motion.h1
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white tracking-tight leading-[1.12] max-w-4xl"
+          >
+            VD — Vérification & <em className="italic font-normal text-emerald-400 font-serif">Intégrité</em> de Diplômes
+          </motion.h1>
+
+          {/* Sous-titre descriptif */}
+          <motion.p
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-6 text-base sm:text-lg md:text-xl text-slate-200/95 max-w-3xl leading-relaxed font-normal"
+          >
+            Pour les directions de scolarité, les recruteurs et les brigades d’enquête : inspectez les micro-structures des parchemins à 300 DPI, validez les matricules officiels et scellez les preuves sous empreinte SHA-256 inaltérable.
+          </motion.p>
+
+          {/* Deux boutons d'action (un plein émeraude, un outline clair) */}
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-4"
+          >
+            {/* Bouton plein émeraude */}
+            <button
+              type="button"
+              id="hero-cta-verifier-btn"
+              onClick={() => {
+                if (user) {
+                  onEnterApp(user.role);
+                } else if (onOpenLoginModal) {
+                  onOpenLoginModal();
+                } else {
+                  handleDirectDemo('agent', 'VERIFICATEUR');
+                }
+              }}
+              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm sm:text-base px-6 py-3.5 shadow-lg shadow-emerald-950/50 hover:shadow-emerald-900/60 transition-all cursor-pointer transform hover:-translate-y-0.5"
             >
-              <div className="space-y-4">
-                {/* Clean Tag (Non-blinking) */}
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/90 border border-slate-200 rounded-md text-[11px] font-mono tracking-widest text-slate-700 uppercase">
-                  <span className="w-2 h-2 bg-emerald-500 rounded-full" />
-                  <span>AUTHENTIFICATION MÉDICO-LÉGALE D’ÉTAT</span>
-                </div>
+              <ShieldCheck className="w-5 h-5 text-emerald-100" />
+              <span>Accéder au Scanner d'État</span>
+            </button>
 
-                {/* Sub-Badges */}
-                <div className="flex flex-wrap items-center gap-2 pt-0.5">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-xs font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                    Capture étalonnée 300 DPI
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-xs font-medium">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    SHA-256 Souverain
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-xs font-medium">
-                    <Award className="w-3.5 h-3.5 text-emerald-600" />
-                    Conforme Décret 2026-MINESUP
-                  </span>
-                </div>
-
-                {/* Titre Principal */}
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-serif font-bold tracking-tight text-slate-950 leading-[1.08]">
-                  L’<span className="text-emerald-600">intégrité</span> des diplômes d’État par vision IA & registres souverains.
-                </h1>
-
-                <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl font-normal pt-1">
-                  Pour les directions de scolarité, les recruteurs et les brigades d’enquête : inspectez les micro-structures des parchemins à 300 DPI, validez les matricules officiels et scellez les preuves sous empreinte SHA-256 inaltérable.
-                </p>
-
-                {/* Actions: Component Login and Simulator link */}
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <Login buttonText="Login" />
-                  <a
-                    href="#simulateur"
-                    className="border border-slate-300 hover:border-emerald-600 hover:text-emerald-700 bg-white/90 px-4 py-2 text-xs font-medium text-slate-800 transition-colors rounded-lg flex items-center gap-2"
-                  >
-                    <Eye className="w-4 h-4 text-emerald-600" />
-                    <span>Tester le simulateur optique</span>
-                  </a>
-                </div>
-              </div>
-
-              {/* Direct Access Profiles */}
-              <div className="pt-4 border-t border-slate-200">
-                <div className="text-xs font-medium text-slate-500 mb-2">
-                  Accès direct démo (profils officiels certifiés) :
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleDirectDemo('agent', 'VERIFICATEUR')}
-                    className="border border-slate-200 hover:border-emerald-600 hover:text-emerald-700 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 transition-colors rounded-lg cursor-pointer"
-                  >
-                    Poste Scolarité (Vérificateur) →
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDirectDemo('enqueteur', 'ANALYSTE')}
-                    className="border border-slate-200 hover:border-emerald-600 hover:text-emerald-700 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 transition-colors rounded-lg cursor-pointer"
-                  >
-                    Cellule Fraudes (Analyste) →
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleDirectDemo('admin', 'ADMIN')}
-                    className="border border-slate-200 hover:border-emerald-600 hover:text-emerald-700 bg-white px-3 py-1.5 text-xs font-medium text-slate-800 transition-colors rounded-lg cursor-pointer"
-                  >
-                    Console Centrale (Admin) →
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Right Column: Clean Parchemin Document without excessive nested frames */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, delay: 0.15 }}
-              className="lg:col-span-5 relative"
+            {/* Bouton outline clair */}
+            <a
+              href="#simulateur"
+              id="hero-cta-simulator-btn"
+              className="flex items-center gap-2 rounded-xl border border-white/30 hover:border-white/70 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm sm:text-base px-6 py-3.5 backdrop-blur-xs transition-all cursor-pointer transform hover:-translate-y-0.5"
             >
-              <div className="relative overflow-hidden rounded-xl bg-slate-950 aspect-[4/3] shadow-md border border-slate-200">
-                <img
-                  src={coverHeroImg}
-                  alt="Parchemin officiel d'État sous numérisation haute résolution"
-                  referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover object-center brightness-95"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent pointer-events-none" />
+              <Eye className="w-5 h-5 text-emerald-300" />
+              <span>Tester le simulateur optique</span>
+            </a>
+          </motion.div>
 
-                {/* HUD Badges */}
-                <div className="absolute top-3 left-3 flex items-center gap-1.5 bg-slate-900/90 px-2.5 py-1 rounded-md text-[10px] font-mono text-emerald-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  <span>300 DPI // 48-BIT SPECTRAL</span>
-                </div>
+          {/* Profils d'accès direct démo certifiés */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-2 text-xs"
+          >
+            <span className="text-slate-400 font-medium">Profils certifiés démo :</span>
+            <button
+              type="button"
+              onClick={() => handleDirectDemo('agent', 'VERIFICATEUR')}
+              className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 border border-white/15 transition-colors cursor-pointer text-xs flex items-center gap-1"
+            >
+              <span>Poste Scolarité (Vérificateur)</span>
+              <span className="text-emerald-400">→</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDirectDemo('enqueteur', 'ANALYSTE')}
+              className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 border border-white/15 transition-colors cursor-pointer text-xs flex items-center gap-1"
+            >
+              <span>Cellule Fraudes (Analyste)</span>
+              <span className="text-emerald-400">→</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDirectDemo('admin', 'ADMIN')}
+              className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 border border-white/15 transition-colors cursor-pointer text-xs flex items-center gap-1"
+            >
+              <span>Console Centrale (Admin)</span>
+              <span className="text-emerald-400">→</span>
+            </button>
+          </motion.div>
+        </div>
 
-                <div className="absolute top-3 right-3 bg-emerald-950/90 px-2.5 py-1 rounded-md text-[10px] font-mono text-emerald-300">
-                  SHA-256 SOUVERAIN
-                </div>
-
-                {/* Bottom Overlay Info */}
-                <div className="absolute bottom-3 inset-x-3 flex items-center justify-between text-white text-xs bg-slate-950/90 p-2.5 rounded-lg border border-white/10">
-                  <div>
-                    <div className="text-[10px] text-emerald-400 font-mono">PARCHEMIN ÉTALON SCELLÉ</div>
-                    <div className="font-bold text-xs text-white">IAI-2023-ING-0412</div>
-                  </div>
-                  <div className="text-right">
-                    <span className="inline-flex items-center gap-1 text-[11px] text-emerald-300 font-medium bg-emerald-950 px-2 py-0.5 rounded">
-                      <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />
-                      Sceau Conforme
-                    </span>
-                  </div>
-                </div>
+        {/* Bande de statistiques en bas (ex. "20K+ titres archivés", "SHA-256", "300 DPI") */}
+        <div className="relative z-10 w-full border-t border-white/10 bg-slate-950/70 backdrop-blur-md py-4 sm:py-5">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-white/10">
+              <div className="pt-2 md:pt-0">
+                <div className="text-xl sm:text-2xl font-serif font-bold text-emerald-400">20K+</div>
+                <div className="text-xs text-slate-400 font-medium mt-0.5">Titres archivés</div>
               </div>
-            </motion.div>
+              <div className="pt-2 md:pt-0">
+                <div className="text-xl sm:text-2xl font-serif font-bold text-white">SHA-256</div>
+                <div className="text-xs text-slate-400 font-medium mt-0.5">Scellement inaltérable</div>
+              </div>
+              <div className="pt-2 md:pt-0">
+                <div className="text-xl sm:text-2xl font-serif font-bold text-emerald-400">300 DPI</div>
+                <div className="text-xs text-slate-400 font-medium mt-0.5">Étalonnage optique</div>
+              </div>
+              <div className="pt-2 md:pt-0">
+                <div className="text-xl sm:text-2xl font-serif font-bold text-white">&lt; 1.2s</div>
+                <div className="text-xs text-slate-400 font-medium mt-0.5">Temps de confrontation</div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

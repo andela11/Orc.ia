@@ -396,28 +396,14 @@ export default function App() {
     );
   }
 
-  // 2. If not logged in or activeTab === 'landing' -> show LandingPage
-  if (!user || activeTab === 'landing') {
-    return (
-      <LandingPage
-        onEnterApp={(targetRole?: UserRole) => {
-          const effectiveRole = targetRole || user?.role;
-          if (effectiveRole === 'ADMIN') setActiveTab('admin');
-          else if (effectiveRole === 'ANALYSTE') setActiveTab('alertes');
-          else if (effectiveRole === 'VERIFICATEUR') setActiveTab('verifier');
-          else if (user) {
-            setActiveTab(ROLE_DEFAULT_TAB[user.role]);
-          } else {
-            setShowLoginFlow(true);
-          }
-        }}
-        onOpenLoginModal={() => setShowLoginFlow(true)}
-      />
-    );
-  }
-
   // Permitted tabs configuration for the workspace segmented switcher
   const getWorkspaceTabs = () => {
+    if (!user) {
+      return [
+        { id: 'landing' as ActiveTab, label: 'Accueil', icon: <ShieldCheck className="h-3.5 w-3.5" /> },
+        { id: 'documentation' as ActiveTab, label: 'Spécifications', icon: <FileText className="h-3.5 w-3.5" /> },
+      ];
+    }
     if (user.role === 'ANALYSTE') {
       return [
         { id: 'alertes' as ActiveTab, label: 'Cellule Alertes & Fraudes', icon: <Bell className="h-3.5 w-3.5" />, count: activeAlertsCount },
@@ -450,8 +436,30 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#f8faf9] text-slate-900 flex flex-col font-sans selection:bg-emerald-100 selection:text-emerald-900">
-      {/* React Workspace Perimeter Banner (Only for authenticated operators) */}
-      {user && (
+      {/* 1. Global Sticky Translucent Navbar with backdrop-blur */}
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={(tab) => {
+          if (!user && tab !== 'landing' && tab !== 'documentation') {
+            setShowLoginFlow(true);
+          } else {
+            setActiveTab(tab);
+          }
+        }}
+        registryCount={registry.length}
+        alertsCount={activeAlertsCount}
+        onOpenAuthModal={(mode) => {
+          if (mode === 'login') {
+            setShowLoginFlow(true);
+          } else {
+            setAuthModalTab(mode || 'login');
+            setIsAuthModalOpen(true);
+          }
+        }}
+      />
+
+      {/* React Workspace Perimeter Banner (Only for authenticated operators when not on landing) */}
+      {user && activeTab !== 'landing' && (
         <div className="border-b border-slate-200 bg-white">
           <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
@@ -574,8 +582,24 @@ export default function App() {
         onToggleAudio={() => setAudioEnabled(!audioEnabled)}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
+      {/* Content Area: Landing Page (Hero cover, Simulator, Features) OR Operator Workspace View */}
+      {activeTab === 'landing' ? (
+        <LandingPage
+          onEnterApp={(targetRole?: UserRole) => {
+            const effectiveRole = targetRole || user?.role;
+            if (effectiveRole === 'ADMIN') setActiveTab('admin');
+            else if (effectiveRole === 'ANALYSTE') setActiveTab('alertes');
+            else if (effectiveRole === 'VERIFICATEUR') setActiveTab('verifier');
+            else if (user) {
+              setActiveTab(ROLE_DEFAULT_TAB[user.role]);
+            } else {
+              setShowLoginFlow(true);
+            }
+          }}
+          onOpenLoginModal={() => setShowLoginFlow(true)}
+        />
+      ) : (
+        <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
         {/* Error notification banner */}
         {error && (
           <div className="mb-6 flex items-center justify-between rounded-lg bg-red-50 border border-red-200 p-4 text-xs text-red-900">
@@ -733,6 +757,7 @@ export default function App() {
           <ProjectDocumentationView />
         )}
       </main>
+      )}
 
       {/* Official Attestation Certificate Modal */}
       {isAttestationModalOpen && verificationResult && (
@@ -747,6 +772,18 @@ export default function App() {
         isOpen={isAuthModalOpen}
         initialTab={authModalTab}
         onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      {/* Global Official Footer with Bulletins, Partner network and Legal references */}
+      <Footer
+        onNavigate={(tab) => {
+          if (!user && tab !== 'landing' && tab !== 'documentation') {
+            setShowLoginFlow(true);
+          } else {
+            setActiveTab(tab);
+          }
+        }}
+        onOpenLoginModal={() => setShowLoginFlow(true)}
       />
     </div>
   );
