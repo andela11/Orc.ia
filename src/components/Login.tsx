@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Lock, CheckCircle2 } from 'lucide-react';
+import { X, Lock, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { UserRole } from '../types';
 
@@ -288,6 +288,34 @@ export const Login: React.FC<LoginProps> = ({
                 {/* 1. FORMULAIRE DE CONNEXION */}
                 {activeTab === 'login' && (
                   <form onSubmit={handleLoginSubmit} className="space-y-3.5">
+                    {/* Encadré Administrateur par défaut */}
+                    <div className="rounded-lg border border-purple-200 bg-purple-50/80 p-2.5 text-left">
+                      <div className="flex items-center justify-between gap-1">
+                        <div className="flex items-center gap-1.5 font-bold text-xs text-purple-950">
+                          <ShieldCheck className="h-3.5 w-3.5 text-purple-700" />
+                          <span>Identifiants Administrateur par défaut</span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUsernameOrEmail('admin');
+                            setPassword('Admin2026!');
+                          }}
+                          className="text-[10px] font-semibold text-purple-700 hover:text-purple-900 bg-white border border-purple-200 rounded px-1.5 py-0.5 cursor-pointer"
+                        >
+                          Préremplir
+                        </button>
+                      </div>
+                      <div className="mt-1 flex items-center gap-2 text-[11px] text-purple-900 font-mono">
+                        <span>Identifiant : <strong>admin</strong></span>
+                        <span>•</span>
+                        <span>Mot de passe : <strong>Admin2026!</strong></span>
+                      </div>
+                      <div className="text-[10px] text-purple-700 mt-0.5">
+                        L'administrateur n'a pas à créer de compte : il dispose d'identifiants souverains par défaut.
+                      </div>
+                    </div>
+
                     <div>
                       <label className="block text-xs font-medium text-slate-700 mb-1">
                         Identifiant ou Email
@@ -429,14 +457,15 @@ export const Login: React.FC<LoginProps> = ({
                           setRegRole(r);
                           if (r === 'VERIFICATEUR') setRegDept('Direction de la Scolarité & Diplômes');
                           if (r === 'ANALYSTE') setRegDept('Cellule Répression des Fraudes Documentaires');
-                          if (r === 'ADMIN') setRegDept('Gouvernance Centrale & Registre National');
                         }}
                         className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg text-slate-900 bg-white focus:outline-hidden focus:border-emerald-500"
                       >
                         <option value="VERIFICATEUR">Agent de Scolarité (Vérificateur - Scanner)</option>
                         <option value="ANALYSTE">Analyste Forensique (Cellule Anti-Fraude)</option>
-                        <option value="ADMIN">Administrateur Central (Supervision & Registre)</option>
                       </select>
+                      <span className="text-[10px] text-slate-500 mt-0.5 block">
+                        * Le rôle Administrateur n'est pas sélectionnable à l'inscription (identifiants d'État par défaut).
+                      </span>
                     </div>
 
                     <div className="grid grid-cols-2 gap-2">

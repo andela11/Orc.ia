@@ -517,7 +517,7 @@ export default function App() {
               </div>
 
               {/* Right: Segmented Switcher Controls with logout button */}
-              <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-100 rounded-lg border border-slate-200">
+              <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-lg border border-slate-200 overflow-x-auto max-w-full">
                 {workspaceTabs.map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
@@ -526,7 +526,7 @@ export default function App() {
                       type="button"
                       whileTap={{ scale: 0.97 }}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer ${
+                      className={`relative flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-all cursor-pointer shrink-0 whitespace-nowrap ${
                         isActive
                           ? 'text-white'
                           : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
@@ -557,7 +557,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setActiveTab('landing')}
-                  className="px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-900 hover:bg-white/70 rounded-md transition-colors font-medium flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1.5 text-[11px] text-slate-500 hover:text-slate-900 hover:bg-white/70 rounded-md transition-colors font-medium flex items-center gap-1 cursor-pointer shrink-0 whitespace-nowrap"
                   title="Voir la page d'accueil"
                 >
                   <span>Accueil</span>
@@ -569,7 +569,7 @@ export default function App() {
                     logout();
                     setActiveTab('landing');
                   }}
-                  className="px-2.5 py-1.5 text-[11px] text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-md transition-colors font-medium flex items-center gap-1 cursor-pointer"
+                  className="px-2.5 py-1.5 text-[11px] text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-md transition-colors font-medium flex items-center gap-1 cursor-pointer shrink-0 whitespace-nowrap"
                   title="Se déconnecter"
                 >
                   <LogOut className="h-3 w-3" />
@@ -595,15 +595,17 @@ export default function App() {
       {activeTab === 'landing' ? (
         <LandingPage
           onEnterApp={(targetRole?: UserRole) => {
-            const effectiveRole = targetRole || user?.role;
+            if (!user) {
+              setLoginFlowMode('login');
+              setShowLoginFlow(true);
+              return;
+            }
+            const effectiveRole = targetRole || user.role;
             if (effectiveRole === 'ADMIN') setActiveTab('admin');
             else if (effectiveRole === 'ANALYSTE') setActiveTab('alertes');
             else if (effectiveRole === 'VERIFICATEUR') setActiveTab('verifier');
-            else if (user) {
-              setActiveTab(ROLE_DEFAULT_TAB[user.role]);
-            } else {
-              setLoginFlowMode('login');
-              setShowLoginFlow(true);
+            else {
+              setActiveTab(ROLE_DEFAULT_TAB[user.role] || 'verifier');
             }
           }}
           onOpenLoginModal={(mode?: 'login' | 'register') => {

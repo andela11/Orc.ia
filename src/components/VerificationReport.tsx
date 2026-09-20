@@ -139,19 +139,19 @@ export const VerificationReport: React.FC<VerificationReportProps> = ({
         </div>
 
         {/* Action buttons */}
-        <div className="mt-5 flex flex-wrap items-center gap-2.5 pt-4 border-t border-slate-100">
+        <div className="mt-5 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 pt-4 border-t border-slate-100">
           {!isNonConforme ? (
             <button
               id="print-attestation-btn"
               type="button"
               onClick={onOpenAttestationModal}
-              className="rounded-lg bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-slate-800"
+              className="w-full sm:w-auto rounded-lg bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-slate-800 text-center justify-center"
             >
               Télécharger l'attestation officielle (PDF)
             </button>
           ) : (
             <div className="text-xs text-slate-700 flex items-center gap-1.5 font-medium">
-              <AlertOctagon className="h-3.5 w-3.5 text-slate-700" />
+              <AlertOctagon className="h-3.5 w-3.5 text-slate-700 shrink-0" />
               <span>Attestation officielle bloquée : Le fichier ne constitue pas un diplôme académique</span>
             </div>
           )}
@@ -159,7 +159,7 @@ export const VerificationReport: React.FC<VerificationReportProps> = ({
             id="new-verify-btn"
             type="button"
             onClick={onReset}
-            className="rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50"
+            className="w-full sm:w-auto rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 text-center justify-center"
           >
             Nouveau scan
           </button>

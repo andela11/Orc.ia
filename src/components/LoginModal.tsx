@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, LogIn, X, Lock, UserPlus } from 'lucide-react';
+import { ShieldCheck, Shield, LogIn, X, Lock, UserPlus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { UserRole } from '../types';
 
@@ -99,12 +99,12 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-200">
+      <div className="relative w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+        <div className="flex items-start justify-between border-b border-slate-100 pb-3 sm:pb-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 text-white shrink-0">
               <ShieldCheck className="h-5 w-5" />
             </div>
             <div>
@@ -167,6 +167,34 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         {/* Tab 1: Login Form */}
         {tab === 'login' && (
           <div className="mt-4 space-y-4">
+            {/* Encadré Administrateur par défaut */}
+            <div className="rounded-xl border border-purple-200 bg-purple-50/80 p-3 text-left">
+              <div className="flex flex-wrap items-center justify-between gap-1.5">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-purple-950">
+                  <Shield className="h-3.5 w-3.5 text-purple-700" />
+                  <span>Identifiants Administrateur par défaut</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUsernameOrEmail('admin');
+                    setPassword('Admin2026!');
+                  }}
+                  className="text-[11px] font-semibold text-purple-700 hover:text-purple-900 bg-white border border-purple-200 rounded-md px-2 py-0.5 shadow-2xs hover:bg-purple-50 transition-colors cursor-pointer"
+                >
+                  Préremplir
+                </button>
+              </div>
+              <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-purple-900 font-mono">
+                <span>Identifiant : <strong className="text-purple-950 font-bold">admin</strong></span>
+                <span>•</span>
+                <span>Mot de passe : <strong className="text-purple-950 font-bold">Admin2026!</strong></span>
+              </div>
+              <div className="text-[10px] text-purple-700 mt-1">
+                L'administrateur n'a pas à créer de compte : il dispose d'identifiants souverains par défaut.
+              </div>
+            </div>
+
             <form onSubmit={handleLoginSubmit} className="space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -316,8 +344,10 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 >
                   <option value="VERIFICATEUR">Vérificateur (Admissions & Scolarité)</option>
                   <option value="ANALYSTE">Analyste (Cellule Anti-Fraude)</option>
-                  <option value="ADMIN">Administrateur (Complet)</option>
                 </select>
+                <span className="text-[10px] text-slate-500 mt-0.5 block">
+                  * L'accès Administrateur est pré-configuré par défaut (sans inscription).
+                </span>
               </div>
 
               <div>

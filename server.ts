@@ -778,6 +778,14 @@ app.post("/api/auth/register", (req, res) => {
   const organization = req.body.organization || "Établissement Supérieur";
   const badgeNumber = req.body.badgeNumber;
 
+  // STRICT REQUIREMENT: Admin accounts cannot be created via public registration
+  if (role === "ADMIN") {
+    return res.status(403).json({
+      success: false,
+      error: "La création d'un compte Administrateur est interdite. L'administrateur possède des identifiants par défaut (identifiant: admin / mot de passe: Admin2026!)."
+    });
+  }
+
   if ((!email && !username) || !password || !fullName) {
     return res.status(400).json({ success: false, error: "Nom complet, email/identifiant et mot de passe requis." });
   }

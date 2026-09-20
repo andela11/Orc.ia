@@ -11,7 +11,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { UserRole } from '../types';
 import { Login } from './Login';
-import coverHeroImg from '../assets/images/academic_cover_hero_1789563230986.jpg';
+import headerBgImg from '../assets/images/academic_header_bg_1789939166623.jpg';
 
 interface LandingPageProps {
   onEnterApp: (role?: UserRole) => void;
@@ -21,7 +21,7 @@ interface LandingPageProps {
 type SimulatorScenario = 'authentic' | 'falsified' | 'rejected';
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLoginModal }) => {
-  const { user, quickLogin } = useAuth();
+  const { user } = useAuth();
 
   // Simulator State
   const [selectedScenario, setSelectedScenario] = useState<SimulatorScenario>('authentic');
@@ -57,14 +57,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
         setIsScanning(false);
       }
     }, 280);
-  };
-
-  // Fast direct demo access
-  const handleDirectDemo = async (roleName: string, roleType: UserRole) => {
-    const res = await quickLogin(roleName);
-    if (res.success) {
-      onEnterApp(roleType);
-    }
   };
 
   const partnerUniversities = [
@@ -124,19 +116,19 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
       {/* 1. GRAND COVER HERO SECTION (PLEIN ÉCRAN ~85vh, BACKGROUND BLUR 18px & SCALE 1.12) */}
       {/* ------------------------------------------------------------------- */}
       <section className="relative min-h-[85vh] flex flex-col justify-between overflow-hidden border-b border-slate-900/80 bg-slate-950 text-white">
-        {/* Parchemin officiel flouté en fond de la première section au header */}
+        {/* Parchemin officiel et archives régaliennes floutés en fond du header */}
         <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
           <img
-            src={coverHeroImg}
-            alt="Parchemin officiel d'État sous numérisation haute résolution"
+            src={headerBgImg}
+            alt="Archives universitaires d'État et parchemin sous expertise optique"
             referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-center brightness-75 opacity-70 filter blur-[8px] scale-105 transition-all duration-700"
+            className="w-full h-full object-cover object-center brightness-85 opacity-75 filter blur-[10px] md:blur-[12px] scale-105 transition-all duration-700"
           />
         </div>
 
-        {/* Dégradé sombre et halo émeraude par-dessus pour sublimer le parchemin flouté tout en assurant une lisibilité maximale */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/50 via-slate-950/70 to-slate-950/92 pointer-events-none" />
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_15%,rgba(16,185,129,0.18),transparent)] pointer-events-none" />
+        {/* Dégradé sombre et halo émeraude par-dessus pour sublimer le fond flouté tout en assurant une lisibilité maximale */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/60 via-slate-950/75 to-slate-950/95 pointer-events-none" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_20%,rgba(16,185,129,0.20),transparent)] pointer-events-none" />
 
         {/* Contenu centré */}
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 pt-16 sm:pt-24 pb-12 text-center flex-1 flex flex-col items-center justify-center">
@@ -156,7 +148,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white tracking-tight leading-[1.12] max-w-4xl"
+            className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white tracking-tight leading-[1.15] sm:leading-[1.12] max-w-4xl"
           >
             VD — Vérification & <em className="italic font-normal text-emerald-400 font-serif">Intégrité</em> de Diplômes
           </motion.h1>
@@ -166,7 +158,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-6 text-base sm:text-lg md:text-xl text-slate-200/95 max-w-3xl leading-relaxed font-normal"
+            className="mt-5 sm:mt-6 text-sm sm:text-lg md:text-xl text-slate-200/95 max-w-3xl leading-relaxed font-normal px-1 sm:px-0"
           >
             Pour les directions de scolarité, les recruteurs et les brigades d’enquête : inspectez les micro-structures des parchemins à 300 DPI, validez les matricules officiels et scellez les preuves sous empreinte SHA-256 inaltérable.
           </motion.p>
@@ -176,7 +168,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-4"
+            className="mt-7 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto"
           >
             {/* Bouton plein émeraude */}
             <button
@@ -186,14 +178,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
                 if (user) {
                   onEnterApp(user.role);
                 } else if (onOpenLoginModal) {
-                  onOpenLoginModal();
-                } else {
-                  handleDirectDemo('agent', 'VERIFICATEUR');
+                  onOpenLoginModal('login');
                 }
               }}
-              className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm sm:text-base px-6 py-3.5 shadow-lg shadow-emerald-950/50 hover:shadow-emerald-900/60 transition-all cursor-pointer transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm sm:text-base px-5 sm:px-6 py-3.5 shadow-lg shadow-emerald-950/50 hover:shadow-emerald-900/60 transition-all cursor-pointer transform hover:-translate-y-0.5"
             >
-              <ShieldCheck className="w-5 h-5 text-emerald-100" />
+              <ShieldCheck className="w-5 h-5 text-emerald-100 shrink-0" />
               <span>Accéder au Scanner d'État</span>
             </button>
 
@@ -201,52 +191,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
             <a
               href="#simulateur"
               id="hero-cta-simulator-btn"
-              className="flex items-center gap-2 rounded-xl border border-white/30 hover:border-white/70 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm sm:text-base px-6 py-3.5 backdrop-blur-xs transition-all cursor-pointer transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 hover:border-white/70 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm sm:text-base px-5 sm:px-6 py-3.5 backdrop-blur-xs transition-all cursor-pointer transform hover:-translate-y-0.5"
             >
-              <Eye className="w-5 h-5 text-emerald-300" />
+              <Eye className="w-5 h-5 text-emerald-300 shrink-0" />
               <span>Tester le simulateur optique</span>
             </a>
-          </motion.div>
-
-          {/* Profils d'accès direct démo certifiés */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="mt-8 flex flex-wrap items-center justify-center gap-2 text-xs"
-          >
-            <span className="text-slate-400 font-medium">Profils certifiés démo :</span>
-            <button
-              type="button"
-              onClick={() => handleDirectDemo('agent', 'VERIFICATEUR')}
-              className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 border border-white/15 transition-colors cursor-pointer text-xs flex items-center gap-1"
-            >
-              <span>Poste Scolarité (Vérificateur)</span>
-              <span className="text-emerald-400">→</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDirectDemo('enqueteur', 'ANALYSTE')}
-              className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 border border-white/15 transition-colors cursor-pointer text-xs flex items-center gap-1"
-            >
-              <span>Cellule Fraudes (Analyste)</span>
-              <span className="text-emerald-400">→</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDirectDemo('admin', 'ADMIN')}
-              className="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-200 border border-white/15 transition-colors cursor-pointer text-xs flex items-center gap-1"
-            >
-              <span>Console Centrale (Admin)</span>
-              <span className="text-emerald-400">→</span>
-            </button>
           </motion.div>
         </div>
 
         {/* Bande de statistiques en bas (ex. "20K+ titres archivés", "SHA-256", "300 DPI") */}
         <div className="relative z-10 w-full border-t border-white/10 bg-slate-950/70 backdrop-blur-md py-4 sm:py-5">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-y md:divide-y-0 md:divide-x divide-white/10">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 text-center divide-y-0 sm:divide-y md:divide-y-0 md:divide-x divide-white/10">
               <div className="pt-2 md:pt-0">
                 <div className="text-xl sm:text-2xl font-serif font-bold text-emerald-400">20K+</div>
                 <div className="text-xs text-slate-400 font-medium mt-0.5">Titres archivés</div>
@@ -386,22 +342,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
               </span>
             </div>
 
-            <div className="flex flex-wrap gap-2 text-xs font-mono">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2 text-xs font-mono w-full sm:w-auto">
               <button
                 type="button"
                 onClick={() => handleTriggerScan('authentic')}
-                className={`px-3 py-1.5 border transition-all rounded-xs cursor-pointer ${
+                className={`w-full sm:w-auto text-center px-3 py-1.5 border transition-all rounded-xs cursor-pointer ${
                   selectedScenario === 'authentic'
                     ? 'bg-slate-950 text-white border-slate-950 font-bold'
                     : 'bg-white text-slate-700 border-slate-300 hover:border-slate-800'
                 }`}
               >
-                [ CAS 1 : DIPLÔME AUTHENTIQUE IAI ]
+                [ CAS 1 : AUTHENTIQUE IAI ]
               </button>
               <button
                 type="button"
                 onClick={() => handleTriggerScan('falsified')}
-                className={`px-3 py-1.5 border transition-all rounded-xs cursor-pointer ${
+                className={`w-full sm:w-auto text-center px-3 py-1.5 border transition-all rounded-xs cursor-pointer ${
                   selectedScenario === 'falsified'
                     ? 'bg-red-950 text-white border-red-950 font-bold'
                     : 'bg-white text-slate-700 border-slate-300 hover:border-slate-800'
@@ -412,7 +368,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
               <button
                 type="button"
                 onClick={() => handleTriggerScan('rejected')}
-                className={`px-3 py-1.5 border transition-all rounded-xs cursor-pointer ${
+                className={`w-full sm:w-auto text-center px-3 py-1.5 border transition-all rounded-xs cursor-pointer ${
                   selectedScenario === 'rejected'
                     ? 'bg-amber-950 text-white border-amber-950 font-bold'
                     : 'bg-white text-slate-700 border-slate-300 hover:border-slate-800'
@@ -424,9 +380,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
           </div>
 
           {/* Simulator Content Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center pt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-center pt-6">
             {/* Left Screen: Parchment View */}
-            <div className="lg:col-span-7 relative aspect-[4/3] bg-slate-950 rounded-md overflow-hidden flex items-center justify-center p-6 border border-slate-800">
+            <div className="lg:col-span-7 relative min-h-[280px] sm:aspect-[4/3] bg-slate-950 rounded-md overflow-hidden flex items-center justify-center p-4 sm:p-6 border border-slate-800">
               <AnimatePresence mode="wait">
                 {selectedScenario === 'authentic' && (
                   <motion.div
@@ -604,22 +560,22 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
               </AnimatePresence>
 
               {/* Data Table */}
-              <div className="border border-slate-200 text-xs font-mono divide-y divide-slate-200">
-                <div className="p-2.5 flex justify-between bg-slate-50">
+              <div className="border border-slate-200 rounded-lg overflow-hidden text-xs font-mono divide-y divide-slate-200">
+                <div className="p-2.5 flex flex-col xs:flex-row xs:items-center justify-between gap-1 bg-slate-50">
                   <span className="text-slate-500">Établissement émetteur</span>
-                  <span className="font-bold text-slate-900">
+                  <span className="font-bold text-slate-900 truncate">
                     {selectedScenario === 'authentic' ? 'IAI-Cameroun' : selectedScenario === 'falsified' ? 'Sorbonne Université (Usurpée)' : 'N/A'}
                   </span>
                 </div>
-                <div className="p-2.5 flex justify-between">
+                <div className="p-2.5 flex flex-col xs:flex-row xs:items-center justify-between gap-1">
                   <span className="text-slate-500">Matricule détecté</span>
-                  <span className="font-bold text-slate-900">
+                  <span className="font-bold text-slate-900 font-mono">
                     {selectedScenario === 'authentic' ? 'IAI-2023-ING-0412' : selectedScenario === 'falsified' ? 'SORB-9999-FAKE' : 'NON DISPONIBLE'}
                   </span>
                 </div>
-                <div className="p-2.5 flex justify-between bg-slate-50">
+                <div className="p-2.5 flex flex-col xs:flex-row xs:items-center justify-between gap-1 bg-slate-50">
                   <span className="text-slate-500">Empreinte SHA-256</span>
-                  <span className="text-slate-700">
+                  <span className="text-slate-700 font-mono text-[11px] truncate">
                     {selectedScenario === 'authentic' ? 'a8f93...1094' : selectedScenario === 'falsified' ? 'e3b0c...855 (Blacklisté)' : 'REJETÉ'}
                   </span>
                 </div>
@@ -627,10 +583,16 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
 
               <button
                 type="button"
-                onClick={() => onEnterApp('VERIFICATEUR')}
-                className="w-full bg-slate-950 hover:bg-slate-800 text-white font-medium text-xs tracking-wider uppercase py-2.5 rounded-md transition-colors cursor-pointer"
+                onClick={() => {
+                  if (user) {
+                    onEnterApp(user.role);
+                  } else if (onOpenLoginModal) {
+                    onOpenLoginModal('login');
+                  }
+                }}
+                className="w-full bg-slate-950 hover:bg-slate-800 text-white font-medium text-xs tracking-wider uppercase py-2.5 rounded-md transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
-                Tester avec vos propres parchemins dans l’application →
+                <span>Tester avec vos propres parchemins dans l’application →</span>
               </button>
             </div>
           </div>

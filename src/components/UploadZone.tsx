@@ -212,7 +212,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileSelected, isAnalyz
         </p>
 
         {/* Modern Action Buttons */}
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 w-full sm:w-auto max-w-sm sm:max-w-none mx-auto">
           <motion.button
             id="browse-files-btn"
             type="button"
@@ -220,7 +220,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileSelected, isAnalyz
             whileTap={{ scale: 0.98 }}
             disabled={isAnalyzing}
             onClick={() => fileInputRef.current?.click()}
-            className="rounded-xl bg-slate-950 px-5 py-2.5 text-xs font-semibold text-white transition-all hover:bg-slate-800 shadow-sm disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+            className="w-full sm:w-auto rounded-xl bg-slate-950 px-5 py-2.5 text-xs font-semibold text-white transition-all hover:bg-slate-800 shadow-sm disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
           >
             <FileText className="h-4 w-4 text-emerald-400" />
             <span>Sélectionner un fichier</span>
@@ -233,7 +233,7 @@ export const UploadZone: React.FC<UploadZoneProps> = ({ onFileSelected, isAnalyz
             whileTap={{ scale: 0.98 }}
             disabled={isAnalyzing}
             onClick={startCamera}
-            className="rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 hover:border-slate-400 transition-all disabled:opacity-50 flex items-center gap-2 cursor-pointer shadow-2xs"
+            className="w-full sm:w-auto rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-xs font-semibold text-slate-800 hover:bg-slate-50 hover:border-slate-400 transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer shadow-2xs"
           >
             <Camera className="h-4 w-4 text-slate-600" />
             <span>Scanner avec la caméra</span>

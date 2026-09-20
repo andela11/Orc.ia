@@ -328,6 +328,34 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             {/* ------------------------------------------------------------- */}
             {mode === 'login' ? (
               <form onSubmit={handleLoginSubmit} className="space-y-4">
+                {/* Encadré Identifiants Administrateur par défaut */}
+                <div className="rounded-xl border border-purple-200/90 bg-purple-50/80 p-3 text-left">
+                  <div className="flex flex-wrap items-center justify-between gap-1.5">
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-purple-950">
+                      <Shield className="h-3.5 w-3.5 text-purple-700" />
+                      <span>Accès Administrateur Central (Par défaut)</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEmail('admin');
+                        setPassword('Admin2026!');
+                      }}
+                      className="text-[11px] font-semibold text-purple-700 hover:text-purple-900 bg-white border border-purple-200 rounded-md px-2 py-0.5 shadow-2xs hover:bg-purple-50 transition-colors cursor-pointer"
+                    >
+                      Préremplir
+                    </button>
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-purple-900 font-mono">
+                    <span>Identifiant : <strong className="text-purple-950 font-bold">admin</strong></span>
+                    <span>•</span>
+                    <span>Mot de passe : <strong className="text-purple-950 font-bold">Admin2026!</strong></span>
+                  </div>
+                  <div className="text-[10px] text-purple-700/90 mt-1 font-sans leading-tight">
+                    L'administrateur ne crée pas de compte : il dispose d'identifiants permanents par défaut.
+                  </div>
+                </div>
+
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
                     Identifiant ou E-mail officiel
@@ -449,8 +477,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                     >
                       <option value="VERIFICATEUR">Scolarité / Vérificateur</option>
                       <option value="ANALYSTE">Analyste Fraudes / Enquêteur</option>
-                      <option value="ADMIN">Administrateur Central</option>
                     </select>
+                    <span className="text-[10px] text-slate-500 mt-1 block">
+                      * L'accès Administrateur est exclusif et pré-configuré par défaut (non sélectionnable à l'inscription).
+                    </span>
                   </div>
                 </div>
 

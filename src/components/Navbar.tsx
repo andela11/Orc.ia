@@ -172,11 +172,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-700 text-white shadow-sm border border-emerald-400/30 group-hover:scale-105 transition-transform shrink-0">
             <ShieldCheck className="h-5 w-5 text-white" />
           </div>
-          <div className="flex flex-col text-left">
+          <div className="flex flex-col text-left min-w-0">
             <span className="text-xl font-bold tracking-tight text-slate-900 font-serif leading-none">
               VD
             </span>
-            <span className="text-[10px] text-slate-500 font-medium leading-tight mt-1 whitespace-nowrap">
+            <span className="text-[10px] text-slate-500 font-medium leading-tight mt-1 truncate max-w-[140px] xs:max-w-[180px] sm:max-w-none">
               Vérification & Intégrité de Diplômes
             </span>
           </div>
@@ -377,19 +377,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                   id="open-login-btn"
                   type="button"
                   onClick={() => onOpenAuthModal('login')}
-                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-800 transition-all cursor-pointer shadow-2xs"
+                  className="flex items-center gap-1.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-slate-800 transition-all cursor-pointer shadow-2xs shrink-0"
                 >
                   <LogIn className="h-3.5 w-3.5 text-slate-600" />
                   <span>Connexion</span>
                 </motion.button>
 
-                {/* Bouton Inscription */}
+                {/* Bouton Inscription (masqué sur les très petits écrans pour éviter les coupures) */}
                 <motion.button
                   whileTap={{ scale: 0.97 }}
                   id="open-register-btn"
                   type="button"
                   onClick={() => onOpenAuthModal('register')}
-                  className="flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 px-3.5 py-1.5 text-xs font-bold text-white transition-all cursor-pointer shadow-sm hover:shadow-md"
+                  className="hidden sm:flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 px-3 py-1.5 text-xs font-bold text-white transition-all cursor-pointer shadow-sm hover:shadow-md shrink-0"
                 >
                   <UserPlus className="h-3.5 w-3.5 text-emerald-100" />
                   <span>Inscription</span>
@@ -403,7 +403,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             id="mobile-menu-toggle-btn"
             type="button"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden flex items-center justify-center h-9 w-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors"
+            className="lg:hidden flex items-center justify-center h-9 w-9 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-100 transition-colors shrink-0"
             aria-label="Menu principal"
           >
             {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -419,13 +419,48 @@ export const Navbar: React.FC<NavbarProps> = ({
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             id="mobile-nav-drawer"
-            className="lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-md px-4 py-3 shadow-lg overflow-hidden"
+            className="lg:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-md px-4 py-3 shadow-lg overflow-y-auto max-h-[80vh]"
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
                 Espace dédié : {user ? roleStyle.label : 'Navigation générale'}
               </span>
             </div>
+
+            {/* If user is not logged in, show section jump links */}
+            {!user && (
+              <div className="mb-3 grid grid-cols-2 gap-1.5 text-xs">
+                <a
+                  href="#fonctionnalites"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium"
+                >
+                  ⚡ Fonctionnalités
+                </a>
+                <a
+                  href="#simulateur"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium"
+                >
+                  🔬 Simulateur optique
+                </a>
+                <a
+                  href="#protocole"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium"
+                >
+                  🛡️ Protocole d'audit
+                </a>
+                <a
+                  href="#universites"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="p-2 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 font-medium"
+                >
+                  🏛️ Universités
+                </a>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
               {navItems.map((item) => {
                 const isActive = activeTab === item.id;
