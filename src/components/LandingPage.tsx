@@ -15,7 +15,7 @@ import coverHeroImg from '../assets/images/academic_cover_hero_1789563230986.jpg
 
 interface LandingPageProps {
   onEnterApp: (role?: UserRole) => void;
-  onOpenLoginModal?: () => void;
+  onOpenLoginModal?: (mode?: 'login' | 'register') => void;
 }
 
 type SimulatorScenario = 'authentic' | 'falsified' | 'rejected';
@@ -123,19 +123,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
       {/* ------------------------------------------------------------------- */}
       {/* 1. GRAND COVER HERO SECTION (PLEIN ÉCRAN ~85vh, BACKGROUND BLUR 18px & SCALE 1.12) */}
       {/* ------------------------------------------------------------------- */}
-      <section className="relative min-h-[85vh] flex flex-col justify-between overflow-hidden border-b border-slate-900/60 bg-slate-950 text-white">
-        {/* Parchemin en fond : fortement flouté (blur(18px), scale(1.12)) et assombri */}
+      <section className="relative min-h-[85vh] flex flex-col justify-between overflow-hidden border-b border-slate-900/80 bg-slate-950 text-white">
+        {/* Parchemin officiel flouté en fond de la première section au header */}
         <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
           <img
             src={coverHeroImg}
             alt="Parchemin officiel d'État sous numérisation haute résolution"
             referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-center brightness-60 filter blur-[18px] scale-[1.12]"
+            className="w-full h-full object-cover object-center brightness-75 opacity-70 filter blur-[8px] scale-105 transition-all duration-700"
           />
         </div>
 
-        {/* Dégradé sombre par-dessus (haut vers bas, plus foncé en bas) pour garantir la lisibilité du texte blanc */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/70 via-slate-950/85 to-slate-950/98 pointer-events-none" />
+        {/* Dégradé sombre et halo émeraude par-dessus pour sublimer le parchemin flouté tout en assurant une lisibilité maximale */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/50 via-slate-950/70 to-slate-950/92 pointer-events-none" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_15%,rgba(16,185,129,0.18),transparent)] pointer-events-none" />
 
         {/* Contenu centré */}
         <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 pt-16 sm:pt-24 pb-12 text-center flex-1 flex flex-col items-center justify-center">

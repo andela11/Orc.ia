@@ -148,10 +148,14 @@ export const Login: React.FC<LoginProps> = ({
   const handleQuickDemo = async (username: string) => {
     setIsSubmitting(true);
     setErrorMessage(null);
-    await quickLogin(username);
+    const res = await quickLogin(username);
     setIsSubmitting(false);
-    handleClose();
-    if (onSuccess) onSuccess();
+    if (res.success) {
+      handleClose();
+      if (onSuccess) onSuccess();
+    } else {
+      setErrorMessage(res.error || 'Échec de connexion rapide.');
+    }
   };
 
   // Button styles based on variant

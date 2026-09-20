@@ -140,7 +140,7 @@ const OFFICIAL_BILLETS: Billet[] = [
 
 interface FooterProps {
   onNavigate?: (tab: ActiveTab) => void;
-  onOpenLoginModal?: () => void;
+  onOpenLoginModal?: (mode?: 'login' | 'register') => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) => {
@@ -165,49 +165,53 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
   const getCategoryBadgeClass = (cat: Billet['category']) => {
     switch (cat) {
       case 'alerte':
-        return 'bg-rose-100 text-rose-800 border-rose-200';
+        return 'bg-rose-950/80 text-rose-300 border-rose-500/40';
       case 'reglementaire':
-        return 'bg-amber-100 text-amber-900 border-amber-200';
+        return 'bg-amber-950/80 text-amber-300 border-amber-500/40';
       case 'technique':
-        return 'bg-blue-100 text-blue-900 border-blue-200';
+        return 'bg-blue-950/80 text-blue-300 border-blue-500/40';
       case 'academique':
-        return 'bg-emerald-100 text-emerald-900 border-emerald-200';
+        return 'bg-emerald-950/80 text-emerald-300 border-emerald-500/40';
       default:
-        return 'bg-slate-100 text-slate-800 border-slate-200';
+        return 'bg-slate-800 text-slate-300 border-slate-700';
     }
   };
 
   return (
-    <footer className="border-t border-slate-200 bg-white text-slate-800 print-hidden">
+    <footer className="relative border-t border-emerald-900/60 bg-gradient-to-br from-slate-950 via-[#071918] to-emerald-950 text-slate-300 print-hidden overflow-hidden">
+      {/* Halo radial de dégradé d'ambiance */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(16,185,129,0.12),transparent)] pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_90%_90%,rgba(5,150,105,0.08),transparent)] pointer-events-none" />
+
       {/* ------------------------------------------------------------------- */}
       {/* SECTION BILLETS OFFICIELS BIEN ORGANISÉE */}
       {/* ------------------------------------------------------------------- */}
-      <div className="border-b border-slate-200 bg-slate-50/70 py-10">
+      <div id="juridique" className="relative z-10 border-b border-slate-800/80 bg-slate-950/40 backdrop-blur-xs py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           {/* Header de la section des Billets */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-800 uppercase tracking-wider mb-2 font-mono">
-                <BookOpen className="w-3.5 h-3.5 text-emerald-600" />
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-500/40 text-[11px] font-semibold text-emerald-300 uppercase tracking-wider mb-2 font-mono">
+                <BookOpen className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Publications & Veille Documentaire</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-serif font-bold text-slate-950">
+              <h2 className="text-xl sm:text-2xl font-serif font-bold text-white">
                 Billets & Bulletins Officiels de Contrôle
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 mt-1 max-w-2xl">
+              <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
                 Consultez les derniers billets d'alerte aux falsifications, arrêtés ministériels, décrets de conformité et standards techniques d'authentification.
               </p>
             </div>
 
             {/* Filtres des Billets */}
-            <div className="flex flex-wrap items-center gap-1.5 p-1 bg-white rounded-lg border border-slate-200 shadow-2xs">
+            <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-900/90 rounded-lg border border-slate-700/80 shadow-inner">
               <button
                 type="button"
                 onClick={() => setFilterCategory('all')}
                 className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                   filterCategory === 'all'
-                    ? 'bg-slate-900 text-white'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-emerald-600 text-white font-semibold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 Tous les billets ({OFFICIAL_BILLETS.length})
@@ -217,8 +221,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 onClick={() => setFilterCategory('alerte')}
                 className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                   filterCategory === 'alerte'
-                    ? 'bg-rose-700 text-white'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-rose-600 text-white font-semibold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 Alertes Fraude
@@ -228,8 +232,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 onClick={() => setFilterCategory('reglementaire')}
                 className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                   filterCategory === 'reglementaire'
-                    ? 'bg-amber-700 text-white'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-amber-600 text-white font-semibold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 Décrets & Lois
@@ -239,8 +243,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 onClick={() => setFilterCategory('technique')}
                 className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                   filterCategory === 'technique'
-                    ? 'bg-blue-700 text-white'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-blue-600 text-white font-semibold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 Standards 300 DPI
@@ -250,8 +254,8 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 onClick={() => setFilterCategory('academique')}
                 className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer ${
                   filterCategory === 'academique'
-                    ? 'bg-emerald-700 text-white'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-emerald-600 text-white font-semibold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800'
                 }`}
               >
                 Académique
@@ -267,7 +271,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 layout
                 whileHover={{ y: -2 }}
                 onClick={() => setSelectedBillet(billet)}
-                className="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-2xs hover:shadow-sm hover:border-slate-300 transition-all flex flex-col justify-between cursor-pointer group"
+                className="bg-slate-900/70 rounded-xl border border-slate-800/90 p-4 sm:p-5 shadow-sm hover:border-emerald-500/50 hover:bg-slate-850/90 transition-all flex flex-col justify-between cursor-pointer group backdrop-blur-xs"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2.5">
@@ -280,21 +284,21 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                     </span>
                   </div>
 
-                  <h3 className="font-serif font-bold text-slate-900 text-sm sm:text-base leading-snug group-hover:text-emerald-700 transition-colors">
+                  <h3 className="font-serif font-bold text-white text-sm sm:text-base leading-snug group-hover:text-emerald-300 transition-colors">
                     {billet.title}
                   </h3>
 
-                  <p className="text-xs text-slate-600 mt-2 line-clamp-3 leading-relaxed">
+                  <p className="text-xs text-slate-300 mt-2 line-clamp-3 leading-relaxed">
                     {billet.excerpt}
                   </p>
                 </div>
 
-                <div className="pt-4 mt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <div className="pt-4 mt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
                   <div className="flex items-center gap-1.5 text-[11px]">
                     <Calendar className="w-3.5 h-3.5 text-slate-400" />
                     <span>{billet.date}</span>
                   </div>
-                  <span className="font-semibold text-emerald-700 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform text-xs">
+                  <span className="font-semibold text-emerald-400 inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform text-xs">
                     <span>Consulter le billet</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </span>
@@ -304,13 +308,13 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
           </div>
 
           {/* Inscription aux nouveaux billets */}
-          <div className="mt-8 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="mt-8 rounded-xl border border-emerald-500/30 bg-emerald-950/40 backdrop-blur-xs p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="space-y-1 text-center sm:text-left">
-              <div className="font-semibold text-emerald-950 text-sm flex items-center justify-center sm:justify-start gap-2">
-                <FileText className="w-4 h-4 text-emerald-700" />
+              <div className="font-semibold text-emerald-200 text-sm flex items-center justify-center sm:justify-start gap-2">
+                <FileText className="w-4 h-4 text-emerald-400" />
                 <span>Veille réglementaire et diffusion des billets d'alerte</span>
               </div>
-              <p className="text-xs text-emerald-800">
+              <p className="text-xs text-emerald-300/80">
                 Recevez directement les alertes de falsification et les nouvelles circulaires par courriel sécurisé.
               </p>
             </div>
@@ -322,11 +326,11 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 value={newsletterEmail}
                 onChange={(e) => setNewsletterEmail(e.target.value)}
                 placeholder="agent@academie.fr"
-                className="bg-white border border-emerald-300 rounded-lg px-3 py-1.5 text-xs text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:border-emerald-600 w-full sm:w-64"
+                className="bg-slate-900/90 border border-emerald-500/40 rounded-lg px-3 py-1.5 text-xs text-white placeholder:text-slate-400 focus:outline-hidden focus:border-emerald-400 w-full sm:w-64"
               />
               <button
                 type="submit"
-                className="bg-emerald-700 hover:bg-emerald-800 text-white font-medium text-xs px-4 py-1.5 rounded-lg transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer shadow-2xs"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs px-4 py-1.5 rounded-lg transition-colors shrink-0 flex items-center gap-1.5 cursor-pointer shadow-sm"
               >
                 <span>Recevoir</span>
                 <Send className="w-3 h-3" />
@@ -334,7 +338,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
             </form>
           </div>
           {newsletterSuccess && (
-            <p className="text-xs text-emerald-700 mt-2 text-right">
+            <p className="text-xs text-emerald-400 mt-2 text-right">
               ✓ Votre adresse a été inscrite au registre de diffusion des billets officiels.
             </p>
           )}
@@ -344,37 +348,37 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
       {/* ------------------------------------------------------------------- */}
       {/* SECTION COLONNES DU FOOTER (ORGANISATION DES LIENS ET SERVICES) */}
       {/* ------------------------------------------------------------------- */}
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Colonne 1 : Identité VD */}
           <div className="lg:col-span-2 space-y-3">
             <div className="flex items-center gap-2.5">
-              <div className="h-8 w-8 rounded-lg bg-emerald-800 text-white flex items-center justify-center font-bold text-sm">
+              <div className="h-8 w-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
                 VD
               </div>
               <div>
-                <span className="font-serif font-bold text-slate-900 text-base">
+                <span className="font-serif font-bold text-white text-base">
                   VD
                 </span>
-                <span className="ml-1 text-[10px] uppercase font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-sm">
+                <span className="ml-1 text-[10px] uppercase font-mono text-emerald-300 bg-emerald-950/80 border border-emerald-500/30 px-1.5 py-0.5 rounded-sm">
                   d'État
                 </span>
               </div>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed max-w-sm">
-              <strong>VD</strong> est la plateforme de souveraineté documentaire dédiée au contrôle optique, à la détection médico-légale des falsifications et à la certification d’authenticité des diplômes d’État par registres inaltérables.
+            <p className="text-xs text-slate-300 leading-relaxed max-w-sm">
+              <strong className="text-white">VD</strong> est la plateforme de souveraineté documentaire dédiée au contrôle optique, à la détection médico-légale des falsifications et à la certification d’authenticité des diplômes d’État par registres inaltérables.
             </p>
-            <div className="flex items-center gap-2 text-[11px] text-slate-500 pt-1">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 font-mono">
-                <Lock className="w-3 h-3 text-emerald-600" />
+            <div className="flex items-center gap-2 text-[11px] text-slate-300 pt-1">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-900/90 border border-slate-800 font-mono">
+                <Lock className="w-3 h-3 text-emerald-400" />
                 SHA-256
               </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 font-mono">
-                <Scale className="w-3 h-3 text-emerald-600" />
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-900/90 border border-slate-800 font-mono">
+                <Scale className="w-3 h-3 text-emerald-400" />
                 Art. 441-1 CP
               </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 font-mono">
-                <ShieldCheck className="w-3 h-3 text-emerald-600" />
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-900/90 border border-slate-800 font-mono">
+                <ShieldCheck className="w-3 h-3 text-emerald-400" />
                 Conforme RGPD
               </span>
             </div>
@@ -382,15 +386,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
 
           {/* Colonne 2 : Espaces de travail */}
           <div className="space-y-2.5 text-xs">
-            <h4 className="font-semibold text-slate-900 uppercase tracking-wider text-[11px] font-mono">
+            <h4 className="font-semibold text-white uppercase tracking-wider text-[11px] font-mono">
               Espaces & Fonctions
             </h4>
-            <ul className="space-y-1.5 text-slate-600">
+            <ul className="space-y-1.5 text-slate-400">
               <li>
                 <button
                   type="button"
                   onClick={() => onNavigate && onNavigate('verifier')}
-                  className="hover:text-emerald-700 transition-colors text-left"
+                  className="hover:text-emerald-300 transition-colors text-left"
                 >
                   Scanner de Parchemin (Scolarité)
                 </button>
@@ -399,7 +403,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 <button
                   type="button"
                   onClick={() => onNavigate && onNavigate('alertes')}
-                  className="hover:text-emerald-700 transition-colors text-left"
+                  className="hover:text-emerald-300 transition-colors text-left"
                 >
                   Cellule Répression des Fraudes
                 </button>
@@ -408,7 +412,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 <button
                   type="button"
                   onClick={() => onNavigate && onNavigate('registry')}
-                  className="hover:text-emerald-700 transition-colors text-left"
+                  className="hover:text-emerald-300 transition-colors text-left"
                 >
                   Registre National d'Archives
                 </button>
@@ -417,7 +421,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 <button
                   type="button"
                   onClick={() => onNavigate && onNavigate('stats')}
-                  className="hover:text-emerald-700 transition-colors text-left"
+                  className="hover:text-emerald-300 transition-colors text-left"
                 >
                   Observatoire des Menaces
                 </button>
@@ -426,7 +430,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 <button
                   type="button"
                   onClick={() => onNavigate && onNavigate('admin')}
-                  className="hover:text-emerald-700 transition-colors text-left"
+                  className="hover:text-emerald-300 transition-colors text-left"
                 >
                   Console Centrale de Gouvernance
                 </button>
@@ -436,23 +440,23 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
 
           {/* Colonne 3 : Établissements Partenaires */}
           <div className="space-y-2.5 text-xs">
-            <h4 className="font-semibold text-slate-900 uppercase tracking-wider text-[11px] font-mono">
+            <h4 className="font-semibold text-white uppercase tracking-wider text-[11px] font-mono">
               Réseau Partenaire
             </h4>
-            <ul className="space-y-1.5 text-slate-600">
-              <li className="flex items-center gap-1">
+            <ul className="space-y-1.5 text-slate-400">
+              <li>
                 <span>IAI-Cameroun (Système CEMAC)</span>
               </li>
-              <li className="flex items-center gap-1">
+              <li>
                 <span>Sorbonne Université</span>
               </li>
-              <li className="flex items-center gap-1">
+              <li>
                 <span>École Polytechnique (IP Paris)</span>
               </li>
-              <li className="flex items-center gap-1">
+              <li>
                 <span>Office du Baccalauréat</span>
               </li>
-              <li className="flex items-center gap-1">
+              <li>
                 <span>Université Paris-Saclay</span>
               </li>
             </ul>
@@ -460,15 +464,15 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
 
           {/* Colonne 4 : Billets & Documents Légaux */}
           <div className="space-y-2.5 text-xs">
-            <h4 className="font-semibold text-slate-900 uppercase tracking-wider text-[11px] font-mono">
+            <h4 className="font-semibold text-white uppercase tracking-wider text-[11px] font-mono">
               Billets & Légalité
             </h4>
-            <ul className="space-y-1.5 text-slate-600">
+            <ul className="space-y-1.5 text-slate-400">
               <li>
                 <button
                   type="button"
                   onClick={() => setSelectedBillet(OFFICIAL_BILLETS[0])}
-                  className="hover:text-emerald-700 transition-colors text-left"
+                  className="hover:text-emerald-300 transition-colors text-left"
                 >
                   Dernier Billet d'Alerte Fraude
                 </button>
@@ -477,31 +481,39 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 <button
                   type="button"
                   onClick={() => setSelectedBillet(OFFICIAL_BILLETS[1])}
-                  className="hover:text-emerald-700 transition-colors text-left"
+                  className="hover:text-emerald-300 transition-colors text-left"
                 >
                   Billet Décret n° 2026-442
                 </button>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => onNavigate && onNavigate('documentation')}
-                  className="hover:text-emerald-700 transition-colors text-left"
+                <a
+                  href="#protocole"
+                  className="hover:text-emerald-300 transition-colors text-left block"
                 >
-                  Spécifications de l'Audit 300 DPI
-                </button>
+                  Protocole d'Audit 300 DPI
+                </a>
               </li>
               <li>
                 <span className="text-slate-500">Réquisitions : parquet@vd.interieur.gouv</span>
               </li>
-              <li>
+              <li className="pt-1 flex flex-col gap-1.5">
                 {onOpenLoginModal && (
                   <button
                     type="button"
-                    onClick={onOpenLoginModal}
-                    className="text-emerald-700 hover:text-emerald-900 font-semibold"
+                    onClick={() => onOpenLoginModal('login')}
+                    className="text-emerald-400 hover:text-emerald-300 font-semibold text-left"
                   >
-                    Accréditation Opérateur →
+                    Connexion Opérateur →
+                  </button>
+                )}
+                {onOpenLoginModal && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenLoginModal('register')}
+                    className="text-teal-400 hover:text-teal-300 font-semibold text-left"
+                  >
+                    Créer un compte Opérateur →
                   </button>
                 )}
               </li>
@@ -512,12 +524,12 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
         {/* ------------------------------------------------------------------- */}
         {/* BAS DE PAGE (CRÉDITS & CODES) */}
         {/* ------------------------------------------------------------------- */}
-        <div className="mt-10 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+        <div className="mt-10 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="font-semibold text-slate-800">VD v2.6.4</span>
+            <span className="font-semibold text-white">VD v2.6.4</span>
             <span>— Plateforme Nationale d'Intégrité Documentaire & Vérification de Diplômes</span>
           </div>
-          <div className="text-[11px] text-slate-400">
+          <div className="text-[11px] text-slate-500">
             Conforme RGPD • SHA-256 • Décret 2026-MINESUP • Tous droits réservés
           </div>
         </div>

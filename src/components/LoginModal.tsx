@@ -89,9 +89,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const handleQuickSelect = async (username: string) => {
     setIsSubmitting(true);
     setError(null);
-    await quickLogin(username);
+    const result = await quickLogin(username);
     setIsSubmitting(false);
-    onClose();
+    if (result.success) {
+      onClose();
+    } else {
+      setError(result.error || 'Échec de la connexion rapide.');
+    }
   };
 
   return (

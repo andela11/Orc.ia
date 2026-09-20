@@ -16,7 +16,7 @@ interface AuthContextType {
     department: string;
   }) => Promise<{ success: boolean; error?: string; user?: UserProfile }>;
   logout: () => Promise<void>;
-  quickLogin: (username: string) => Promise<{ success: boolean; user?: UserProfile }>;
+  quickLogin: (roleOrUsername: string) => Promise<{ success: boolean; error?: string; user?: UserProfile }>;
   demoUsers: UserProfile[];
 }
 
@@ -56,23 +56,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Verify existing token if present
         const storedToken = localStorage.getItem(LOCAL_STORAGE_TOKEN_KEY);
         if (storedToken) {
-          const meRes = await fetch('/api/auth/me', {
-            headers: {
-              Authorization: `Bearer ${storedToken}`,
-            },
-          });
-          if (meRes.ok) {
-            const meData = await meRes.json();
-            if (meData.user) {
-              setUser(meData.user);
-              localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(meData.user));
+          try {
+            const meRes = await fetch('/api/auth/me', {
+              headers: {
+                Authorization: `Bearer ${storedToken}`,
+              },
+            });
+            if (meRes.ok) {
+              const meData = await meRes.json();
+              if (meData.user) {
+                setUser(meData.user);
+                setToken(storedToken);
+                localStorage.setItem(LOCAL_STORAGE_USER_KEY, JSON.stringify(meData.user));
+              }
+            } else if (meRes.status === 401) {
+              // Token definitively rejected by backend
+              localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
+              localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
+              setUser(null);
+              setToken(null);
             }
-          } else {
-            // Token expired or invalid
-            localStorage.removeItem(LOCAL_STORAGE_TOKEN_KEY);
-            localStorage.removeItem(LOCAL_STORAGE_USER_KEY);
-            setUser(null);
-            setToken(null);
+          } catch (netErr) {
+            console.warn('Vérification session hors-ligne ou retard serveur:', netErr);
+            // In case of transient offline/start-up delay, retain user from localStorage
           }
         } else {
           // No stored session: user starts unauthenticated on the landing page
@@ -160,16 +166,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const quickLogin = async (username: string): Promise<{ success: boolean; user?: UserProfile }> => {
-    const passwords: Record<string, string> = {
-      admin: 'Admin2026!',
-      agent: 'Agent2026!',
-      verificateur: 'Agent2026!',
-      enqueteur: 'Fraude2026!',
-      analyste: 'Fraude2026!',
-    };
-    const password = passwords[username.toLowerCase()] || 'Admin2026!';
-    return await login(username, password);
+  const quickLogin = async (roleOrUsername: string): Promise<{ success: boolean; error?: string; user?: UserProfile }> => {
+    const key = (roleOrUsername || '').toLowerCase().trim();
+    if (key === 'admin') {
+      return await login('admin', 'Admin2026!');
+    } else if (key === 'agent' || key === 'verificateur' || key === 'scolarite') {
+      return await login('claire.fontaine', 'Agent2026!');
+    } else if (key === 'enqueteur' || key === 'analyste' || key === 'fraude') {
+      return await login('marc.dupuis', 'Fraude2026!');
+    }
+    return await login(roleOrUsername, 'Admin2026!');
   };
 
   return (

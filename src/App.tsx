@@ -211,6 +211,7 @@ export default function App() {
   const { user, logout } = useAuth();
   const [activeTab, setActiveTab] = useState<ActiveTab>('landing');
   const [showLoginFlow, setShowLoginFlow] = useState<boolean>(false);
+  const [loginFlowMode, setLoginFlowMode] = useState<'login' | 'register'>('login');
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<string>('');
   const [selectedMimeType, setSelectedMimeType] = useState<string>('image/jpeg');
@@ -225,6 +226,11 @@ export default function App() {
       // If the current tab is not allowed for this role, immediately redirect to default role tab
       if (!allowed.includes(activeTab)) {
         setActiveTab(ROLE_DEFAULT_TAB[user.role] || 'landing');
+      }
+    } else {
+      // If session is closed and activeTab is not landing, reset to landing page
+      if (activeTab !== 'landing') {
+        setActiveTab('landing');
       }
     }
   }, [user, activeTab]);
@@ -385,6 +391,7 @@ export default function App() {
   if (!user && showLoginFlow) {
     return (
       <LoginScreen
+        initialMode={loginFlowMode}
         onBackToLanding={() => setShowLoginFlow(false)}
         onSuccess={(role) => {
           setShowLoginFlow(false);
@@ -396,39 +403,45 @@ export default function App() {
     );
   }
 
+  interface WorkspaceTab {
+    id: ActiveTab;
+    label: string;
+    icon: React.ReactNode;
+    count?: number;
+  }
+
   // Permitted tabs configuration for the workspace segmented switcher
-  const getWorkspaceTabs = () => {
+  const getWorkspaceTabs = (): WorkspaceTab[] => {
+    const homeTab: WorkspaceTab = { id: 'landing', label: 'Accueil', icon: <ShieldCheck className="h-3.5 w-3.5" /> };
+
     if (!user) {
-      return [
-        { id: 'landing' as ActiveTab, label: 'Accueil', icon: <ShieldCheck className="h-3.5 w-3.5" /> },
-        { id: 'documentation' as ActiveTab, label: 'Spécifications', icon: <FileText className="h-3.5 w-3.5" /> },
-      ];
+      return [homeTab];
     }
     if (user.role === 'ANALYSTE') {
       return [
+        homeTab,
         { id: 'alertes' as ActiveTab, label: 'Cellule Alertes & Fraudes', icon: <Bell className="h-3.5 w-3.5" />, count: activeAlertsCount },
         { id: 'stats' as ActiveTab, label: 'Statistiques Menaces', icon: <BarChart3 className="h-3.5 w-3.5" /> },
         { id: 'audit' as ActiveTab, label: 'Audit Judiciaire', icon: <History className="h-3.5 w-3.5" /> },
-        { id: 'documentation' as ActiveTab, label: 'Spécifications', icon: <FileText className="h-3.5 w-3.5" /> },
       ];
     }
     if (user.role === 'VERIFICATEUR') {
       return [
+        homeTab,
         { id: 'verifier' as ActiveTab, label: 'Scanner Parchemin', icon: <ShieldCheck className="h-3.5 w-3.5" /> },
         { id: 'registry' as ActiveTab, label: 'Registre Scolarité', icon: <Database className="h-3.5 w-3.5" />, count: registry.length },
         { id: 'audit' as ActiveTab, label: 'Audits Scolarité', icon: <History className="h-3.5 w-3.5" /> },
-        { id: 'documentation' as ActiveTab, label: 'Spécifications', icon: <FileText className="h-3.5 w-3.5" /> },
       ];
     }
     // ADMIN
     return [
+      homeTab,
       { id: 'admin' as ActiveTab, label: 'Console Centrale', icon: <Shield className="h-3.5 w-3.5" /> },
       { id: 'registry' as ActiveTab, label: 'Registre National', icon: <Database className="h-3.5 w-3.5" />, count: registry.length },
       { id: 'alertes' as ActiveTab, label: 'Supervision Fraudes', icon: <Bell className="h-3.5 w-3.5" />, count: activeAlertsCount },
       { id: 'verifier' as ActiveTab, label: 'Banc Scanner', icon: <ShieldCheck className="h-3.5 w-3.5" /> },
       { id: 'stats' as ActiveTab, label: 'Statistiques', icon: <BarChart3 className="h-3.5 w-3.5" /> },
       { id: 'audit' as ActiveTab, label: 'Journal d’État', icon: <History className="h-3.5 w-3.5" /> },
-      { id: 'documentation' as ActiveTab, label: 'Spécifications', icon: <FileText className="h-3.5 w-3.5" /> },
     ];
   };
 
@@ -440,7 +453,7 @@ export default function App() {
       <Navbar
         activeTab={activeTab}
         setActiveTab={(tab) => {
-          if (!user && tab !== 'landing' && tab !== 'documentation') {
+          if (!user && tab !== 'landing') {
             setShowLoginFlow(true);
           } else {
             setActiveTab(tab);
@@ -449,12 +462,8 @@ export default function App() {
         registryCount={registry.length}
         alertsCount={activeAlertsCount}
         onOpenAuthModal={(mode) => {
-          if (mode === 'login') {
-            setShowLoginFlow(true);
-          } else {
-            setAuthModalTab(mode || 'login');
-            setIsAuthModalOpen(true);
-          }
+          setLoginFlowMode(mode || 'login');
+          setShowLoginFlow(true);
         }}
       />
 
@@ -593,10 +602,26 @@ export default function App() {
             else if (user) {
               setActiveTab(ROLE_DEFAULT_TAB[user.role]);
             } else {
+              setLoginFlowMode('login');
               setShowLoginFlow(true);
             }
           }}
-          onOpenLoginModal={() => setShowLoginFlow(true)}
+          onOpenLoginModal={(mode?: 'login' | 'register') => {
+            setLoginFlowMode(mode || 'login');
+            setShowLoginFlow(true);
+          }}
+        />
+      ) : !user ? (
+        <LoginScreen
+          initialMode={loginFlowMode}
+          onSuccess={(role) => {
+            setShowLoginFlow(false);
+            setActiveTab(ROLE_DEFAULT_TAB[role] || 'verifier');
+          }}
+          onCancel={() => {
+            setShowLoginFlow(false);
+            setActiveTab('landing');
+          }}
         />
       ) : (
         <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-6 sm:px-6">
@@ -777,13 +802,17 @@ export default function App() {
       {/* Global Official Footer with Bulletins, Partner network and Legal references */}
       <Footer
         onNavigate={(tab) => {
-          if (!user && tab !== 'landing' && tab !== 'documentation') {
+          if (!user && tab !== 'landing') {
+            setLoginFlowMode('login');
             setShowLoginFlow(true);
           } else {
             setActiveTab(tab);
           }
         }}
-        onOpenLoginModal={() => setShowLoginFlow(true)}
+        onOpenLoginModal={(mode?: 'login' | 'register') => {
+          setLoginFlowMode(mode || 'login');
+          setShowLoginFlow(true);
+        }}
       />
     </div>
   );
