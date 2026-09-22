@@ -1,15 +1,62 @@
 @import "tailwindcss";
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     letter-spacing: -0.015em;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   .font-serif {
     font-family: 'Newsreader', Georgia, Cambria, "Times New Roman", Times, serif;
   }
   .font-mono-code, .font-mono {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  /* Anneau de focus homogène et accessible sur toute la plateforme */
+  :focus-visible {
+    outline: 2px solid rgb(16 185 129 / 0.75);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  /* Équilibrage typographique des grands titres (évite les veuves/orphelines) */
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  /* Trame technique discrète du hero (effet « relevé forensique ») */
+  .hero-grid-overlay {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.055) 1px, transparent 1px);
+    background-size: 56px 56px;
+    -webkit-mask-image: radial-gradient(ellipse 62% 55% at 50% 38%, black, transparent 78%);
+    mask-image: radial-gradient(ellipse 62% 55% at 50% 38%, black, transparent 78%);
+  }
+  /* Léger relief au survol des cartes */
+  .card-lift {
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-4px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-lift,
+    html {
+      scroll-behavior: auto;
+    }
+    .card-lift:hover {
+      transform: none;
+    }
   }
 }
 
