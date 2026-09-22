@@ -103,7 +103,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         body: JSON.stringify({ username: usernameOrEmail, email: usernameOrEmail, password }),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        return {
+          success: false,
+          error: res.status >= 500
+            ? 'Erreur serveur lors de la connexion. Veuillez réessayer ultérieurement.'
+            : `Réponse inattendue du serveur (${res.status}).`,
+        };
+      }
+
       if (!res.ok || !data.success) {
         return { success: false, error: data.error || 'Identifiants invalides' };
       }
@@ -133,7 +145,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         body: JSON.stringify(userData),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data: any = {};
+      try {
+        data = JSON.parse(text);
+      } catch {
+        return {
+          success: false,
+          error: res.status >= 500
+            ? 'Erreur serveur lors de la création de compte. Veuillez recharger la page ou réessayer.'
+            : `Réponse inattendue du serveur (${res.status}).`,
+        };
+      }
+
       if (!res.ok || !data.success) {
         return { success: false, error: data.error || "Erreur lors de l'enregistrement" };
       }

@@ -6,7 +6,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { GoogleGenAI } from "@google/genai";
 import { createServer as createViteServer } from "vite";
 import Tesseract from "tesseract.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
@@ -727,13 +727,18 @@ async function seedDefaultUsers(): Promise<void> {
 
 function ensureDefaultUsers(): Promise<void> {
   if (!seedPromise) {
-    seedPromise = seedDefaultUsers();
+    seedPromise = seedDefaultUsers().catch((err) => {
+      console.error("[Auth] Error seeding default users:", err);
+      seedPromise = null;
+    });
   }
   return seedPromise;
 }
 
-// Initialise les comptes opérateurs au chargement
-ensureDefaultUsers();
+// Initialise les comptes opérateurs au chargement sans bloquer ni planter
+ensureDefaultUsers().catch((err) => {
+  console.error("[Auth] Initial seed failed silently:", err);
+});
 
 function findUser(identifier: string): UserAccount | undefined {
   const q = identifier.toLowerCase().trim();
