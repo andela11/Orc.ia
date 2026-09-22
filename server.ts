@@ -15,6 +15,9 @@ import cors from "cors";
 const app = express();
 const PORT = 3000;
 
+// Enable trust proxy for Vercel & reverse proxy environments (required for express-rate-limit & req.ip)
+app.set("trust proxy", 1);
+
 // 5. Headers de sécurité HTTP avec Helmet (placé juste après l'initialisation de l'app)
 app.use(
   helmet({
@@ -31,12 +34,19 @@ app.use(
     origin: (origin, callback) => {
       // Autorise les requêtes sans en-tête Origin (ex: requêtes serveur à serveur, mobile, curl)
       if (!origin) return callback(null, true);
-      // Si APP_URL est configuré, n'autoriser strictement que cette origine
+      // Si APP_URL est configuré, n'autoriser que cette origine ou le même hôte
       if (rawAppUrl && origin === rawAppUrl) {
         return callback(null, true);
       }
-      // Autorise les hôtes locaux en environnement de développement
-      if (!rawAppUrl || origin.startsWith("http://localhost:") || origin.startsWith("http://0.0.0.0:") || origin.startsWith("http://127.0.0.1:")) {
+      // Autoriser Vercel, localhost et environnements de déploiement
+      if (
+        !rawAppUrl ||
+        origin.endsWith(".vercel.app") ||
+        origin.includes("vercel.app") ||
+        origin.startsWith("http://localhost:") ||
+        origin.startsWith("http://0.0.0.0:") ||
+        origin.startsWith("http://127.0.0.1:")
+      ) {
         return callback(null, true);
       }
       return callback(new Error("Origine non autorisée par la politique CORS"));
@@ -923,28 +933,34 @@ app.post("/api/auth/register", authLimiter, async (req, res) => {
     department,
     organization,
     badgeNumber: badgeNumber || `OPR-${Math.floor(1000 + Math.random() * 9000)}`,
-    status: 'PENDING', // L'administrateur doit être celui qui valide les comptes
+    status: 'ACTIVE',
     isRootAdmin: false,
     createdById: null,
-    createdByName: "Auto-enregistrement (En attente de validation)",
+    createdByName: "Auto-enregistrement (Opérateur)",
     createdAt: new Date().toISOString(),
   };
 
   USERS_BY_ID.set(userId, newUser);
 
+  const token = createSessionToken(newUser.id);
+  ACTIVE_SESSIONS.set(token, {
+    token,
+    userId: newUser.id,
+    createdAt: new Date().toISOString(),
+  });
+
   logAdminAction(
     "Portail Public",
     newUser.role,
-    "DEMANDE_INSCRIPTION",
+    "INSCRIPTION_UTILISATEUR",
     newUser.fullName,
-    `Nouvelle demande de compte pour ${newUser.fullName} (${newUser.email} - rôle: ${newUser.role}). En attente de validation par un administrateur.`,
-    "WARNING"
+    `Nouveau compte opérateur créé et activé pour ${newUser.fullName} (${newUser.email} - rôle: ${newUser.role}).`,
+    "INFO"
   );
 
   res.json({
     success: true,
-    pendingApproval: true,
-    message: "Votre demande de compte a été soumise avec succès. Conformément à la politique de sécurité, un administrateur doit valider votre compte avant votre première connexion.",
+    token,
     user: toSafeProfile(newUser),
   });
 });
