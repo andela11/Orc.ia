@@ -3,14 +3,17 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   ShieldCheck,
   Eye,
-  Award,
   Zap,
   Lock,
-  CheckCircle,
+  ArrowRight,
+  Fingerprint,
+  ScanLine,
+  BadgeCheck,
+  Building2,
+  ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { UserRole } from '../types';
-import { Login } from './Login';
 import headerBgImg from '../assets/images/academic_header_bg_1789939166623.jpg';
 
 interface LandingPageProps {
@@ -122,24 +125,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
             src={headerBgImg}
             alt="Archives universitaires d'État et parchemin sous expertise optique"
             referrerPolicy="no-referrer"
-            className="w-full h-full object-cover object-center brightness-85 opacity-75 filter blur-[10px] md:blur-[12px] scale-105 transition-all duration-700"
+            className="w-full h-full object-cover object-center brightness-90 opacity-80 filter blur-[8px] md:blur-[10px] scale-105 transition-all duration-700"
           />
         </div>
 
         {/* Dégradé sombre et halo émeraude par-dessus pour sublimer le fond flouté tout en assurant une lisibilité maximale */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/60 via-slate-950/75 to-slate-950/95 pointer-events-none" />
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_20%,rgba(16,185,129,0.20),transparent)] pointer-events-none" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-b from-slate-950/55 via-slate-950/78 to-slate-950/97 pointer-events-none" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_50%_18%,rgba(16,185,129,0.22),transparent)] pointer-events-none" />
+        {/* Trame technique discrète (relevé forensique) */}
+        <div className="absolute inset-0 -z-10 hero-grid-overlay pointer-events-none" />
 
         {/* Contenu centré */}
-        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 pt-16 sm:pt-24 pb-12 text-center flex-1 flex flex-col items-center justify-center">
+        <div className="relative z-10 mx-auto max-w-5xl px-4 sm:px-6 pt-20 sm:pt-28 pb-14 text-center flex-1 flex flex-col items-center justify-center">
           {/* Badge de statut */}
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs font-mono tracking-wider uppercase mb-6 backdrop-blur-md shadow-sm"
+            className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-emerald-950/70 border border-emerald-400/35 text-emerald-300 text-[11px] sm:text-xs font-mono tracking-wider uppercase mb-7 backdrop-blur-md shadow-[0_0_28px_-8px_rgba(16,185,129,0.55)] ring-1 ring-inset ring-white/5"
           >
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60 animate-ping" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
             <span>Authentification médico-légale d'État</span>
           </motion.div>
 
@@ -148,17 +156,25 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white tracking-tight leading-[1.15] sm:leading-[1.12] max-w-4xl"
+            className="text-balance text-4xl xs:text-5xl sm:text-6xl md:text-7xl lg:text-[5.25rem] font-serif font-bold text-white tracking-tight leading-[1.08] sm:leading-[1.05] max-w-4xl drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
           >
             VD — Vérification & <em className="italic font-normal text-emerald-400 font-serif">Intégrité</em> de Diplômes
           </motion.h1>
+
+          {/* Filet doré de séparation (touche institutionnelle) */}
+          <motion.div
+            initial={{ opacity: 0, scaleX: 0.4 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ duration: 0.7, delay: 0.25 }}
+            className="mt-7 h-px w-40 sm:w-56 bg-gradient-to-r from-transparent via-emerald-400/70 to-transparent"
+          />
 
           {/* Sous-titre descriptif */}
           <motion.p
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mt-5 sm:mt-6 text-sm sm:text-lg md:text-xl text-slate-200/95 max-w-3xl leading-relaxed font-normal px-1 sm:px-0"
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-pretty mt-6 text-sm sm:text-lg md:text-xl text-slate-200/90 max-w-3xl leading-relaxed font-normal px-1 sm:px-0"
           >
             Pour les directions de scolarité, les recruteurs et les brigades d’enquête : inspectez les micro-structures des parchemins à 300 DPI, validez les matricules officiels et scellez les preuves sous empreinte SHA-256 inaltérable.
           </motion.p>
@@ -167,8 +183,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-7 sm:mt-8 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto"
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="mt-8 sm:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto"
           >
             {/* Bouton plein émeraude */}
             <button
@@ -181,43 +197,65 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
                   onOpenLoginModal('login');
                 }
               }}
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm sm:text-base px-5 sm:px-6 py-3.5 shadow-lg shadow-emerald-950/50 hover:shadow-emerald-900/60 transition-all cursor-pointer transform hover:-translate-y-0.5"
+              className="group w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-sm sm:text-base px-5 sm:px-6 py-3.5 shadow-lg shadow-emerald-950/50 hover:shadow-emerald-900/60 transition-all cursor-pointer transform hover:-translate-y-0.5 ring-1 ring-inset ring-white/15"
             >
               <ShieldCheck className="w-5 h-5 text-emerald-100 shrink-0" />
               <span>Accéder au Scanner d'État</span>
+              <ArrowRight className="w-4 h-4 text-emerald-100/80 shrink-0 transition-transform group-hover:translate-x-0.5" />
             </button>
 
             {/* Bouton outline clair */}
             <a
               href="#simulateur"
               id="hero-cta-simulator-btn"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-white/30 hover:border-white/70 bg-white/10 hover:bg-white/15 text-white font-semibold text-sm sm:text-base px-5 sm:px-6 py-3.5 backdrop-blur-xs transition-all cursor-pointer transform hover:-translate-y-0.5"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 rounded-xl border border-white/25 hover:border-white/60 bg-white/5 hover:bg-white/12 text-white font-semibold text-sm sm:text-base px-5 sm:px-6 py-3.5 backdrop-blur-xs transition-all cursor-pointer transform hover:-translate-y-0.5"
             >
               <Eye className="w-5 h-5 text-emerald-300 shrink-0" />
               <span>Tester le simulateur optique</span>
             </a>
           </motion.div>
+
+          {/* Indicateurs de confiance compacts */}
+          <motion.ul
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.55 }}
+            className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2.5 text-[11px] sm:text-xs text-slate-300/80 font-medium"
+          >
+            <li className="inline-flex items-center gap-1.5">
+              <Fingerprint className="w-3.5 h-3.5 text-emerald-400/90" />
+              Scellement SHA-256
+            </li>
+            <li className="inline-flex items-center gap-1.5">
+              <ScanLine className="w-3.5 h-3.5 text-emerald-400/90" />
+              Capteur 300 DPI
+            </li>
+            <li className="inline-flex items-center gap-1.5">
+              <BadgeCheck className="w-3.5 h-3.5 text-emerald-400/90" />
+              Registres cloisonnés par établissement
+            </li>
+          </motion.ul>
         </div>
 
         {/* Bande de statistiques en bas (ex. "20K+ titres archivés", "SHA-256", "300 DPI") */}
-        <div className="relative z-10 w-full border-t border-white/10 bg-slate-950/70 backdrop-blur-md py-4 sm:py-5">
+        <div className="relative z-10 w-full border-t border-white/10 bg-slate-950/60 backdrop-blur-md py-5 sm:py-6">
           <div className="mx-auto max-w-7xl px-4 sm:px-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 text-center divide-y-0 sm:divide-y md:divide-y-0 md:divide-x divide-white/10">
-              <div className="pt-2 md:pt-0">
-                <div className="text-xl sm:text-2xl font-serif font-bold text-emerald-400">20K+</div>
-                <div className="text-xs text-slate-400 font-medium mt-0.5">Titres archivés</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-5 gap-x-6 text-center md:divide-x divide-white/10">
+              <div>
+                <div className="text-2xl sm:text-3xl font-serif font-bold text-emerald-400 tabular-nums">20K+</div>
+                <div className="text-[11px] sm:text-xs text-slate-400 font-medium mt-1 tracking-wide">Titres archivés</div>
               </div>
-              <div className="pt-2 md:pt-0">
-                <div className="text-xl sm:text-2xl font-serif font-bold text-white">SHA-256</div>
-                <div className="text-xs text-slate-400 font-medium mt-0.5">Scellement inaltérable</div>
+              <div>
+                <div className="text-2xl sm:text-3xl font-serif font-bold text-white">SHA-256</div>
+                <div className="text-[11px] sm:text-xs text-slate-400 font-medium mt-1 tracking-wide">Scellement inaltérable</div>
               </div>
-              <div className="pt-2 md:pt-0">
-                <div className="text-xl sm:text-2xl font-serif font-bold text-emerald-400">300 DPI</div>
-                <div className="text-xs text-slate-400 font-medium mt-0.5">Étalonnage optique</div>
+              <div>
+                <div className="text-2xl sm:text-3xl font-serif font-bold text-emerald-400 tabular-nums">300 DPI</div>
+                <div className="text-[11px] sm:text-xs text-slate-400 font-medium mt-1 tracking-wide">Étalonnage optique</div>
               </div>
-              <div className="pt-2 md:pt-0">
-                <div className="text-xl sm:text-2xl font-serif font-bold text-white">&lt; 1.2s</div>
-                <div className="text-xs text-slate-400 font-medium mt-0.5">Temps de confrontation</div>
+              <div>
+                <div className="text-2xl sm:text-3xl font-serif font-bold text-white tabular-nums">&lt; 1.2s</div>
+                <div className="text-[11px] sm:text-xs text-slate-400 font-medium mt-1 tracking-wide">Temps de confrontation</div>
               </div>
             </div>
           </div>
@@ -227,88 +265,89 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
       {/* ------------------------------------------------------------------- */}
       {/* 2. SECTION FONCTIONNALITÉS (CLEAN COLUMNS, NO HEAVY BOX FRAMES) */}
       {/* ------------------------------------------------------------------- */}
-      <section id="fonctionnalites" className="py-16 sm:py-24 px-4 sm:px-8 max-w-7xl mx-auto border-b border-slate-200">
-        <div className="max-w-3xl mb-12 text-left space-y-2">
-          <div className="text-[11px] font-mono text-emerald-700 font-semibold tracking-wider uppercase">
-            ARCHITECTURE & FONCTIONNALITÉS SOUVERAINES
+      <section id="fonctionnalites" className="py-20 sm:py-28 px-4 sm:px-8 max-w-7xl mx-auto border-b border-slate-200">
+        <div className="max-w-3xl mb-14 text-left space-y-3">
+          <div className="inline-flex items-center gap-2 text-[11px] font-mono text-emerald-700 font-semibold tracking-wider uppercase">
+            <span className="h-px w-6 bg-emerald-600/60" />
+            Architecture & fonctionnalités souveraines
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-950 tracking-tight">
+          <h2 className="text-balance text-3xl sm:text-4xl lg:text-[2.75rem] font-serif font-bold text-slate-950 tracking-tight leading-[1.15]">
             Une technologie conçue pour la certitude probante
           </h2>
-          <p className="text-sm text-slate-600 leading-relaxed font-normal">
+          <p className="text-pretty text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
             Conforme aux décrets ministériels de sécurisation des diplômes universitaires et titres d’État.
           </p>
         </div>
 
         {/* Clean Open Grid (No heavy card boxes, no nested frames) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {/* Column 1 */}
-          <div className="text-left space-y-3 pt-4 border-t border-slate-200">
-            <div className="text-emerald-700">
-              <ShieldCheck className="w-6 h-6" />
+          <div className="card-lift group text-left space-y-4 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-lg hover:border-emerald-300/70">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+              <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono text-emerald-700 font-bold uppercase tracking-widest">
-                VISION FORENSIQUE IA
+              <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase tracking-[0.18em]">
+                Vision forensique IA
               </span>
-              <h3 className="text-lg font-bold text-slate-900 mt-1">
+              <h3 className="text-lg font-bold text-slate-900 mt-1.5 leading-snug">
                 Analyse Médico-Légale des Parchemins
               </h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-[13px] text-slate-600 leading-relaxed">
               Détection micrométrique des falsifications : micro-lignes guillochées altérées, encres discordantes, sceaux gaufrés déplacés et incohérences typographiques.
             </p>
-            <div className="pt-4 flex items-baseline justify-between">
+            <div className="pt-4 mt-auto flex items-baseline justify-between border-t border-slate-100">
               <span className="text-xs text-slate-500">Précision de Détection</span>
-              <span className="text-2xl font-bold font-serif text-emerald-600">
+              <span className="text-2xl font-bold font-serif text-emerald-600 tabular-nums">
                 99.8%
               </span>
             </div>
           </div>
 
           {/* Column 2 */}
-          <div className="text-left space-y-3 pt-4 border-t border-slate-200">
-            <div className="text-emerald-700">
-              <Zap className="w-6 h-6" />
+          <div className="card-lift group text-left space-y-4 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-lg hover:border-emerald-300/70">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+              <Zap className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono text-emerald-700 font-bold uppercase tracking-widest">
-                EXTRACTION OCR INSTANTANÉE
+              <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase tracking-[0.18em]">
+                Extraction OCR instantanée
               </span>
-              <h3 className="text-lg font-bold text-slate-900 mt-1">
+              <h3 className="text-lg font-bold text-slate-900 mt-1.5 leading-snug">
                 Reconnaissance & Détection 300 DPI
               </h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-[13px] text-slate-600 leading-relaxed">
               Numérisation à haute résolution avec compensation spectrale de l'éclairage et redressement géométrique automatique du parchemin sans distorsion.
             </p>
-            <div className="pt-4 flex items-baseline justify-between">
+            <div className="pt-4 mt-auto flex items-baseline justify-between border-t border-slate-100">
               <span className="text-xs text-slate-500">Vitesse d'Exécution</span>
-              <span className="text-2xl font-bold font-serif text-emerald-600">
+              <span className="text-2xl font-bold font-serif text-emerald-600 tabular-nums">
                 &lt; 1.5s
               </span>
             </div>
           </div>
 
           {/* Column 3 */}
-          <div className="text-left space-y-3 pt-4 border-t border-slate-200">
-            <div className="text-emerald-700">
-              <Lock className="w-6 h-6" />
+          <div className="card-lift group text-left space-y-4 p-6 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-lg hover:border-emerald-300/70">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+              <Lock className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] font-mono text-emerald-700 font-bold uppercase tracking-widest">
-                REGISTRE SOUVERAIN SCELLÉ
+              <span className="text-[10px] font-mono text-emerald-700 font-bold uppercase tracking-[0.18em]">
+                Registre souverain scellé
               </span>
-              <h3 className="text-lg font-bold text-slate-900 mt-1">
+              <h3 className="text-lg font-bold text-slate-900 mt-1.5 leading-snug">
                 Empreinte Cryptographique SHA-256
               </h3>
             </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-[13px] text-slate-600 leading-relaxed">
               Confrontation en direct avec les partitions chiffrées des universités partenaires. Chaque titre validé est certifié inaltérable et opposable en justice.
             </p>
-            <div className="pt-4 flex items-baseline justify-between">
+            <div className="pt-4 mt-auto flex items-baseline justify-between border-t border-slate-100">
               <span className="text-xs text-slate-500">Garantie d'Intégrité</span>
-              <span className="text-2xl font-bold font-serif text-emerald-600">
+              <span className="text-2xl font-bold font-serif text-emerald-600 tabular-nums">
                 100%
               </span>
             </div>
@@ -319,25 +358,29 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
       {/* ------------------------------------------------------------------- */}
       {/* 3. INTERACTIVE FORENSIC SIMULATOR */}
       {/* ------------------------------------------------------------------- */}
-      <section id="simulateur" className="py-16 sm:py-24 px-4 sm:px-8 max-w-7xl mx-auto border-b border-slate-200">
-        <div className="max-w-3xl mb-10 text-left space-y-2">
-          <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest">
-            DÉMONSTRATION INTERACTIVE FORENSIQUE
+      <section id="simulateur" className="py-20 sm:py-28 px-4 sm:px-8 max-w-7xl mx-auto border-b border-slate-200">
+        <div className="max-w-3xl mb-12 text-left space-y-3">
+          <div className="inline-flex items-center gap-2 text-[11px] font-mono text-slate-500 uppercase tracking-widest">
+            <span className="h-px w-6 bg-slate-400/60" />
+            Démonstration interactive forensique
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-950 tracking-tight">
+          <h2 className="text-balance text-3xl sm:text-4xl lg:text-[2.75rem] font-serif font-bold text-slate-950 tracking-tight leading-[1.15]">
             Simulateur d’expertise médico-légale en direct
           </h2>
-          <p className="text-sm text-slate-600 leading-relaxed font-normal">
+          <p className="text-pretty text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
             Sélectionnez l’un des trois cas d’évaluation pour observer la détection en temps réel de l’intégrité documentaire par notre moteur optique.
           </p>
         </div>
 
-        <div className="bg-white p-6 sm:p-8 rounded-lg border border-slate-200">
+        <div className="bg-white p-5 sm:p-8 rounded-2xl border border-slate-200 shadow-sm ring-1 ring-slate-950/[0.03]">
           {/* Scenario Selector Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 bg-slate-950 rounded-xs" />
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-slate-900">
+            <div className="flex items-center gap-2.5">
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-50 animate-ping" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-600" />
+              </span>
+              <span className="font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-900">
                 CAPTEUR OPTIQUE 300 DPI // ÉVALUATION MULTIMODALE
               </span>
             </div>
@@ -602,29 +645,31 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
       {/* ------------------------------------------------------------------- */}
       {/* 4. OPERATIONAL PROTOCOL (CLEAN MINIMAL PHASES) */}
       {/* ------------------------------------------------------------------- */}
-      <section id="protocole" className="py-16 sm:py-24 px-4 sm:px-8 max-w-7xl mx-auto border-b border-slate-200">
-        <div className="max-w-3xl mb-12 text-left space-y-2">
-          <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest">
-            PROTOCOLE EN 4 PHASES
+      <section id="protocole" className="py-20 sm:py-28 px-4 sm:px-8 max-w-7xl mx-auto border-b border-slate-200">
+        <div className="max-w-3xl mb-14 text-left space-y-3">
+          <div className="inline-flex items-center gap-2 text-[11px] font-mono text-slate-500 uppercase tracking-widest">
+            <span className="h-px w-6 bg-slate-400/60" />
+            Protocole en 4 phases
           </div>
-          <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-950 tracking-tight">
+          <h2 className="text-balance text-3xl sm:text-4xl lg:text-[2.75rem] font-serif font-bold text-slate-950 tracking-tight leading-[1.15]">
             Comment fonctionne l’authentification souveraine
           </h2>
-          <p className="text-sm text-slate-600 leading-relaxed font-normal">
+          <p className="text-pretty text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
             Une chaîne de traitement infalsifiable garantissant l'intégrité probante du titre sans ambiguïté.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6">
           {steps.map((st, i) => (
             <div
               key={i}
-              className="border-t-2 border-slate-950 pt-4 text-left space-y-2"
+              className="relative text-left space-y-3 pt-5 border-t-2 border-slate-950/90 group"
             >
-              <div className="font-mono text-2xl font-light text-slate-400">
-                {st.num}.
+              <span className="absolute -top-[3px] left-0 h-[2px] w-8 bg-emerald-500" />
+              <div className="font-mono text-3xl font-light text-slate-300 group-hover:text-emerald-500 transition-colors tabular-nums">
+                {st.num}
               </div>
-              <h3 className="font-serif text-base font-bold text-slate-950">
+              <h3 className="font-serif text-base font-bold text-slate-950 leading-snug">
                 {st.title}
               </h3>
               <p className="text-xs text-slate-600 leading-relaxed">
@@ -638,29 +683,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
       {/* ------------------------------------------------------------------- */}
       {/* 5. PARTNER UNIVERSITIES NETWORK (MINIMALIST TYPOGRAPHIC TILES) */}
       {/* ------------------------------------------------------------------- */}
-      <section id="universites" className="py-16 sm:py-20 bg-white border-b border-slate-200 px-4 sm:px-8">
+      <section id="universites" className="py-20 sm:py-24 bg-white border-b border-slate-200 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto text-left">
-          <div className="max-w-3xl mb-10 space-y-2">
-            <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest">
-              REGISTRE NATIONAL D'UNIVERSITÉS
+          <div className="max-w-3xl mb-12 space-y-3">
+            <div className="inline-flex items-center gap-2 text-[11px] font-mono text-slate-500 uppercase tracking-widest">
+              <span className="h-px w-6 bg-slate-400/60" />
+              Registre national d'universités
             </div>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-slate-950">
+            <h2 className="text-balance text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-slate-950 tracking-tight leading-[1.15]">
               Cloisonnement hermétique par établissement
             </h2>
-            <p className="text-xs text-slate-600">
+            <p className="text-pretty text-sm text-slate-600 leading-relaxed">
               Chaque établissement partenaire administre sa partition de registre sans partage de données avec les tiers.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 pt-2">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 lg:gap-5">
             {partnerUniversities.map((univ, idx) => (
               <div
                 key={idx}
-                className="text-left space-y-1.5 border-t border-slate-200 pt-3"
+                className="card-lift group text-left space-y-2 rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 hover:border-emerald-300/70 hover:bg-white hover:shadow-md"
               >
-                <div className="text-xs font-bold text-slate-950">{univ.name}</div>
-                <div className="text-[11px] text-slate-500">{univ.jurisdiction}</div>
-                <div className="font-mono text-[10px] text-slate-400">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-500 group-hover:text-emerald-600 group-hover:border-emerald-200 transition-colors">
+                  <Building2 className="w-4 h-4" />
+                </div>
+                <div className="text-xs font-bold text-slate-950 leading-snug">{univ.name}</div>
+                <div className="text-[11px] text-slate-500 leading-snug">{univ.jurisdiction}</div>
+                <div className="font-mono text-[10px] text-emerald-700/90 pt-1 border-t border-slate-200/70">
                   {univ.archives}
                 </div>
               </div>
@@ -672,12 +721,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
       {/* ------------------------------------------------------------------- */}
       {/* 6. JURIDICAL FAQ (ACCORDION) */}
       {/* ------------------------------------------------------------------- */}
-      <section id="juridique" className="py-16 sm:py-24 px-4 sm:px-8 max-w-4xl mx-auto">
-        <div className="text-left mb-10 space-y-2">
-          <div className="text-[11px] font-mono text-slate-500 uppercase tracking-widest">
-            CADRE JURIDIQUE & QUESTIONS FRÉQUENTES
+      <section id="juridique" className="py-20 sm:py-28 px-4 sm:px-8 max-w-4xl mx-auto">
+        <div className="text-left mb-12 space-y-3">
+          <div className="inline-flex items-center gap-2 text-[11px] font-mono text-slate-500 uppercase tracking-widest">
+            <span className="h-px w-6 bg-slate-400/60" />
+            Cadre juridique & questions fréquentes
           </div>
-          <h2 className="text-3xl font-serif font-bold text-slate-950">
+          <h2 className="text-balance text-3xl sm:text-4xl font-serif font-bold text-slate-950 tracking-tight leading-[1.15]">
             Garanties légales et fonctionnement
           </h2>
         </div>
@@ -688,11 +738,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
               <button
                 type="button"
                 onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
-                className="w-full flex items-center justify-between text-left text-sm font-bold text-slate-900 hover:text-slate-700 transition-colors py-1 cursor-pointer"
+                className="group w-full flex items-center justify-between gap-4 text-left text-sm sm:text-[15px] font-bold text-slate-900 hover:text-emerald-800 transition-colors py-1.5 cursor-pointer"
               >
-                <span>{faq.q}</span>
-                <span className="font-mono text-base text-slate-500 ml-4 shrink-0">
-                  {activeFaq === idx ? '−' : '+'}
+                <span className="leading-snug">{faq.q}</span>
+                <span
+                  className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-sm transition-all ${
+                    activeFaq === idx
+                      ? 'border-emerald-600 bg-emerald-600 text-white rotate-180'
+                      : 'border-slate-300 text-slate-500 group-hover:border-emerald-400 group-hover:text-emerald-600'
+                  }`}
+                  aria-hidden="true"
+                >
+                  <ChevronDown className="w-3.5 h-3.5" />
                 </span>
               </button>
 
@@ -705,7 +762,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <p className="text-xs text-slate-600 leading-relaxed pt-2 pb-2">
+                    <p className="text-[13px] text-slate-600 leading-relaxed pt-1 pb-2 pr-10">
                       {faq.a}
                     </p>
                   </motion.div>

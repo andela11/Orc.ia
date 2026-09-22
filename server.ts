@@ -4,7 +4,6 @@ import path from "path";
 import crypto from "crypto";
 import { WebSocketServer, WebSocket } from "ws";
 import { GoogleGenAI } from "@google/genai";
-import { createServer as createViteServer } from "vite";
 import Tesseract from "tesseract.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -14,6 +13,12 @@ import cors from "cors";
 
 const app = express();
 const PORT = 3000;
+
+// Derrière un reverse-proxy (Vercel, Cloud Run, etc.) l'IP réelle du client est transmise
+// via l'en-tête X-Forwarded-For. Sans ce réglage, express-rate-limit détecte l'en-tête mais
+// refuse de s'en servir et lève une erreur de configuration. On fait confiance à 1 seul niveau
+// de proxy (jamais `true`, qui serait trivialement contournable).
+app.set("trust proxy", 1);
 
 // 5. Headers de sécurité HTTP avec Helmet (placé juste après l'initialisation de l'app)
 app.use(
@@ -39,6 +44,16 @@ app.use(
       if (!rawAppUrl || origin.startsWith("http://localhost:") || origin.startsWith("http://0.0.0.0:") || origin.startsWith("http://127.0.0.1:")) {
         return callback(null, true);
       }
+      // Autorise les déploiements Vercel (production & previews) : l'application est
+      // servie par le même projet et le front appelle l'API en same-origin.
+      try {
+        const host = new URL(origin).hostname;
+        if (host.endsWith(".vercel.app")) {
+          return callback(null, true);
+        }
+      } catch {
+        // Origin malformée : on refuse ci-dessous.
+      }
       return callback(new Error("Origine non autorisée par la politique CORS"));
     },
     credentials: true,
@@ -48,11 +63,16 @@ app.use(
 );
 
 // 4. Rate limiting sur l'authentification (max 5 tentatives par IP toutes les 15 minutes)
+// Le `trust proxy` (défini plus haut) permet au keyGenerator par défaut de récupérer l'IP réelle
+// du client via X-Forwarded-For, y compris sur Vercel. On ne surcharge donc pas keyGenerator
+// (un keyGenerator custom basé sur req.ip déclencherait la validation IPv6 d'express-rate-limit).
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // Maximum 5 requêtes par IP
   standardHeaders: true,
   legacyHeaders: false,
+  // En cas d'erreur du store (mémoire), on laisse passer la requête au lieu de renvoyer une 500.
+  passOnStoreError: true,
   message: {
     success: false,
     error: "Trop de tentatives d'authentification depuis cette adresse IP. Veuillez patienter 15 minutes avant de réessayer.",
@@ -3235,11 +3255,32 @@ Réponds uniquement en JSON valide conforme au format suivant :
 });
 
 // ----------------------------------------------------
+// Gestionnaire d'erreurs global : renvoie TOUJOURS du JSON.
+// Sans cela, toute exception non capturée produit une réponse texte/HTML que le
+// front ne peut pas parser (=> "Unexpected token ... is not valid JSON").
+// ----------------------------------------------------
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.error("[Global Error Handler]", err?.stack || err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  const status = typeof err?.status === "number" ? err.status : 500;
+  res.status(status).json({
+    success: false,
+    error: err?.message || "Une erreur interne est survenue sur le serveur.",
+  });
+});
+
+// ----------------------------------------------------
 // Vite Middleware / Static Serving & WebSocket Server
 // ----------------------------------------------------
 async function startServer() {
   await ensureDefaultUsers();
   if (process.env.NODE_ENV !== "production") {
+    // Import dynamique de Vite : Vite n'est requis QUE pour le serveur de développement local.
+    // Un import statique en haut de fichier casse le déploiement serverless (Vercel) car le
+    // bundling de Vite repose sur `import.meta.url` (=> "TypeError: Invalid URL" au chargement).
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
