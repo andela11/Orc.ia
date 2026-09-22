@@ -115,7 +115,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
       {/* ------------------------------------------------------------------- */}
       {/* 1. GRAND COVER HERO SECTION (PLEIN ÉCRAN ~85vh, BACKGROUND BLUR 18px & SCALE 1.12) */}
       {/* ------------------------------------------------------------------- */}
-      <section className="relative min-h-[85vh] flex flex-col justify-between overflow-hidden border-b border-slate-900/80 bg-slate-950 text-white">
+      <section className="relative min-h-[88vh] flex flex-col justify-between overflow-hidden border-b border-slate-900/80 bg-slate-950 text-white">
         {/* Parchemin officiel et archives régaliennes floutés en fond du header */}
         <div className="absolute inset-0 -z-20 overflow-hidden pointer-events-none">
           <img
@@ -137,9 +137,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-xs font-mono tracking-wider uppercase mb-6 backdrop-blur-md shadow-sm"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900/90 border border-emerald-500/40 text-emerald-300 text-xs font-mono tracking-wider uppercase mb-6 backdrop-blur-md shadow-md shadow-emerald-950/40"
           >
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
             <span>Authentification médico-légale d'État</span>
           </motion.div>
 
@@ -150,7 +153,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-white tracking-tight leading-[1.15] sm:leading-[1.12] max-w-4xl"
           >
-            VD — Vérification & <em className="italic font-normal text-emerald-400 font-serif">Intégrité</em> de Diplômes
+            VD — Vérification & <em className="italic font-serif font-normal text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-300 to-emerald-400">Intégrité</em> de Diplômes
           </motion.h1>
 
           {/* Sous-titre descriptif */}
@@ -241,7 +244,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
         </div>
 
         {/* Clean Open Grid (No heavy card boxes, no nested frames) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Column 1 */}
           <div className="text-left space-y-3 pt-4 border-t border-slate-200">
             <div className="text-emerald-700">
