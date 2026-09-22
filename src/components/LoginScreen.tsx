@@ -31,8 +31,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   onBackToLanding,
   onSuccess,
 }) => {
-  const { login, register, quickLogin, isLoading } = useAuth();
-  const [mode, setMode] = useState<'login' | 'register'>(initialMode);
+  const { login, register, forgotPassword, isLoading } = useAuth();
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot-password'>(initialMode);
 
   useEffect(() => {
     setMode(initialMode);
@@ -44,6 +44,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+
+  // Forgot password form state
+  const [forgotIdentifier, setForgotIdentifier] = useState('');
+  const [forgotNewPassword, setForgotNewPassword] = useState('');
+  const [forgotConfirmPassword, setForgotConfirmPassword] = useState('');
+  const [showForgotNewPassword, setShowForgotNewPassword] = useState(false);
+  const [isResetLoading, setIsResetLoading] = useState(false);
+  const [resetCompleted, setResetCompleted] = useState(false);
 
   // Register form state
   const [regFullName, setRegFullName] = useState('');
@@ -143,19 +151,43 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
     }
   };
 
-  const handleDemoLogin = async (type: 'admin' | 'verificateur' | 'analyste') => {
+  const handleForgotSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLocalError(null);
     setLocalSuccess(null);
-    const roleKey = type === 'verificateur' ? 'agent' : type === 'analyste' ? 'enqueteur' : 'admin';
-    const res = await quickLogin(roleKey);
-    if (res.success && res.user?.role) {
-      onSuccess(res.user.role);
-    } else if (res.success) {
-      if (type === 'admin') onSuccess('ADMIN');
-      else if (type === 'analyste') onSuccess('ANALYSTE');
-      else onSuccess('VERIFICATEUR');
+
+    const idVal = forgotIdentifier.trim();
+    if (!idVal) {
+      setLocalError('Veuillez renseigner votre identifiant ou adresse email.');
+      return;
+    }
+
+    if (!forgotNewPassword) {
+      setLocalError('Veuillez saisir votre nouveau mot de passe.');
+      return;
+    }
+
+    if (forgotNewPassword.length < 6) {
+      setLocalError('Le nouveau mot de passe doit comporter au moins 6 caractères.');
+      return;
+    }
+
+    if (forgotNewPassword !== forgotConfirmPassword) {
+      setLocalError('Les deux mots de passe ne correspondent pas.');
+      return;
+    }
+
+    setIsResetLoading(true);
+    const res = await forgotPassword(idVal, forgotNewPassword);
+    setIsResetLoading(false);
+
+    if (!res.success) {
+      setLocalError(res.error || 'Erreur lors de la réinitialisation du mot de passe.');
     } else {
-      setLocalError(res.error || 'Impossible de se connecter au compte de démonstration.');
+      setLocalSuccess(res.message || 'Votre mot de passe a été réinitialisé avec succès !');
+      setResetCompleted(true);
+      setEmail(idVal);
+      setPassword(forgotNewPassword);
     }
   };
 
@@ -300,12 +332,14 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             {/* Form Title & Context */}
             <div className="mb-4">
               <h2 className="text-lg font-bold text-slate-950 font-serif tracking-tight">
-                {mode === 'login' ? 'Connexion à votre Espace' : 'Créer un Compte Opérateur'}
+                {mode === 'login' && 'Connexion à votre Espace'}
+                {mode === 'register' && 'Créer un Compte Opérateur'}
+                {mode === 'forgot-password' && 'Réinitialiser votre Mot de Passe'}
               </h2>
               <p className="text-xs text-slate-500 mt-0.5">
-                {mode === 'login'
-                  ? 'Saisissez vos identifiants ou utilisez un accès démo 1-clic ci-dessous.'
-                  : 'Renseignez les informations de votre établissement pour créer votre session.'}
+                {mode === 'login' && 'Saisissez vos identifiants pour accéder à votre espace de travail sécurisé.'}
+                {mode === 'register' && 'Renseignez les informations de votre établissement pour créer votre session.'}
+                {mode === 'forgot-password' && 'Définissez un nouveau mot de passe sécurisé pour votre compte opérateur.'}
               </p>
             </div>
 
@@ -326,36 +360,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             {/* ------------------------------------------------------------- */}
             {/* FORMULAIRE DE CONNEXION */}
             {/* ------------------------------------------------------------- */}
-            {mode === 'login' ? (
+            {mode === 'login' && (
               <form onSubmit={handleLoginSubmit} className="space-y-4">
-                {/* Encadré Identifiants Administrateur par défaut */}
-                <div className="rounded-xl border border-purple-200/90 bg-purple-50/80 p-3 text-left">
-                  <div className="flex flex-wrap items-center justify-between gap-1.5">
-                    <div className="flex items-center gap-1.5 font-bold text-xs text-purple-950">
-                      <Shield className="h-3.5 w-3.5 text-purple-700" />
-                      <span>Accès Administrateur Central (Par défaut)</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEmail('admin');
-                        setPassword('Admin2026!');
-                      }}
-                      className="text-[11px] font-semibold text-purple-700 hover:text-purple-900 bg-white border border-purple-200 rounded-md px-2 py-0.5 shadow-2xs hover:bg-purple-50 transition-colors cursor-pointer"
-                    >
-                      Préremplir
-                    </button>
-                  </div>
-                  <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-purple-900 font-mono">
-                    <span>Identifiant : <strong className="text-purple-950 font-bold">admin</strong></span>
-                    <span>•</span>
-                    <span>Mot de passe : <strong className="text-purple-950 font-bold">Admin2026!</strong></span>
-                  </div>
-                  <div className="text-[10px] text-purple-700/90 mt-1 font-sans leading-tight">
-                    L'administrateur ne crée pas de compte : il dispose d'identifiants permanents par défaut.
-                  </div>
-                </div>
-
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
                     Identifiant ou E-mail officiel
@@ -367,7 +373,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="ex: admin ou claire.fontaine@sorbonne-universite.fr"
+                      placeholder="ex: agent@univ.fr ou identifiant officiel"
                       className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
                     />
                   </div>
@@ -378,6 +384,19 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                     <label className="text-xs font-bold text-slate-700">
                       Mot de passe
                     </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('forgot-password');
+                        setForgotIdentifier(email);
+                        setLocalError(null);
+                        setLocalSuccess(null);
+                        setResetCompleted(false);
+                      }}
+                      className="text-[11px] font-medium text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer"
+                    >
+                      Mot de passe oublié ?
+                    </button>
                   </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -430,10 +449,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                   </button>
                 </div>
               </form>
-            ) : (
-              /* ------------------------------------------------------------- */
-              /* FORMULAIRE D'INSCRIPTION */
-              /* ------------------------------------------------------------- */
+            )}
+
+            {/* ------------------------------------------------------------- */}
+            {/* FORMULAIRE D'INSCRIPTION */}
+            {/* ------------------------------------------------------------- */}
+            {mode === 'register' && (
               <form onSubmit={handleRegisterSubmit} className="space-y-3.5">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
@@ -593,57 +614,135 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
               </form>
             )}
 
-            {/* Quick Demo Access Profile Buttons */}
-            <div className="mt-5 pt-4 border-t border-slate-100">
-              <div className="text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <KeyRound className="h-3.5 w-3.5 text-emerald-700" />
-                <span>Accès Rapide par Rôle (Connexion en 1 Clic) :</span>
-              </div>
+            {/* ------------------------------------------------------------- */}
+            {/* FORMULAIRE DE RÉINITIALISATION DU MOT DE PASSE */}
+            {/* ------------------------------------------------------------- */}
+            {mode === 'forgot-password' && (
+              <form onSubmit={handleForgotSubmit} className="space-y-4">
+                {resetCompleted ? (
+                  <div className="space-y-4 py-2">
+                    <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs">
+                      <div className="flex items-center gap-2 font-bold mb-1">
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                        <span>Mot de passe mis à jour avec succès</span>
+                      </div>
+                      <p className="text-slate-600 leading-relaxed">
+                        Votre mot de passe d'habilitation a été modifié. Vous pouvez dès à présent vous authentifier avec votre nouvel accès.
+                      </p>
+                    </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleDemoLogin('verificateur')}
-                  className="flex flex-col items-start p-2.5 rounded-xl border border-emerald-100 bg-[#fbfdfc] hover:bg-emerald-50/80 hover:border-emerald-300 text-left transition-all group shadow-2xs cursor-pointer"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <GraduationCap className="h-3.5 w-3.5 text-emerald-700" />
-                    <span className="text-[11px] font-bold text-slate-800 group-hover:text-emerald-950">
-                      Scolarité
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMode('login');
+                        setLocalError(null);
+                        setLocalSuccess(null);
+                        setResetCompleted(false);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-3 text-xs font-bold text-white hover:bg-emerald-800 transition-all shadow-md shadow-emerald-700/20 cursor-pointer"
+                    >
+                      <Lock className="h-4 w-4" />
+                      <span>Accéder à la Connexion</span>
+                    </button>
                   </div>
-                  <span className="text-[10px] text-slate-500 mt-0.5">Vérification & Scan</span>
-                </button>
+                ) : (
+                  <>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                        Identifiant officiel ou Adresse E-mail <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                        <input
+                          type="text"
+                          required
+                          value={forgotIdentifier}
+                          onChange={(e) => setForgotIdentifier(e.target.value)}
+                          placeholder="ex: admin, claire.fontaine ou agent@univ.fr"
+                          className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
+                        />
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-1">
+                        Saisissez le nom d'utilisateur ou l'email associé à votre compte habilité.
+                      </p>
+                    </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleDemoLogin('admin')}
-                  className="flex flex-col items-start p-2.5 rounded-xl border border-emerald-100 bg-[#fbfdfc] hover:bg-emerald-50/80 hover:border-emerald-300 text-left transition-all group shadow-2xs cursor-pointer"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <Shield className="h-3.5 w-3.5 text-amber-600" />
-                    <span className="text-[11px] font-bold text-slate-800 group-hover:text-amber-950">
-                      Admin
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-slate-500 mt-0.5">Console Centrale</span>
-                </button>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                        Nouveau mot de passe <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <KeyRound className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                        <input
+                          type={showForgotNewPassword ? 'text' : 'password'}
+                          required
+                          value={forgotNewPassword}
+                          onChange={(e) => setForgotNewPassword(e.target.value)}
+                          placeholder="Au moins 6 caractères"
+                          className="w-full pl-9 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowForgotNewPassword(!showForgotNewPassword)}
+                          className="absolute right-2.5 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+                        >
+                          {showForgotNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleDemoLogin('analyste')}
-                  className="flex flex-col items-start p-2.5 rounded-xl border border-emerald-100 bg-[#fbfdfc] hover:bg-emerald-50/80 hover:border-emerald-300 text-left transition-all group shadow-2xs cursor-pointer"
-                >
-                  <div className="flex items-center gap-1.5">
-                    <UserCheck className="h-3.5 w-3.5 text-indigo-600" />
-                    <span className="text-[11px] font-bold text-slate-800 group-hover:text-indigo-950">
-                      Enquêteur
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-slate-500 mt-0.5">Alertes Parquet</span>
-                </button>
-              </div>
-            </div>
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                        Confirmer le nouveau mot de passe <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+                        <input
+                          type={showForgotNewPassword ? 'text' : 'password'}
+                          required
+                          value={forgotConfirmPassword}
+                          onChange={(e) => setForgotConfirmPassword(e.target.value)}
+                          placeholder="Répétez le mot de passe"
+                          className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isResetLoading}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-3 text-xs font-bold text-white hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all shadow-md shadow-emerald-700/20 disabled:opacity-50 cursor-pointer"
+                    >
+                      {isResetLoading ? (
+                        <span className="inline-flex items-center gap-2">
+                          <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                          Mise à jour sécurisée...
+                        </span>
+                      ) : (
+                        <>
+                          <span>Valider le Nouveau Mot de Passe</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </>
+                      )}
+                    </button>
+
+                    <div className="text-center pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMode('login');
+                          setLocalError(null);
+                          setLocalSuccess(null);
+                        }}
+                        className="text-xs text-emerald-700 hover:text-emerald-900 font-semibold cursor-pointer"
+                      >
+                        Se souvenir de son mot de passe ? <span className="underline">Se connecter</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </form>
+            )}
           </div>
         </div>
       </main>

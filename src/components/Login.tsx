@@ -21,7 +21,7 @@ export const Login: React.FC<LoginProps> = ({
   isOpenControlled,
   onOpenChange,
 }) => {
-  const { login, register, quickLogin } = useAuth();
+  const { login, register, forgotPassword } = useAuth();
   const [internalOpen, setInternalOpen] = useState(false);
 
   const isModalOpen = isOpenControlled !== undefined ? isOpenControlled : internalOpen;
@@ -126,35 +126,34 @@ export const Login: React.FC<LoginProps> = ({
   };
 
   // Password reset handler
-  const handleResetSubmit = (e: React.FormEvent) => {
+  const handleResetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!resetEmail.trim()) {
       setErrorMessage('Veuillez renseigner votre email ou identifiant professionnel.');
       return;
     }
 
+    if (newPassword && newPassword.length < 6) {
+      setErrorMessage('Le nouveau mot de passe doit comporter au moins 6 caractères.');
+      return;
+    }
+
     setIsSubmitting(true);
     setErrorMessage(null);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setResetSuccessMessage(
-        `Les instructions de réinitialisation sécurisée ont été transmises à "${resetEmail}". Si un compte correspond, un mot de passe temporaire a été configuré.`
-      );
-    }, 600);
-  };
-
-  // Fast demo account select
-  const handleQuickDemo = async (username: string) => {
-    setIsSubmitting(true);
-    setErrorMessage(null);
-    const res = await quickLogin(username);
+    const res = await forgotPassword(resetEmail.trim(), newPassword.trim() || undefined);
     setIsSubmitting(false);
+
     if (res.success) {
-      handleClose();
-      if (onSuccess) onSuccess();
+      setResetSuccessMessage(
+        res.message || 'Votre mot de passe a été réinitialisé avec succès.'
+      );
+      if (newPassword) {
+        setUsernameOrEmail(resetEmail.trim());
+        setPassword(newPassword.trim());
+      }
     } else {
-      setErrorMessage(res.error || 'Échec de connexion rapide.');
+      setErrorMessage(res.error || 'Erreur lors de la réinitialisation du mot de passe.');
     }
   };
 
@@ -288,34 +287,6 @@ export const Login: React.FC<LoginProps> = ({
                 {/* 1. FORMULAIRE DE CONNEXION */}
                 {activeTab === 'login' && (
                   <form onSubmit={handleLoginSubmit} className="space-y-3.5">
-                    {/* Encadré Administrateur par défaut */}
-                    <div className="rounded-lg border border-purple-200 bg-purple-50/80 p-2.5 text-left">
-                      <div className="flex items-center justify-between gap-1">
-                        <div className="flex items-center gap-1.5 font-bold text-xs text-purple-950">
-                          <ShieldCheck className="h-3.5 w-3.5 text-purple-700" />
-                          <span>Identifiants Administrateur par défaut</span>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setUsernameOrEmail('admin');
-                            setPassword('Admin2026!');
-                          }}
-                          className="text-[10px] font-semibold text-purple-700 hover:text-purple-900 bg-white border border-purple-200 rounded px-1.5 py-0.5 cursor-pointer"
-                        >
-                          Préremplir
-                        </button>
-                      </div>
-                      <div className="mt-1 flex items-center gap-2 text-[11px] text-purple-900 font-mono">
-                        <span>Identifiant : <strong>admin</strong></span>
-                        <span>•</span>
-                        <span>Mot de passe : <strong>Admin2026!</strong></span>
-                      </div>
-                      <div className="text-[10px] text-purple-700 mt-0.5">
-                        L'administrateur n'a pas à créer de compte : il dispose d'identifiants souverains par défaut.
-                      </div>
-                    </div>
-
                     <div>
                       <label className="block text-xs font-medium text-slate-700 mb-1">
                         Identifiant ou Email
@@ -364,39 +335,6 @@ export const Login: React.FC<LoginProps> = ({
                     >
                       {isSubmitting ? 'Connexion en cours...' : 'Se connecter'}
                     </button>
-
-                    {/* Raccourcis Profils Démo */}
-                    <div className="pt-3 mt-3 border-t border-slate-100">
-                      <div className="text-[11px] text-slate-500 mb-2">
-                        Comptes de test (accès immédiat) :
-                      </div>
-                      <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                        <button
-                          type="button"
-                          onClick={() => handleQuickDemo('agent')}
-                          className="p-1.5 border border-slate-200 rounded-lg hover:border-emerald-500 hover:bg-emerald-50/40 transition-colors"
-                        >
-                          <div className="font-semibold text-slate-800">Scolarité</div>
-                          <div className="text-[10px] text-slate-500">Vérificateur</div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleQuickDemo('enqueteur')}
-                          className="p-1.5 border border-slate-200 rounded-lg hover:border-emerald-500 hover:bg-emerald-50/40 transition-colors"
-                        >
-                          <div className="font-semibold text-slate-800">Analyste</div>
-                          <div className="text-[10px] text-slate-500">Fraudes</div>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleQuickDemo('admin')}
-                          className="p-1.5 border border-slate-200 rounded-lg hover:border-emerald-500 hover:bg-emerald-50/40 transition-colors"
-                        >
-                          <div className="font-semibold text-slate-800">Admin</div>
-                          <div className="text-[10px] text-slate-500">Central</div>
-                        </button>
-                      </div>
-                    </div>
                   </form>
                 )}
 

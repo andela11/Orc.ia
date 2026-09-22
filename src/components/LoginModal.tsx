@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Shield, LogIn, X, Lock, UserPlus } from 'lucide-react';
+import { ShieldCheck, Shield, LogIn, X, Lock, UserPlus, KeyRound, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { UserRole } from '../types';
 
@@ -14,8 +14,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   initialTab = 'login',
   onClose,
 }) => {
-  const { login, register, quickLogin } = useAuth();
-  const [tab, setTab] = useState<'login' | 'register'>(initialTab);
+  const { login, register, forgotPassword } = useAuth();
+  const [tab, setTab] = useState<'login' | 'register' | 'reset'>(initialTab);
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   
@@ -27,6 +27,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const [regRole, setRegRole] = useState<UserRole>('VERIFICATEUR');
   const [regDept, setRegDept] = useState('Service des Admissions & Titres');
 
+  // Password reset fields
+  const [resetIdentifier, setResetIdentifier] = useState('');
+  const [resetNewPassword, setResetNewPassword] = useState('');
+  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
+
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -34,6 +39,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     if (isOpen) {
       setTab(initialTab);
       setError(null);
+      setResetSuccess(null);
     }
   }, [isOpen, initialTab]);
 
@@ -86,15 +92,30 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }
   };
 
-  const handleQuickSelect = async (username: string) => {
+  const handleResetSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetIdentifier.trim()) {
+      setError('Veuillez renseigner votre email ou identifiant professionnel.');
+      return;
+    }
+    if (resetNewPassword && resetNewPassword.length < 6) {
+      setError('Le nouveau mot de passe doit comporter au moins 6 caractères.');
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
-    const result = await quickLogin(username);
+    const result = await forgotPassword(resetIdentifier.trim(), resetNewPassword.trim() || undefined);
     setIsSubmitting(false);
+
     if (result.success) {
-      onClose();
+      setResetSuccess(result.message || 'Votre mot de passe a été réinitialisé avec succès.');
+      if (resetNewPassword) {
+        setUsernameOrEmail(resetIdentifier.trim());
+        setPassword(resetNewPassword.trim());
+      }
     } else {
-      setError(result.error || 'Échec de la connexion rapide.');
+      setError(result.error || 'Erreur lors de la réinitialisation.');
     }
   };
 
@@ -109,12 +130,14 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900">
-                {tab === 'login' ? 'Connexion au portail' : 'Création d\'un compte vérificateur'}
+                {tab === 'login' ? 'Connexion au portail' : tab === 'register' ? 'Création d\'un compte vérificateur' : 'Réinitialisation du mot de passe'}
               </h2>
               <p className="text-xs text-slate-500">
                 {tab === 'login'
                   ? 'Accès au système national de contrôle documentaire'
-                  : 'Enregistrement d\'un nouvel agent de scolarité ou auditeur'}
+                  : tab === 'register'
+                  ? 'Enregistrement d\'un nouvel agent de scolarité ou auditeur'
+                  : 'Définition sécurisée d\'un nouveau mot de passe'}
               </p>
             </div>
           </div>
@@ -167,34 +190,6 @@ export const LoginModal: React.FC<LoginModalProps> = ({
         {/* Tab 1: Login Form */}
         {tab === 'login' && (
           <div className="mt-4 space-y-4">
-            {/* Encadré Administrateur par défaut */}
-            <div className="rounded-xl border border-purple-200 bg-purple-50/80 p-3 text-left">
-              <div className="flex flex-wrap items-center justify-between gap-1.5">
-                <div className="flex items-center gap-1.5 font-bold text-xs text-purple-950">
-                  <Shield className="h-3.5 w-3.5 text-purple-700" />
-                  <span>Identifiants Administrateur par défaut</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setUsernameOrEmail('admin');
-                    setPassword('Admin2026!');
-                  }}
-                  className="text-[11px] font-semibold text-purple-700 hover:text-purple-900 bg-white border border-purple-200 rounded-md px-2 py-0.5 shadow-2xs hover:bg-purple-50 transition-colors cursor-pointer"
-                >
-                  Préremplir
-                </button>
-              </div>
-              <div className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[11px] text-purple-900 font-mono">
-                <span>Identifiant : <strong className="text-purple-950 font-bold">admin</strong></span>
-                <span>•</span>
-                <span>Mot de passe : <strong className="text-purple-950 font-bold">Admin2026!</strong></span>
-              </div>
-              <div className="text-[10px] text-purple-700 mt-1">
-                L'administrateur n'a pas à créer de compte : il dispose d'identifiants souverains par défaut.
-              </div>
-            </div>
-
             <form onSubmit={handleLoginSubmit} className="space-y-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 mb-1">
@@ -203,7 +198,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 <input
                   id="login-username-input"
                   type="text"
-                  placeholder="ex: admin ou claire.fontaine@univ.fr"
+                  placeholder="ex: agent@univ.fr ou matricule"
                   value={usernameOrEmail}
                   onChange={(e) => setUsernameOrEmail(e.target.value)}
                   className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-hidden"
@@ -212,9 +207,23 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Mot de passe
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block text-xs font-semibold text-slate-700">
+                    Mot de passe
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTab('reset');
+                      setResetIdentifier(usernameOrEmail);
+                      setError(null);
+                      setResetSuccess(null);
+                    }}
+                    className="text-[11px] text-slate-600 hover:text-slate-900 hover:underline cursor-pointer"
+                  >
+                    Mot de passe oublié ?
+                  </button>
+                </div>
                 <input
                   id="login-password-input"
                   type="password"
@@ -237,40 +246,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               </button>
             </form>
 
-            {/* Quick Demo Profiles (Clean, no colored boxes) */}
-            <div className="pt-3 border-t border-slate-100">
-              <div className="text-[11px] font-semibold text-slate-600 mb-2">
-                Profils de test disponibles en un clic :
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleQuickSelect('admin')}
-                  className="p-2 text-left rounded-lg border border-slate-200 hover:border-slate-400 hover:bg-slate-50 transition-colors"
-                >
-                  <div className="text-xs font-semibold text-slate-900">Dr. Vernier</div>
-                  <div className="text-[11px] text-slate-500">Administrateur</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickSelect('agent')}
-                  className="p-2 text-left rounded-lg border border-slate-200 hover:border-slate-400 hover:bg-slate-50 transition-colors"
-                >
-                  <div className="text-xs font-semibold text-slate-900">C. Fontaine</div>
-                  <div className="text-[11px] text-slate-500">Admissions</div>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickSelect('enqueteur')}
-                  className="p-2 text-left rounded-lg border border-slate-200 hover:border-slate-400 hover:bg-slate-50 transition-colors"
-                >
-                  <div className="text-xs font-semibold text-slate-900">M. Dupuis</div>
-                  <div className="text-[11px] text-slate-500">Analyste anti-fraude</div>
-                </button>
-              </div>
-            </div>
-
-            <div className="text-center pt-1">
+            <div className="text-center pt-2">
               <button
                 type="button"
                 onClick={() => setTab('register')}
@@ -400,6 +376,86 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               </button>
             </div>
           </form>
+        )}
+
+        {/* Tab 3: Forgot Password Form */}
+        {tab === 'reset' && (
+          <div className="mt-4 space-y-4">
+            {resetSuccess ? (
+              <div className="space-y-3 py-2">
+                <div className="rounded-lg bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-800 flex items-start gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>{resetSuccess}</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTab('login');
+                    setResetSuccess(null);
+                  }}
+                  className="w-full rounded-lg bg-slate-900 py-2.5 text-xs font-bold text-white hover:bg-slate-800 transition-colors shadow-xs cursor-pointer"
+                >
+                  Retourner à la connexion
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleResetSubmit} className="space-y-3">
+                <p className="text-xs text-slate-600">
+                  Renseignez votre identifiant ou adresse email officielle pour définir votre nouveau mot de passe d'accès.
+                </p>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Identifiant officiel ou Email professionnel
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={resetIdentifier}
+                    onChange={(e) => setResetIdentifier(e.target.value)}
+                    placeholder="ex: admin, claire.fontaine ou agent@univ.fr"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-hidden"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
+                    Nouveau mot de passe
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={resetNewPassword}
+                    onChange={(e) => setResetNewPassword(e.target.value)}
+                    placeholder="Au moins 6 caractères"
+                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-hidden"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="mt-2 w-full flex items-center justify-center gap-2 rounded-lg bg-slate-900 py-2.5 text-xs font-bold text-white hover:bg-slate-800 disabled:opacity-50 transition-colors shadow-xs cursor-pointer"
+                >
+                  <KeyRound className="h-3.5 w-3.5" />
+                  <span>{isSubmitting ? 'Mise à jour en cours...' : 'Mettre à jour le mot de passe'}</span>
+                </button>
+
+                <div className="text-center pt-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTab('login');
+                      setError(null);
+                    }}
+                    className="text-xs text-slate-600 hover:text-slate-900 font-medium cursor-pointer"
+                  >
+                    Se souvenir de son mot de passe ? Se connecter
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
         )}
       </div>
     </div>

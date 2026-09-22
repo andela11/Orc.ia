@@ -28,6 +28,10 @@ import {
   AlertOctagon,
   ExternalLink,
   Info,
+  Check,
+  Crown,
+  Clock,
+  ShieldCheck,
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -52,7 +56,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   onAddDiplomaToRegistry,
   onRefreshRegistry,
 }) => {
-  const { user, quickLogin } = useAuth();
+  const { user, token } = useAuth();
   const [activeSubTab, setActiveSubTab] = useState<AdminSubTab>('overview');
 
   // Overview stats & loading state
@@ -80,6 +84,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
   // Operators (Users) State
   const [operators, setOperators] = useState<any[]>([]);
   const [operatorSearch, setOperatorSearch] = useState('');
+  const [operatorStatusFilter, setOperatorStatusFilter] = useState<'ALL' | 'PENDING' | 'ACTIVE' | 'SUSPENDED'>('ALL');
   const [isAddOperatorModalOpen, setIsAddOperatorModalOpen] = useState(false);
   const [newOperator, setNewOperator] = useState({
     fullName: '',
@@ -166,7 +171,11 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       }
 
       // 3. Operators
-      const usersRes = await fetch('/api/admin/users');
+      const usersRes = await fetch('/api/admin/users', {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
       if (usersRes.ok) {
         const usersData = await usersRes.json();
         setOperators(usersData.users || []);
@@ -282,7 +291,10 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     try {
       const res = await fetch('/api/admin/users', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify(newOperator),
       });
       const data = await res.json();
@@ -306,26 +318,81 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
     }
   };
 
+  const handleApproveOperator = async (userId: string, name: string) => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}/approve`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur validation compte opérateur');
+
+      setOperators((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, status: 'ACTIVE' } : u))
+      );
+      setActionSuccessMessage(`Le compte de ${name} a été validé et activé avec succès.`);
+      loadAdminData();
+    } catch (err: any) {
+      setActionErrorMessage(err.message);
+    }
+  };
+
+  const handleToggleOperatorStatus = async (userId: string, newStatus: 'ACTIVE' | 'SUSPENDED', name: string) => {
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur mise à jour statut');
+
+      setOperators((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, status: newStatus } : u))
+      );
+      setActionSuccessMessage(`Statut de ${name} mis à jour : ${newStatus === 'ACTIVE' ? 'Actif' : 'Suspendu'}.`);
+      loadAdminData();
+    } catch (err: any) {
+      setActionErrorMessage(err.message);
+    }
+  };
+
   const handleChangeOperatorRole = async (userId: string, newRole: UserRole) => {
     try {
       const res = await fetch(`/api/admin/users/${userId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ role: newRole }),
       });
-      if (res.ok) {
-        setOperators(operators.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
-        setActionSuccessMessage('Rôle opérateur mis à jour avec succès.');
-      }
-    } catch {
-      setActionErrorMessage('Erreur lors de la modification du rôle.');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de la modification du rôle.');
+
+      setOperators(operators.map((u) => (u.id === userId ? { ...u, role: newRole } : u)));
+      setActionSuccessMessage('Rôle opérateur mis à jour avec succès.');
+      loadAdminData();
+    } catch (err: any) {
+      setActionErrorMessage(err.message);
     }
   };
 
   const handleDeleteOperator = async (userId: string, name: string) => {
     if (!window.confirm(`Confirmez-vous la révocation définitive du compte de ${name} ?`)) return;
     try {
-      const res = await fetch(`/api/admin/users/${userId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'DELETE',
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erreur suppression');
 
@@ -520,13 +587,24 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
       i.country.toLowerCase().includes(institutionSearch.toLowerCase())
   );
 
-  const filteredOperators = operators.filter(
-    (u) =>
-      u.fullName.toLowerCase().includes(operatorSearch.toLowerCase()) ||
-      u.email.toLowerCase().includes(operatorSearch.toLowerCase()) ||
-      u.department.toLowerCase().includes(operatorSearch.toLowerCase()) ||
-      u.role.toLowerCase().includes(operatorSearch.toLowerCase())
-  );
+  const filteredOperators = operators.filter((u) => {
+    const matchesSearch =
+      (u.fullName || '').toLowerCase().includes(operatorSearch.toLowerCase()) ||
+      (u.email || '').toLowerCase().includes(operatorSearch.toLowerCase()) ||
+      (u.department || '').toLowerCase().includes(operatorSearch.toLowerCase()) ||
+      (u.role || '').toLowerCase().includes(operatorSearch.toLowerCase()) ||
+      (u.createdByName || '').toLowerCase().includes(operatorSearch.toLowerCase());
+
+    const matchesStatus =
+      operatorStatusFilter === 'ALL' ||
+      (u.status || 'ACTIVE') === operatorStatusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
+
+  const pendingOperatorsCount = operators.filter((u) => u.status === 'PENDING').length;
+  const activeOperatorsCount = operators.filter((u) => (u.status || 'ACTIVE') === 'ACTIVE').length;
+  const suspendedOperatorsCount = operators.filter((u) => u.status === 'SUSPENDED').length;
 
   const filteredRegistry = registry.filter((d) => {
     const matchesSearch =
@@ -682,9 +760,15 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
           >
             <Users className="h-4 w-4" />
             <span>Opérateurs & Rôles (RBAC)</span>
-            <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-slate-800">
-              {operators.length}
-            </span>
+            {pendingOperatorsCount > 0 ? (
+              <span className="rounded-full bg-amber-500 text-white font-bold px-1.5 py-0.2 text-[10px] animate-pulse">
+                {pendingOperatorsCount} à valider
+              </span>
+            ) : (
+              <span className="rounded-full bg-slate-200 px-1.5 py-0.2 text-[10px] text-slate-800">
+                {operators.length}
+              </span>
+            )}
           </button>
 
           <button
@@ -1075,11 +1159,18 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-slate-200">
             <div>
-              <h3 className="text-sm font-bold text-slate-900">
-                Gestion des Opérateurs & Attribution des Rôles (RBAC)
-              </h3>
-              <p className="text-xs text-slate-500">
-                Contrôle strict des habilitations d'accès pour les administrateurs centraux, agents de scolarité universitaire et analystes d'enquête.
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-slate-900">
+                  Gestion des Opérateurs & Validation des Comptes (RBAC)
+                </h3>
+                {pendingOperatorsCount > 0 && (
+                  <span className="rounded-full bg-amber-100 text-amber-900 border border-amber-300 font-semibold px-2 py-0.5 text-[10px]">
+                    {pendingOperatorsCount} en attente
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Validation obligatoire des comptes par l'administrateur et gouvernance hiérarchique : un administrateur ne peut ni modifier ni révoquer son créateur.
               </p>
             </div>
 
@@ -1106,6 +1197,73 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
             </div>
           </div>
 
+          {/* Status Filter Tabs */}
+          <div className="flex items-center gap-2 border-b border-slate-200 pb-2 text-xs">
+            <button
+              type="button"
+              onClick={() => setOperatorStatusFilter('ALL')}
+              className={`px-3 py-1 rounded-lg font-medium transition-colors ${
+                operatorStatusFilter === 'ALL'
+                  ? 'bg-slate-900 text-white'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              Tous ({operators.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setOperatorStatusFilter('PENDING')}
+              className={`px-3 py-1 rounded-lg font-medium flex items-center gap-1.5 transition-colors ${
+                operatorStatusFilter === 'PENDING'
+                  ? 'bg-amber-600 text-white'
+                  : 'text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-200'
+              }`}
+            >
+              <Clock className="h-3 w-3" />
+              <span>En attente de validation ({pendingOperatorsCount})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setOperatorStatusFilter('ACTIVE')}
+              className={`px-3 py-1 rounded-lg font-medium transition-colors ${
+                operatorStatusFilter === 'ACTIVE'
+                  ? 'bg-slate-900 text-white'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              Actifs ({activeOperatorsCount})
+            </button>
+            <button
+              type="button"
+              onClick={() => setOperatorStatusFilter('SUSPENDED')}
+              className={`px-3 py-1 rounded-lg font-medium transition-colors ${
+                operatorStatusFilter === 'SUSPENDED'
+                  ? 'bg-slate-900 text-white'
+                  : 'text-slate-600 hover:bg-slate-100'
+              }`}
+            >
+              Suspendus ({suspendedOperatorsCount})
+            </button>
+          </div>
+
+          {pendingOperatorsCount > 0 && operatorStatusFilter !== 'PENDING' && (
+            <div className="flex items-center justify-between p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
+                <span>
+                  <strong>{pendingOperatorsCount} compte(s) en attente de validation.</strong> Conformément aux règles d'accès, un administrateur doit approuver ces profils avant qu'ils ne puissent se connecter.
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOperatorStatusFilter('PENDING')}
+                className="font-bold underline text-amber-800 hover:text-amber-950 shrink-0 ml-3"
+              >
+                Afficher les comptes en attente →
+              </button>
+            </div>
+          )}
+
           {/* Operators Table */}
           <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-xs">
             <div className="overflow-x-auto">
@@ -1113,65 +1271,189 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                 <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase font-semibold text-[10px] tracking-wider">
                   <tr>
                     <th className="p-3">Opérateur & Badge</th>
-                    <th className="p-3">Email & Contact</th>
+                    <th className="p-3">Email & Filiation (Créateur)</th>
                     <th className="p-3">Organisation / Département</th>
-                    <th className="p-3">Rôle Assigné</th>
-                    <th className="p-3 text-right">Actions</th>
+                    <th className="p-3">Statut & Habilitation</th>
+                    <th className="p-3 text-right">Actions & Gouvernance</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 text-slate-800">
-                  {filteredOperators.map((opr) => {
-                    const isAdmin = opr.role === 'ADMIN';
-                    const isAnalyste = opr.role === 'ANALYSTE';
-                    return (
-                      <tr key={opr.id} className="hover:bg-slate-50/70 transition-colors">
-                        <td className="p-3">
-                          <div className="font-semibold text-slate-900">{opr.fullName}</div>
-                          <div className="text-[10px] font-mono text-slate-500">{opr.badgeNumber || 'OPR-SCOL-01'}</div>
-                        </td>
-                        <td className="p-3 font-mono text-slate-600">{opr.email}</td>
-                        <td className="p-3">
-                          <div className="font-medium text-slate-800">{opr.organization || 'Ministère'}</div>
-                          <div className="text-[10px] text-slate-500">{opr.department}</div>
-                        </td>
-                        <td className="p-3">
-                          <span
-                            className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
-                              isAdmin
-                                ? 'bg-amber-100 text-amber-900 border border-amber-300'
-                                : isAnalyste
-                                ? 'bg-indigo-100 text-indigo-900 border border-indigo-300'
-                                : 'bg-slate-100 text-slate-800 border border-slate-200'
-                            }`}
-                          >
-                            {opr.role}
-                          </span>
-                        </td>
-                        <td className="p-3 text-right">
-                          <div className="flex items-center justify-end gap-2">
-                            <select
-                              value={opr.role}
-                              onChange={(e) => handleChangeOperatorRole(opr.id, e.target.value as UserRole)}
-                              className="text-[11px] rounded border border-slate-200 bg-white px-2 py-1 focus:outline-none"
-                            >
-                              <option value="ADMIN">ADMIN</option>
-                              <option value="VERIFICATEUR">VERIFICATEUR</option>
-                              <option value="ANALYSTE">ANALYSTE</option>
-                            </select>
+                  {filteredOperators.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="p-6 text-center text-slate-500">
+                        Aucun opérateur ne correspond aux critères de filtre.
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredOperators.map((opr) => {
+                      const isAdmin = opr.role === 'ADMIN';
+                      const isAnalyste = opr.role === 'ANALYSTE';
+                      const isMe = user?.id === opr.id;
+                      const isMyCreator = user?.createdById === opr.id;
+                      const isRootProtected = opr.isRootAdmin && !user?.isRootAdmin;
+                      const isProtectedFromMe = !isMe && (isMyCreator || isRootProtected);
+                      const isPending = opr.status === 'PENDING';
+                      const isSuspended = opr.status === 'SUSPENDED';
 
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteOperator(opr.id, opr.fullName)}
-                              title="Révoquer le compte"
-                              className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                      return (
+                        <tr key={opr.id} className="hover:bg-slate-50/70 transition-colors">
+                          <td className="p-3">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-semibold text-slate-900">{opr.fullName}</span>
+                              {opr.isRootAdmin && (
+                                <span title="Administrateur Racine (Fondateur)">
+                                  <Crown className="h-3.5 w-3.5 text-amber-500" />
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[10px] font-mono text-slate-500">{opr.badgeNumber || 'OPR-SCOL-01'}</div>
+                          </td>
+
+                          <td className="p-3">
+                            <div className="font-mono text-slate-600 text-[11px]">{opr.email}</div>
+                            <div className="mt-1">
+                              {opr.isRootAdmin ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded font-semibold border border-amber-200">
+                                  <Crown className="h-2.5 w-2.5 text-amber-600" />
+                                  Fondateur Racine
+                                </span>
+                              ) : opr.createdByName ? (
+                                <span className="inline-flex items-center gap-1 text-[10px] text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
+                                  <Shield className="h-2.5 w-2.5 text-slate-500" />
+                                  Créé par : {opr.createdByName}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-[10px] text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">
+                                  <Clock className="h-2.5 w-2.5 text-blue-600" />
+                                  Auto-inscription
+                                </span>
+                              )}
+                            </div>
+                          </td>
+
+                          <td className="p-3">
+                            <div className="font-medium text-slate-800">{opr.organization || 'Ministère'}</div>
+                            <div className="text-[10px] text-slate-500">{opr.department}</div>
+                          </td>
+
+                          <td className="p-3">
+                            <div className="flex flex-col gap-1 items-start">
+                              <div className="flex items-center gap-1.5">
+                                <span
+                                  className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
+                                    isAdmin
+                                      ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                                      : isAnalyste
+                                      ? 'bg-indigo-100 text-indigo-900 border border-indigo-300'
+                                      : 'bg-slate-100 text-slate-800 border border-slate-200'
+                                  }`}
+                                >
+                                  {opr.role}
+                                </span>
+
+                                {isPending ? (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300 animate-pulse">
+                                    <Clock className="h-2.5 w-2.5" />
+                                    EN ATTENTE
+                                  </span>
+                                ) : isSuspended ? (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300">
+                                    <XCircle className="h-2.5 w-2.5" />
+                                    SUSPENDU
+                                  </span>
+                                ) : (
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                                    <CheckCircle2 className="h-2.5 w-2.5" />
+                                    ACTIF
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="p-3 text-right">
+                            {isProtectedFromMe ? (
+                              <div className="flex items-center justify-end">
+                                <span
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-800 text-[11px] font-medium border border-amber-200 cursor-help"
+                                  title="Règle hiérarchique stricte : Un administrateur ne peut ni modifier ni révoquer l'administrateur qui a créé son compte."
+                                >
+                                  <Lock className="h-3 w-3 text-amber-600" />
+                                  <span>Protégé (Votre Créateur)</span>
+                                </span>
+                              </div>
+                            ) : isMe ? (
+                              <div className="flex items-center justify-end">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 text-[11px] font-medium border border-blue-200">
+                                  <UserCheck className="h-3 w-3 text-blue-600" />
+                                  <span>Votre Session</span>
+                                </span>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-end gap-2">
+                                {isPending && (
+                                  <button
+                                    type="button"
+                                    onClick={() => handleApproveOperator(opr.id, opr.fullName)}
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 text-white font-semibold text-[11px] hover:bg-emerald-700 transition-colors shadow-xs"
+                                    title="Valider l'habilitation et activer ce compte"
+                                  >
+                                    <Check className="h-3.5 w-3.5" />
+                                    <span>Valider le compte</span>
+                                  </button>
+                                )}
+
+                                <select
+                                  value={opr.role}
+                                  onChange={(e) => handleChangeOperatorRole(opr.id, e.target.value as UserRole)}
+                                  className="text-[11px] rounded border border-slate-200 bg-white px-2 py-1 focus:outline-none"
+                                  title="Changer le rôle"
+                                >
+                                  <option value="ADMIN">ADMIN</option>
+                                  <option value="VERIFICATEUR">VERIFICATEUR</option>
+                                  <option value="ANALYSTE">ANALYSTE</option>
+                                </select>
+
+                                {!isPending && (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleToggleOperatorStatus(
+                                        opr.id,
+                                        opr.status === 'ACTIVE' ? 'SUSPENDED' : 'ACTIVE',
+                                        opr.fullName
+                                      )
+                                    }
+                                    title={opr.status === 'ACTIVE' ? 'Suspendre ce compte' : 'Réactiver ce compte'}
+                                    className={`p-1 transition-colors ${
+                                      opr.status === 'ACTIVE'
+                                        ? 'text-slate-400 hover:text-amber-600'
+                                        : 'text-amber-600 hover:text-emerald-600'
+                                    }`}
+                                  >
+                                    {opr.status === 'ACTIVE' ? (
+                                      <Lock className="h-3.5 w-3.5" />
+                                    ) : (
+                                      <Unlock className="h-3.5 w-3.5" />
+                                    )}
+                                  </button>
+                                )}
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteOperator(opr.id, opr.fullName)}
+                                  title="Révoquer définitivement le compte"
+                                  className="p-1 text-slate-400 hover:text-rose-600 transition-colors"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
                 </tbody>
               </table>
             </div>
@@ -1840,6 +2122,16 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                   onChange={(e) => setNewOperator({ ...newOperator, organization: e.target.value })}
                   className="w-full rounded-lg border border-slate-200 p-2 text-xs focus:ring-1 focus:ring-slate-900"
                 />
+              </div>
+
+              <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-[11px] space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-slate-900">
+                  <ShieldCheck className="h-3.5 w-3.5 text-slate-800" />
+                  <span>Règle de gouvernance & protection hiérarchique</span>
+                </div>
+                <p className="text-slate-600 leading-normal">
+                  Ce compte sera enregistré avec mention de son créateur ({user?.fullName || 'Administrateur'}). S'il s'agit d'un administrateur, celui-ci ne pourra ni modifier ni supprimer votre compte.
+                </p>
               </div>
 
               <div className="pt-3 border-t border-slate-100 flex justify-end gap-2">

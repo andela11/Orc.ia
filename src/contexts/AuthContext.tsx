@@ -14,9 +14,9 @@ interface AuthContextType {
     fullName: string;
     role: UserRole;
     department: string;
-  }) => Promise<{ success: boolean; error?: string; user?: UserProfile }>;
+  }) => Promise<{ success: boolean; error?: string; message?: string; pendingApproval?: boolean; user?: UserProfile }>;
   logout: () => Promise<void>;
-  quickLogin: (roleOrUsername: string) => Promise<{ success: boolean; error?: string; user?: UserProfile }>;
+  forgotPassword: (identifier: string, newPassword?: string) => Promise<{ success: boolean; error?: string; message?: string; userFound?: boolean; email?: string }>;
   demoUsers: UserProfile[];
 }
 
@@ -125,7 +125,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     fullName: string;
     role: UserRole;
     department: string;
-  }): Promise<{ success: boolean; error?: string; user?: UserProfile }> => {
+  }): Promise<{ success: boolean; error?: string; message?: string; pendingApproval?: boolean; user?: UserProfile }> => {
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
@@ -136,6 +136,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const data = await res.json();
       if (!res.ok || !data.success) {
         return { success: false, error: data.error || "Erreur lors de l'enregistrement" };
+      }
+
+      if (data.pendingApproval || !data.token) {
+        return {
+          success: true,
+          pendingApproval: true,
+          message: data.message || "Votre compte a été enregistré et est en attente de validation par l'administrateur.",
+          user: data.user,
+        };
       }
 
       setToken(data.token);
@@ -166,16 +175,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const quickLogin = async (roleOrUsername: string): Promise<{ success: boolean; error?: string; user?: UserProfile }> => {
-    const key = (roleOrUsername || '').toLowerCase().trim();
-    if (key === 'admin') {
-      return await login('admin', 'Admin2026!');
-    } else if (key === 'agent' || key === 'verificateur' || key === 'scolarite') {
-      return await login('claire.fontaine', 'Agent2026!');
-    } else if (key === 'enqueteur' || key === 'analyste' || key === 'fraude') {
-      return await login('marc.dupuis', 'Fraude2026!');
+  const forgotPassword = async (
+    identifier: string,
+    newPassword?: string
+  ): Promise<{ success: boolean; error?: string; message?: string; userFound?: boolean; email?: string }> => {
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identifier, newPassword }),
+      });
+      const data = await res.json();
+      return data;
+    } catch (err: any) {
+      return { success: false, error: err?.message || 'Erreur réseau lors de la demande de réinitialisation.' };
     }
-    return await login(roleOrUsername, 'Admin2026!');
   };
 
   return (
@@ -188,7 +202,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         login,
         register,
         logout,
-        quickLogin,
+        forgotPassword,
         demoUsers,
       }}
     >

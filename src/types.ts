@@ -4,6 +4,8 @@ export type CheckStatus = 'PASSED' | 'WARNING' | 'FAILED';
 
 export type UserRole = 'ADMIN' | 'VERIFICATEUR' | 'ANALYSTE';
 
+export type UserStatus = 'ACTIVE' | 'PENDING' | 'SUSPENDED';
+
 export interface UserProfile {
   id: string;
   username: string;
@@ -12,9 +14,15 @@ export interface UserProfile {
   role: UserRole;
   roleLabel: string;
   department: string;
+  organization?: string;
   badgeNumber: string;
+  status: UserStatus;
+  isRootAdmin?: boolean;
+  createdById?: string | null;
+  createdByName?: string | null;
   avatarUrl?: string;
   lastLogin?: string;
+  createdAt?: string;
 }
 
 export interface AuthSession {

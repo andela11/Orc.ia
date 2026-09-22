@@ -6,9 +6,61 @@ import { WebSocketServer, WebSocket } from "ws";
 import { GoogleGenAI } from "@google/genai";
 import { createServer as createViteServer } from "vite";
 import Tesseract from "tesseract.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import rateLimit from "express-rate-limit";
+import helmet from "helmet";
+import cors from "cors";
 
 const app = express();
 const PORT = 3000;
+
+// 5. Headers de sécurité HTTP avec Helmet (placé juste après l'initialisation de l'app)
+app.use(
+  helmet({
+    frameguard: false, // Permet le bon affichage dans l'environnement d'aperçu en iframe
+    contentSecurityPolicy: false, // Vite injecte des scripts, styles inline et WebSockets en dev
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  })
+);
+
+// 6. Configuration CORS restreinte à l'origine APP_URL (et environnement de dev)
+const rawAppUrl = process.env.APP_URL ? process.env.APP_URL.replace(/\/+$/, "") : undefined;
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Autorise les requêtes sans en-tête Origin (ex: requêtes serveur à serveur, mobile, curl)
+      if (!origin) return callback(null, true);
+      // Si APP_URL est configuré, n'autoriser strictement que cette origine
+      if (rawAppUrl && origin === rawAppUrl) {
+        return callback(null, true);
+      }
+      // Autorise les hôtes locaux en environnement de développement
+      if (!rawAppUrl || origin.startsWith("http://localhost:") || origin.startsWith("http://0.0.0.0:") || origin.startsWith("http://127.0.0.1:")) {
+        return callback(null, true);
+      }
+      return callback(new Error("Origine non autorisée par la politique CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// 4. Rate limiting sur l'authentification (max 5 tentatives par IP toutes les 15 minutes)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Maximum 5 requêtes par IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    error: "Trop de tentatives d'authentification depuis cette adresse IP. Veuillez patienter 15 minutes avant de réessayer.",
+  },
+});
+
+// Clé secrète pour signature des JWT de session
+const JWT_SECRET = process.env.JWT_SECRET || "verifdiplome_secure_jwt_secret_dev_key_2026";
 
 // Increase payload limit for high-resolution document scans & photos
 app.use(express.json({ limit: "30mb" }));
@@ -563,6 +615,10 @@ interface UserAccount {
   department: string;
   organization: string;
   badgeNumber: string;
+  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED';
+  isRootAdmin?: boolean;
+  createdById?: string | null;
+  createdByName?: string | null;
   createdAt: string;
   lastLoginAt?: string;
 }
@@ -571,8 +627,9 @@ const USERS_BY_ID = new Map<string, UserAccount>();
 const ACTIVE_SESSIONS = new Map<string, { token: string; userId: string; createdAt: string }>();
 const REVOKED_TOKENS = new Set<string>();
 
-function hashPassword(pwd: string): string {
-  return crypto.createHash("sha256").update(pwd.trim()).digest("hex");
+// 1. Hashing des mots de passe avec bcrypt (cost factor 12)
+async function hashPassword(pwd: string): Promise<string> {
+  return await bcrypt.hash(pwd.trim(), 12);
 }
 
 function getRoleLabel(role: 'ADMIN' | 'VERIFICATEUR' | 'ANALYSTE'): string {
@@ -588,52 +645,85 @@ function getRoleLabel(role: 'ADMIN' | 'VERIFICATEUR' | 'ANALYSTE'): string {
   }
 }
 
-// Seed default certified operator accounts
-const DEFAULT_USERS: UserAccount[] = [
-  {
-    id: "usr_admin_01",
-    username: "admin",
-    email: "admin@verifdiplome.gouv.fr",
-    passwordHash: hashPassword("Admin2026!"),
-    fullName: "Dr. Alexandre Vernier",
-    role: "ADMIN",
-    roleLabel: "Administrateur Central",
-    department: "Direction Centrale de la Sécurité Documentaire",
-    organization: "Ministère de l'Enseignement Supérieur",
-    badgeNumber: "OPR-ADM-8821",
-    createdAt: "2026-01-10T08:00:00.000Z",
-  },
-  {
-    id: "usr_agent_02",
-    username: "claire.fontaine",
-    email: "claire.fontaine@sorbonne-universite.fr",
-    passwordHash: hashPassword("Sorbonne2026!"),
-    fullName: "Claire Fontaine",
-    role: "VERIFICATEUR",
-    roleLabel: "Agent de Scolarité & Vérification",
-    department: "Scolarité Centrale & Registres Diplômants",
-    organization: "Sorbonne Université",
-    badgeNumber: "OPR-SORB-4091",
-    createdAt: "2026-02-15T09:30:00.000Z",
-  },
-  {
-    id: "usr_enqueteur_03",
-    username: "marc.dupuis",
-    email: "marc.dupuis@police-nationale.gouv.fr",
-    passwordHash: hashPassword("Enquete2026!"),
-    fullName: "Marc-Antoine Dupuis",
-    role: "ANALYSTE",
-    roleLabel: "Analyste Anti-Fraude & Enquêteur",
-    department: "Brigade des Fraudes Identitaires et Numériques",
-    organization: "Police Nationale - DCPJ",
-    badgeNumber: "OPR-DCPJ-1104",
-    createdAt: "2026-03-01T14:15:00.000Z",
-  },
-];
+// 1. Seed asynchrone des utilisateurs avec bcrypt au démarrage
+let seedPromise: Promise<void> | null = null;
+async function seedDefaultUsers(): Promise<void> {
+  if (USERS_BY_ID.size > 0) return;
 
-DEFAULT_USERS.forEach((u) => {
-  USERS_BY_ID.set(u.id, u);
-});
+  const [adminHash, agentHash, enqueteurHash] = await Promise.all([
+    bcrypt.hash("Admin2026!", 12),
+    bcrypt.hash("Sorbonne2026!", 12),
+    bcrypt.hash("Enquete2026!", 12),
+  ]);
+
+  const defaultUsers: UserAccount[] = [
+    {
+      id: "usr_admin_01",
+      username: "admin",
+      email: "admin@verifdiplome.gouv.fr",
+      passwordHash: adminHash,
+      fullName: "Dr. Alexandre Vernier",
+      role: "ADMIN",
+      roleLabel: "Administrateur Central",
+      department: "Direction Centrale de la Sécurité Documentaire",
+      organization: "Ministère de l'Enseignement Supérieur",
+      badgeNumber: "OPR-ADM-8821",
+      status: "ACTIVE",
+      isRootAdmin: true,
+      createdById: null,
+      createdByName: "Système Central (Fondateur)",
+      createdAt: "2026-01-10T08:00:00.000Z",
+    },
+    {
+      id: "usr_agent_02",
+      username: "claire.fontaine",
+      email: "claire.fontaine@sorbonne-universite.fr",
+      passwordHash: agentHash,
+      fullName: "Claire Fontaine",
+      role: "VERIFICATEUR",
+      roleLabel: "Agent de Scolarité & Vérification",
+      department: "Scolarité Centrale & Registres Diplômants",
+      organization: "Sorbonne Université",
+      badgeNumber: "OPR-SORB-4091",
+      status: "ACTIVE",
+      isRootAdmin: false,
+      createdById: "usr_admin_01",
+      createdByName: "Dr. Alexandre Vernier",
+      createdAt: "2026-02-15T09:30:00.000Z",
+    },
+    {
+      id: "usr_enqueteur_03",
+      username: "marc.dupuis",
+      email: "marc.dupuis@police-nationale.gouv.fr",
+      passwordHash: enqueteurHash,
+      fullName: "Marc-Antoine Dupuis",
+      role: "ANALYSTE",
+      roleLabel: "Analyste Anti-Fraude & Enquêteur",
+      department: "Brigade des Fraudes Identitaires et Numériques",
+      organization: "Police Nationale - DCPJ",
+      badgeNumber: "OPR-DCPJ-1104",
+      status: "ACTIVE",
+      isRootAdmin: false,
+      createdById: "usr_admin_01",
+      createdByName: "Dr. Alexandre Vernier",
+      createdAt: "2026-03-01T14:15:00.000Z",
+    },
+  ];
+
+  defaultUsers.forEach((u) => {
+    USERS_BY_ID.set(u.id, u);
+  });
+}
+
+function ensureDefaultUsers(): Promise<void> {
+  if (!seedPromise) {
+    seedPromise = seedDefaultUsers();
+  }
+  return seedPromise;
+}
+
+// Initialise les comptes opérateurs au chargement
+ensureDefaultUsers();
 
 function findUser(identifier: string): UserAccount | undefined {
   const q = identifier.toLowerCase().trim();
@@ -667,56 +757,47 @@ function findUser(identifier: string): UserAccount | undefined {
   return undefined;
 }
 
-function verifyUserPassword(user: UserAccount, pwd: string): boolean {
-  if (!pwd) return false;
-  const trimmed = pwd.trim();
-  const hashed = hashPassword(trimmed);
-  if (user.passwordHash === hashed) return true;
-
-  // Ergonomic demo passphrases
-  if (trimmed === "demo") return true;
-  if (user.role === "ADMIN" && trimmed === "Admin2026!") return true;
-  if (user.role === "VERIFICATEUR" && (trimmed === "Sorbonne2026!" || trimmed === "Agent2026!")) return true;
-  if (user.role === "ANALYSTE" && (trimmed === "Enquete2026!" || trimmed === "Fraude2026!")) return true;
-
-  return false;
+// 2. Vérification sécurisée sans aucun mot de passe de secours en dur : uniquement bcrypt.compare
+async function verifyUserPassword(user: UserAccount, pwd: string): Promise<boolean> {
+  if (!pwd || !user.passwordHash) return false;
+  return await bcrypt.compare(pwd.trim(), user.passwordHash);
 }
 
+// 3. Création de token de session JWT signé avec expiration 24h
 function createSessionToken(userId: string): string {
-  const safeIdHex = Buffer.from(userId, "utf8").toString("hex");
-  const entropy = crypto.randomBytes(16).toString("hex");
-  return `vd_sess_${safeIdHex}_${entropy}`;
+  return jwt.sign({ userId }, JWT_SECRET, { expiresIn: "24h" });
 }
 
+// 3. Vérification de session via jwt.verify avec gestion de révocation (REVOKED_TOKENS)
 function getSessionUser(token: string): UserAccount | undefined {
   if (!token || REVOKED_TOKENS.has(token)) return undefined;
 
-  // Check active in-memory session first
-  const session = ACTIVE_SESSIONS.get(token);
-  if (session) {
-    return USERS_BY_ID.get(session.userId);
-  }
-
-  // Resilient fallback: decode userId from token to survive dev server reboots
   try {
-    const parts = token.split("_");
-    if (parts.length >= 4 && parts[0] === "vd" && parts[1] === "sess") {
-      const decodedUserId = Buffer.from(parts[2], "hex").toString("utf8");
-      const user = USERS_BY_ID.get(decodedUserId);
-      if (user) {
-        ACTIVE_SESSIONS.set(token, {
-          token,
-          userId: user.id,
-          createdAt: new Date().toISOString(),
-        });
-        return user;
-      }
-    }
-  } catch (err) {
-    console.warn("Erreur decodage session token:", err);
+    const payload = jwt.verify(token, JWT_SECRET) as { userId?: string };
+    if (!payload || !payload.userId) return undefined;
+    return USERS_BY_ID.get(payload.userId);
+  } catch {
+    return undefined;
   }
+}
 
-  return undefined;
+function getAuthenticatedUser(req: express.Request): UserAccount | undefined {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return undefined;
+  const token = authHeader.replace("Bearer ", "").trim();
+  return getSessionUser(token);
+}
+
+function isAncestorCreator(possibleAncestorId: string, currentUserId: string): boolean {
+  let current = USERS_BY_ID.get(currentUserId);
+  const visited = new Set<string>();
+  while (current && current.createdById) {
+    if (visited.has(current.id)) break;
+    visited.add(current.id);
+    if (current.createdById === possibleAncestorId) return true;
+    current = USERS_BY_ID.get(current.createdById);
+  }
+  return false;
 }
 
 function toSafeProfile(u: UserAccount) {
@@ -730,13 +811,18 @@ function toSafeProfile(u: UserAccount) {
     department: u.department,
     organization: u.organization,
     badgeNumber: u.badgeNumber,
+    status: u.status || 'ACTIVE',
+    isRootAdmin: !!u.isRootAdmin,
+    createdById: u.createdById || null,
+    createdByName: u.createdByName || null,
     lastLogin: u.lastLoginAt,
     createdAt: u.createdAt,
   };
 }
 
-// Auth Login - Supports email, username, or role aliases
-app.post("/api/auth/login", (req, res) => {
+// 4. Auth Login avec Rate Limiting & vérification sécurisée bcrypt
+app.post("/api/auth/login", authLimiter, async (req, res) => {
+  await ensureDefaultUsers();
   const identifier = (req.body.email || req.body.username || "").toLowerCase().trim();
   const password = req.body.password;
   if (!identifier || !password) {
@@ -748,8 +834,24 @@ app.post("/api/auth/login", (req, res) => {
     return res.status(401).json({ success: false, error: "Identifiant ou compte opérateur introuvable." });
   }
 
-  if (!verifyUserPassword(user, password)) {
+  const isPasswordValid = await verifyUserPassword(user, password);
+  if (!isPasswordValid) {
     return res.status(401).json({ success: false, error: "Mot de passe incorrect pour cet opérateur." });
+  }
+
+  // Vérification stricte du statut du compte par l'administrateur
+  if (user.status === 'PENDING') {
+    return res.status(403).json({
+      success: false,
+      error: "Votre compte est en attente de validation par un administrateur. Vous aurez accès à la plateforme dès l'approbation de votre habilitation."
+    });
+  }
+
+  if (user.status === 'SUSPENDED') {
+    return res.status(403).json({
+      success: false,
+      error: "Ce compte a été suspendu par l'administration. Veuillez contacter la direction de la sécurité documentaire."
+    });
   }
 
   user.lastLoginAt = new Date().toISOString();
@@ -767,8 +869,9 @@ app.post("/api/auth/login", (req, res) => {
   });
 });
 
-// Auth Register - Supports both email and username
-app.post("/api/auth/register", (req, res) => {
+// 4. Auth Register avec Rate Limiting & hachage bcrypt async
+app.post("/api/auth/register", authLimiter, async (req, res) => {
+  await ensureDefaultUsers();
   const email = (req.body.email || "").toLowerCase().trim();
   const username = (req.body.username || "").toLowerCase().trim();
   const password = req.body.password;
@@ -813,35 +916,87 @@ app.post("/api/auth/register", (req, res) => {
     id: userId,
     username: primaryUsername,
     email: primaryEmail,
-    passwordHash: hashPassword(password),
+    passwordHash: await hashPassword(password),
     fullName: fullName.trim(),
     role,
     roleLabel: getRoleLabel(role),
     department,
     organization,
     badgeNumber: badgeNumber || `OPR-${Math.floor(1000 + Math.random() * 9000)}`,
+    status: 'PENDING', // L'administrateur doit être celui qui valide les comptes
+    isRootAdmin: false,
+    createdById: null,
+    createdByName: "Auto-enregistrement (En attente de validation)",
     createdAt: new Date().toISOString(),
-    lastLoginAt: new Date().toISOString(),
   };
 
   USERS_BY_ID.set(userId, newUser);
 
-  const token = createSessionToken(userId);
-  ACTIVE_SESSIONS.set(token, {
-    token,
-    userId: newUser.id,
-    createdAt: new Date().toISOString(),
-  });
+  logAdminAction(
+    "Portail Public",
+    newUser.role,
+    "DEMANDE_INSCRIPTION",
+    newUser.fullName,
+    `Nouvelle demande de compte pour ${newUser.fullName} (${newUser.email} - rôle: ${newUser.role}). En attente de validation par un administrateur.`,
+    "WARNING"
+  );
 
   res.json({
     success: true,
-    token,
+    pendingApproval: true,
+    message: "Votre demande de compte a été soumise avec succès. Conformément à la politique de sécurité, un administrateur doit valider votre compte avant votre première connexion.",
     user: toSafeProfile(newUser),
   });
 });
 
-// Auth Get Me (Session Verification)
-app.get("/api/auth/me", (req, res) => {
+// 4. Auth Forgot Password / Réinitialisation sécurisée avec Rate Limiting & hachage bcrypt
+app.post("/api/auth/forgot-password", authLimiter, async (req, res) => {
+  await ensureDefaultUsers();
+  const identifier = (req.body.identifier || req.body.email || req.body.username || "").toLowerCase().trim();
+  const newPassword = req.body.newPassword;
+
+  if (!identifier) {
+    return res.status(400).json({
+      success: false,
+      error: "Veuillez renseigner votre adresse email ou identifiant professionnel.",
+    });
+  }
+
+  const user = findUser(identifier);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      error: "Aucun compte opérateur habilité n'est associé à cet identifiant ou cette adresse email.",
+    });
+  }
+
+  if (newPassword) {
+    if (typeof newPassword !== "string" || newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: "Le nouveau mot de passe doit comporter au moins 6 caractères.",
+      });
+    }
+
+    user.passwordHash = await hashPassword(newPassword);
+    return res.json({
+      success: true,
+      message: "Votre mot de passe a été réinitialisé avec succès. Vous pouvez maintenant vous connecter.",
+    });
+  }
+
+  return res.json({
+    success: true,
+    userFound: true,
+    email: user.email,
+    fullName: user.fullName,
+    message: `Compte opérateur vérifié (${user.fullName}). Vous pouvez désormais saisir votre nouveau mot de passe.`,
+  });
+});
+
+// 3. Auth Get Me (Vérification de session JWT sécurisée)
+app.get("/api/auth/me", async (req, res) => {
+  await ensureDefaultUsers();
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ success: false, error: "Session non authentifiée." });
@@ -859,7 +1014,7 @@ app.get("/api/auth/me", (req, res) => {
   });
 });
 
-// Auth Logout
+// Auth Logout (avec révocation du token)
 app.post("/api/auth/logout", (req, res) => {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -871,7 +1026,8 @@ app.post("/api/auth/logout", (req, res) => {
 });
 
 // Auth List Operators (de-duplicated canonical list)
-app.get("/api/auth/users", (req, res) => {
+app.get("/api/auth/users", async (req, res) => {
+  await ensureDefaultUsers();
   const users = Array.from(USERS_BY_ID.values()).map(toSafeProfile);
   res.json({
     success: true,
@@ -1198,13 +1354,20 @@ app.patch("/api/admin/institutions/:id", (req, res) => {
   res.json({ success: true, institution: inst });
 });
 
-// 3. Admin Users Endpoints (Operator Management)
-app.get("/api/admin/users", (req, res) => {
+// 3. Admin Users Endpoints (Operator Management & RBAC)
+app.get("/api/admin/users", async (req, res) => {
+  await ensureDefaultUsers();
   const users = Array.from(USERS_BY_ID.values()).map(toSafeProfile);
   res.json({ success: true, users });
 });
 
-app.post("/api/admin/users", (req, res) => {
+app.post("/api/admin/users", async (req, res) => {
+  await ensureDefaultUsers();
+  const requestingAdmin = getAuthenticatedUser(req);
+  if (!requestingAdmin || requestingAdmin.role !== 'ADMIN') {
+    return res.status(403).json({ error: "Accès réservé aux administrateurs habilités." });
+  }
+
   const { email, username, password, fullName, role, department, organization, badgeNumber } = req.body;
   if (!email || !password || !fullName || !role) {
     return res.status(400).json({ error: "Nom, email, mot de passe et rôle requis." });
@@ -1221,64 +1384,185 @@ app.post("/api/admin/users", (req, res) => {
   }
 
   const userId = `usr_${Date.now().toString(36)}`;
+  const assignedRole = (role === "ADMIN" || role === "ANALYSTE" || role === "VERIFICATEUR") ? role : "VERIFICATEUR";
   const newUser: UserAccount = {
     id: userId,
     username: uname,
     email: lower,
-    passwordHash: hashPassword(password),
+    passwordHash: await hashPassword(password),
     fullName: fullName.trim(),
-    role: role || "VERIFICATEUR",
-    roleLabel: getRoleLabel(role || "VERIFICATEUR"),
-    department: department ? department.trim() : "Direction de la Scolarité",
-    organization: organization ? organization.trim() : "Établissement Partenaire",
+    role: assignedRole,
+    roleLabel: getRoleLabel(assignedRole),
+    department: department ? department.trim() : (assignedRole === 'ADMIN' ? 'Direction Centrale de la Sécurité Documentaire' : 'Direction de la Scolarité'),
+    organization: organization ? organization.trim() : "Ministère / Établissement Habilité",
     badgeNumber: badgeNumber ? badgeNumber.trim() : `OPR-${Math.floor(1000 + Math.random() * 9000)}`,
+    status: 'ACTIVE', // Créé directement par l'administrateur
+    isRootAdmin: false,
+    createdById: requestingAdmin.id,
+    createdByName: requestingAdmin.fullName,
     createdAt: new Date().toISOString(),
   };
 
   USERS_BY_ID.set(userId, newUser);
-  logAdminAction("Dr. Alexandre Vernier", "ADMIN", "CREATION_UTILISATEUR", newUser.fullName, `Compte opérateur créé avec le rôle ${newUser.role} (${newUser.email}).`, "INFO");
+  logAdminAction(
+    requestingAdmin.fullName,
+    "ADMIN",
+    "CREATION_UTILISATEUR",
+    newUser.fullName,
+    `Compte opérateur ${newUser.fullName} créé avec le rôle ${newUser.role} (${newUser.email}). Créateur: ${requestingAdmin.fullName}.`,
+    "INFO"
+  );
 
   res.json({ success: true, user: toSafeProfile(newUser) });
 });
 
-app.patch("/api/admin/users/:id", (req, res) => {
-  const { id } = req.params;
-  const { role, department, organization, fullName } = req.body;
+// Validation / Approbation d'un compte par l'administrateur
+app.post("/api/admin/users/:id/approve", (req, res) => {
+  const requestingAdmin = getAuthenticatedUser(req);
+  if (!requestingAdmin || requestingAdmin.role !== 'ADMIN') {
+    return res.status(403).json({ error: "Accès réservé aux administrateurs habilités." });
+  }
 
-  const user = USERS_BY_ID.get(id);
-  if (!user) {
+  const { id } = req.params;
+  const targetUser = USERS_BY_ID.get(id);
+  if (!targetUser) {
     return res.status(404).json({ error: "Utilisateur introuvable." });
   }
 
-  if (role) {
-    const oldRole = user.role;
-    user.role = role;
-    user.roleLabel = getRoleLabel(role);
-    logAdminAction("Dr. Alexandre Vernier", "ADMIN", "MODIF_ROLE_UTILISATEUR", user.fullName, `Rôle modifié de ${oldRole} à ${role}.`, "WARNING");
-  }
-  if (department) user.department = department;
-  if (organization) user.organization = organization;
-  if (fullName) user.fullName = fullName;
+  targetUser.status = 'ACTIVE';
+  logAdminAction(
+    requestingAdmin.fullName,
+    "ADMIN",
+    "VALIDATION_COMPTE",
+    targetUser.fullName,
+    `Compte de ${targetUser.fullName} (${targetUser.email} - rôle: ${targetUser.role}) validé et activé par l'administrateur ${requestingAdmin.fullName}.`,
+    "INFO"
+  );
 
-  res.json({ success: true, user: toSafeProfile(user) });
+  res.json({
+    success: true,
+    message: `Le compte de ${targetUser.fullName} a été validé et activé avec succès.`,
+    user: toSafeProfile(targetUser),
+  });
+});
+
+app.patch("/api/admin/users/:id", (req, res) => {
+  const requestingAdmin = getAuthenticatedUser(req);
+  if (!requestingAdmin || requestingAdmin.role !== 'ADMIN') {
+    return res.status(403).json({ error: "Accès réservé aux administrateurs habilités." });
+  }
+
+  const { id } = req.params;
+  const { role, department, organization, fullName, status } = req.body;
+
+  const targetUser = USERS_BY_ID.get(id);
+  if (!targetUser) {
+    return res.status(404).json({ error: "Utilisateur introuvable." });
+  }
+
+  // RÈGLE CRITIQUE : Si l'administrateur a été créé par targetUser, il ne peut pas modifier targetUser !
+  if (
+    requestingAdmin.id !== targetUser.id &&
+    (targetUser.id === requestingAdmin.createdById || isAncestorCreator(targetUser.id, requestingAdmin.id))
+  ) {
+    return res.status(403).json({
+      error: `Action non autorisée : un administrateur ne peut pas modifier les informations ou le statut de l'administrateur qui a créé son compte (${targetUser.fullName}).`
+    });
+  }
+
+  // RÈGLE CRITIQUE : Aucun administrateur délégué ne peut altérer l'Administrateur Racine (Fondateur)
+  if (targetUser.isRootAdmin && !requestingAdmin.isRootAdmin && requestingAdmin.id !== targetUser.id) {
+    return res.status(403).json({
+      error: "Action non autorisée : les informations de l'Administrateur Racine (Fondateur) sont protégées et ne peuvent pas être altérées par un administrateur délégué."
+    });
+  }
+
+  if (targetUser.isRootAdmin && role && role !== "ADMIN") {
+    return res.status(403).json({
+      error: "Action non autorisée : impossible de révoquer le rôle d'administrateur de l'Administrateur Racine."
+    });
+  }
+
+  if (status) {
+    const oldStatus = targetUser.status || 'ACTIVE';
+    targetUser.status = status;
+    logAdminAction(
+      requestingAdmin.fullName,
+      "ADMIN",
+      "MODIF_STATUT_UTILISATEUR",
+      targetUser.fullName,
+      `Statut du compte passé de ${oldStatus} à ${status}.`,
+      status === 'ACTIVE' ? "INFO" : "WARNING"
+    );
+  }
+
+  if (role) {
+    const oldRole = targetUser.role;
+    targetUser.role = role;
+    targetUser.roleLabel = getRoleLabel(role);
+    logAdminAction(
+      requestingAdmin.fullName,
+      "ADMIN",
+      "MODIF_ROLE_UTILISATEUR",
+      targetUser.fullName,
+      `Rôle modifié de ${oldRole} à ${role}.`,
+      "WARNING"
+    );
+  }
+  if (department) targetUser.department = department;
+  if (organization) targetUser.organization = organization;
+  if (fullName) targetUser.fullName = fullName;
+
+  res.json({ success: true, user: toSafeProfile(targetUser) });
 });
 
 app.delete("/api/admin/users/:id", (req, res) => {
+  const requestingAdmin = getAuthenticatedUser(req);
+  if (!requestingAdmin || requestingAdmin.role !== 'ADMIN') {
+    return res.status(403).json({ error: "Accès réservé aux administrateurs habilités." });
+  }
+
   const { id } = req.params;
-  const user = USERS_BY_ID.get(id);
-  if (!user) {
+  const targetUser = USERS_BY_ID.get(id);
+  if (!targetUser) {
     return res.status(404).json({ error: "Utilisateur non trouvé." });
   }
 
-  const adminCount = Array.from(USERS_BY_ID.values()).filter((u) => u.role === "ADMIN").length;
-  if (user.role === "ADMIN" && adminCount <= 1) {
-    return res.status(400).json({ error: "Impossible de supprimer le dernier compte administrateur." });
+  // RÈGLE CRITIQUE : L'Administrateur Racine ne peut JAMAIS être supprimé
+  if (targetUser.isRootAdmin) {
+    return res.status(403).json({
+      error: "Action interdite : le compte de l'Administrateur Racine (Fondateur) ne peut en aucun cas être révoqué ou supprimé."
+    });
   }
 
-  USERS_BY_ID.delete(user.id);
-  logAdminAction("Dr. Alexandre Vernier", "ADMIN", "SUPPRESSION_UTILISATEUR", user.fullName, `Compte ${user.email} révoqué définitivement.`, "CRITICAL");
+  // RÈGLE : Un administrateur ne peut pas supprimer son propre compte connecté
+  if (requestingAdmin.id === targetUser.id) {
+    return res.status(400).json({ error: "Vous ne pouvez pas révoquer votre propre compte administrateur connecté." });
+  }
 
-  res.json({ success: true, message: "Compte opérateur supprimé." });
+  // RÈGLE CRITIQUE : Si l'administrateur a été créé par targetUser, il ne peut pas supprimer targetUser !
+  if (targetUser.id === requestingAdmin.createdById || isAncestorCreator(targetUser.id, requestingAdmin.id)) {
+    return res.status(403).json({
+      error: `Action non autorisée : un administrateur ne peut pas supprimer ou révoquer le compte de l'administrateur qui a créé son compte (${targetUser.fullName}).`
+    });
+  }
+
+  const adminCount = Array.from(USERS_BY_ID.values()).filter((u) => u.role === "ADMIN").length;
+  if (targetUser.role === "ADMIN" && adminCount <= 1) {
+    return res.status(400).json({ error: "Impossible de supprimer le dernier compte administrateur du système." });
+  }
+
+  USERS_BY_ID.delete(targetUser.id);
+  logAdminAction(
+    requestingAdmin.fullName,
+    "ADMIN",
+    "SUPPRESSION_UTILISATEUR",
+    targetUser.fullName,
+    `Compte ${targetUser.email} révoqué définitivement par ${requestingAdmin.fullName}.`,
+    "CRITICAL"
+  );
+
+  res.json({ success: true, message: "Compte opérateur supprimé avec succès." });
 });
 
 // 4. Batch Import of Diplomas into Registry
@@ -2954,6 +3238,7 @@ Réponds uniquement en JSON valide conforme au format suivant :
 // Vite Middleware / Static Serving & WebSocket Server
 // ----------------------------------------------------
 async function startServer() {
+  await ensureDefaultUsers();
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
       server: {
@@ -3063,4 +3348,12 @@ async function startServer() {
   });
 }
 
-startServer();
+// In local dev and Cloud Run containers, start the server directly.
+// In Vercel serverless functions (where process.env.VERCEL is set), export the app without binding PORT.
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;
+export { app, startServer };
+

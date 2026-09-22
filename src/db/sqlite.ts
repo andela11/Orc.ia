@@ -3,17 +3,22 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 
-// Path for SQLite database file
-const DB_DIR = path.join(process.cwd(), 'data');
+// Path for SQLite database file (uses /tmp on serverless environments like Vercel where process.cwd is read-only)
+const isVercel = Boolean(process.env.VERCEL);
+const DB_DIR = isVercel ? path.join('/tmp', 'data') : path.join(process.cwd(), 'data');
 if (!fs.existsSync(DB_DIR)) {
   fs.mkdirSync(DB_DIR, { recursive: true });
 }
 const DB_PATH = path.join(DB_DIR, 'verifdiplome.sqlite');
+const SEED_PATH = path.join(process.cwd(), 'data', 'verifdiplome.sqlite');
 
 const SQL = await initSqlJs();
 let rawDb: SqlJsDatabase;
 if (fs.existsSync(DB_PATH)) {
   const fileBuffer = fs.readFileSync(DB_PATH);
+  rawDb = new SQL.Database(fileBuffer);
+} else if (fs.existsSync(SEED_PATH)) {
+  const fileBuffer = fs.readFileSync(SEED_PATH);
   rawDb = new SQL.Database(fileBuffer);
 } else {
   rawDb = new SQL.Database();
