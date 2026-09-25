@@ -3375,11 +3375,8 @@ async function startServer() {
   });
 }
 
-// In local dev and Cloud Run containers, start the server directly.
-// In Vercel serverless functions (where process.env.VERCEL is set), export the app without binding PORT.
-if (!process.env.VERCEL) {
-  startServer();
-}
+// Start full-stack server
+startServer();
 
 export default app;
 export { app, startServer };

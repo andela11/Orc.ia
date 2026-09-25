@@ -3,9 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 
-// Path for SQLite database file (uses /tmp on serverless/read-only environments)
-const isVercel = Boolean(process.env.VERCEL);
-let DB_DIR = isVercel ? path.join('/tmp', 'data') : path.join(process.cwd(), 'data');
+// Path for SQLite database file
+let DB_DIR = path.join(process.cwd(), 'data');
 try {
   if (!fs.existsSync(DB_DIR)) {
     fs.mkdirSync(DB_DIR, { recursive: true });
