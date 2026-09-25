@@ -13,7 +13,7 @@ import helmet from "helmet";
 import cors from "cors";
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // 5. Headers de sécurité HTTP avec Helmet (placé juste après l'initialisation de l'app)
 app.use(
@@ -107,9 +107,9 @@ interface RegistryRecord {
 const AUTHORITATIVE_REGISTRY: RegistryRecord[] = [
   {
     id: "REG-001",
-    documentId: "SORB-2023-M8921",
-    studentName: "Thomas Laurent",
-    institution: "Sorbonne Université",
+    documentId: "UY1-2023-M8921",
+    studentName: "Boris TCHOUA",
+    institution: "Université de Yaoundé I (UY1)",
     degreeTitle: "Master en Informatique et Systèmes Décisionnels",
     fieldOfStudy: "Sciences & Ingénierie Logicielle",
     issueDate: "2023-06-28",
@@ -118,57 +118,57 @@ const AUTHORITATIVE_REGISTRY: RegistryRecord[] = [
   },
   {
     id: "REG-002",
-    documentId: "X-2022-ING-0412",
-    studentName: "Camille Dupont",
-    institution: "École Polytechnique (Institut Polytechnique de Paris)",
-    degreeTitle: "Diplôme d'Ingénieur de l'École Polytechnique",
-    fieldOfStudy: "Mathématiques Appliquées et Science des Données",
+    documentId: "ENSPY-2022-ING-0412",
+    studentName: "Danielle MBALLA ESSOMBA",
+    institution: "École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)",
+    degreeTitle: "Diplôme d'Ingénieur de Conception",
+    fieldOfStudy: "Génie Informatique & Télécommunications",
     issueDate: "2022-07-15",
     honors: "Félicitations du Jury",
     accredited: true,
   },
   {
     id: "REG-003",
-    documentId: "UPS-2024-L3-1094",
-    studentName: "Alexandre Bernard",
-    institution: "Université Paris-Saclay",
+    documentId: "UD-2024-LIC-1094",
+    studentName: "Alexandre EBANDA",
+    institution: "Université de Douala (UDLA)",
     degreeTitle: "Licence en Mathématiques et Applications",
-    fieldOfStudy: "Mathématiques Générales",
+    fieldOfStudy: "Mathématiques & Informatique",
     issueDate: "2024-06-20",
     honors: "Mention Bien",
     accredited: true,
   },
   {
     id: "REG-004",
-    documentId: "UDM-2023-BACC-7741",
-    studentName: "Sarah Tremblay",
-    institution: "Université de Montréal",
-    degreeTitle: "Baccalauréat en Informatique",
-    fieldOfStudy: "Génie Logiciel & Intelligence Artificielle",
+    documentId: "UB-2023-BSC-7741",
+    studentName: "Sarah NGONO",
+    institution: "University of Buea",
+    degreeTitle: "Bachelor of Science in Computer Science",
+    fieldOfStudy: "Software Engineering & Networks",
     issueDate: "2023-05-30",
-    honors: "Mention d'Excellence",
+    honors: "First Class Honours",
     accredited: true,
   },
   {
     id: "REG-005",
-    documentId: "HEC-2023-MIM-5521",
-    studentName: "Julien Moreau",
-    institution: "HEC Paris",
-    degreeTitle: "Master in Management (Grande École)",
-    fieldOfStudy: "Finance Stratégique",
+    documentId: "ESSEC-2023-DESP-5521",
+    studentName: "Yves MBARGA",
+    institution: "ESSEC Douala",
+    degreeTitle: "Diplôme d'Études Supérieures de Commerce",
+    fieldOfStudy: "Finance & Comptabilité Stratégique",
     issueDate: "2023-09-12",
-    honors: "Summa Cum Laude",
+    honors: "Mention Très Bien",
     accredited: true,
   },
   {
     id: "REG-006",
-    documentId: "UNIGE-2024-DR-3312",
-    studentName: "Élodie Martin",
-    institution: "Université de Genève",
-    degreeTitle: "Maîtrise Universitaire en Droit International",
-    fieldOfStudy: "Droit Humanitaire et Gouvernance",
+    documentId: "UDS-2024-MAS-3312",
+    studentName: "Élodie KAMDEM",
+    institution: "Université de Dschang (UDs)",
+    degreeTitle: "Master en Droit des Affaires et Fiscalité",
+    fieldOfStudy: "Droit Privé & Carrières Judiciaires",
     issueDate: "2024-02-14",
-    honors: "Magna Cum Laude",
+    honors: "Mention Bien",
     accredited: true,
   },
   {
@@ -191,6 +191,28 @@ const AUTHORITATIVE_REGISTRY: RegistryRecord[] = [
     fieldOfStudy: "Sciences & Technologies de l'Information",
     issueDate: "2022-07-28",
     honors: "Mention Bien",
+    accredited: true,
+  },
+  {
+    id: "REG-009",
+    documentId: "UM-2023-LIC-8819",
+    studentName: "Emmanuel BELLA",
+    institution: "Université de Maroua",
+    degreeTitle: "Licence en Sciences Économiques",
+    fieldOfStudy: "Économie Internationale & Développement",
+    issueDate: "2023-06-25",
+    honors: "Mention Assez Bien",
+    accredited: true,
+  },
+  {
+    id: "REG-010",
+    documentId: "UN-2022-MAS-1102",
+    studentName: "Arthur NGUEMO",
+    institution: "Université de Ngaoundéré",
+    degreeTitle: "Master en Agroalimentaire et Biotechnologie",
+    fieldOfStudy: "Industries Alimentaires",
+    issueDate: "2022-07-22",
+    honors: "Mention Très Bien",
     accredited: true,
   },
 ];
@@ -255,39 +277,39 @@ const INITIAL_FALSIFIED_HASHES: FalsifiedHashRecord[] = [
     flaggedDate: "2026-09-08T10:14:00.000Z",
     reason: "Falsification avérée : altération typographique (Arial au lieu de Times) et calque de retouche sur le nom du titulaire.",
     originalDocumentTitle: "Master en Informatique et Systèmes Décisionnels",
-    originalStudentName: "Marc Lefebvre (Usurpateur)",
-    originalInstitution: "Sorbonne Université",
+    originalStudentName: "Alain BIKOI (Usurpateur)",
+    originalInstitution: "Université de Yaoundé I (UY1)",
     detectionSource: "AUDIT_SYSTEM",
     totalSubmissionAttempts: 2,
     lastAttemptDate: "2026-09-09T18:45:00.000Z",
     threatLevel: "MAXIMAL",
-    notes: "Document d'origine volé à Thomas Laurent (SORB-2023-M8921). Plusieurs tentatives de dépôt constatées.",
+    notes: "Document d'origine volé à Boris TCHOUA (UY1-2023-M8921). Plusieurs tentatives de dépôt constatées.",
   },
   {
     sha256: "7c9b208fa5efbc91e8460591e3e8f81bb6c125da9546050e0413fa78f0d8e204",
     flaggedDate: "2026-08-14T09:30:00.000Z",
-    reason: "Contrefaçon totale : faux sceau d'État, signature scannée et numéro de diplôme inexistant.",
+    reason: "Contrefaçon totale : faux sceau d'État MINESUP, signature scannée et numéro de diplôme inexistant.",
     originalDocumentTitle: "Licence en Droit Privé",
-    originalStudentName: "Karim Benali",
-    originalInstitution: "Université Paris-Panthéon-Assas",
+    originalStudentName: "Cédric NOUBISSI",
+    originalInstitution: "Université de Douala",
     detectionSource: "REGISTRE_NATIONAL_FRAUDES",
     totalSubmissionAttempts: 4,
     lastAttemptDate: "2026-09-01T11:20:00.000Z",
     threatLevel: "MAXIMAL",
-    notes: "Dossier transmis au Parquet de Paris (Réf: PP-2026-99214).",
+    notes: "Dossier transmis au Parquet de Grande Instance de Douala (Réf: TGI-WOURI-2026-99214).",
   },
   {
     sha256: "3a11883bfd3fbb39d48bcf62a420b784a86e5898862f1c84138e4a9e52549a71",
     flaggedDate: "2026-07-22T16:00:00.000Z",
-    reason: "Signature décalquée sans modulation de pression (reproduction vectorielle uniforme) et mention falsifiée.",
-    originalDocumentTitle: "Master Finance et Gestion de Portefeuille",
-    originalStudentName: "Sophie Delaunay",
-    originalInstitution: "Université Paris-Dauphine",
+    reason: "Signature décalquée sans modulation de pression (reproduction vectorielle) et mention Très Bien falsifiée.",
+    originalDocumentTitle: "Diplôme d'Ingénieur de Conception",
+    originalStudentName: "Franck NGUELE",
+    originalInstitution: "École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)",
     detectionSource: "PARQUET_JUDICIAIRE",
     totalSubmissionAttempts: 1,
     lastAttemptDate: "2026-07-22T16:00:00.000Z",
     threatLevel: "ELEVE",
-    notes: "Signalé par la cellule anti-fraude bancaire.",
+    notes: "Signalé par la cellule d'enquête judiciaire et DGSN Cameroun.",
   },
 ];
 
@@ -305,12 +327,12 @@ const ALERTS_STORE: FalsifiedDiplomaAlert[] = [
     sha256: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
     hashRecord: INITIAL_FALSIFIED_HASHES[0],
     submittedDocument: {
-      fileName: "scan_master_sorbonne_marc_lefebvre.pdf",
-      studentName: "Marc LEFEBVRE",
-      institution: "Sorbonne Université",
+      fileName: "scan_master_uy1_alain_bikoi.pdf",
+      studentName: "Alain BIKOI",
+      institution: "Université de Yaoundé I (UY1)",
       degreeTitle: "Master en Informatique et Systèmes Décisionnels",
-      documentId: "SORB-2023-M8921",
-      ipOrigin: "193.54.112.44 (Rectorat Île-de-France)",
+      documentId: "UY1-2023-M8921",
+      ipOrigin: "195.24.201.55 (Camtel Yaoundé)",
     },
     triggerReason: "ALERTE RÉCIDIVE : Tentative de vérification d'un document dont le hash SHA-256 a déjà été répertorié comme FALSIFIÉ.",
     attemptCount: 2,
@@ -318,7 +340,7 @@ const ALERTS_STORE: FalsifiedDiplomaAlert[] = [
       "[18:45:10] Alerte temps réel générée automatiquement sur détection d'empreinte récidiviste.",
       "[19:02:40] Analyse préliminaire : la tentative utilise le même fichier altéré qu'en août 2026.",
     ],
-    handledBy: "Admin Sécurité",
+    handledBy: "Admin Sécurité MINESUP",
     handledAt: new Date(Date.now() - 3600000 * 4).toISOString(),
   },
 ];
@@ -556,10 +578,10 @@ app.post("/api/alerts/simulate", (req, res) => {
     hashRecord = {
       sha256: sampleHash,
       flaggedDate: new Date(Date.now() - 86400000 * 3).toISOString(),
-      reason: "Altération typographique détectée, calque de retouche et usurpation de matricule Sorbonne.",
+      reason: "Altération typographique détectée, calque de retouche et usurpation de matricule UY1.",
       originalDocumentTitle: "Master en Informatique et Systèmes Décisionnels",
-      originalStudentName: "Marc Lefebvre (Usurpateur)",
-      originalInstitution: "Sorbonne Université",
+      originalStudentName: "Alain BIKOI (Usurpateur)",
+      originalInstitution: "Université de Yaoundé I (UY1)",
       detectionSource: "AUDIT_SYSTEM",
       totalSubmissionAttempts: 1,
       lastAttemptDate: new Date().toISOString(),
@@ -579,12 +601,12 @@ app.post("/api/alerts/simulate", (req, res) => {
     sha256: sampleHash,
     hashRecord: { ...hashRecord },
     submittedDocument: {
-      fileName: "diplome_master_paris_scan_recu.pdf",
-      studentName: "Marc LEFEBVRE",
-      institution: "Sorbonne Université",
+      fileName: "diplome_master_uy1_scan_recu.pdf",
+      studentName: "Alain BIKOI",
+      institution: "Université de Yaoundé I (UY1)",
       degreeTitle: "Master en Informatique et Systèmes Décisionnels",
-      documentId: "SORB-2023-M8921",
-      ipOrigin: "194.254.129.18 (Réseau Académique)",
+      documentId: "UY1-2023-M8921",
+      ipOrigin: "195.24.201.55 (Réseau Universitaire Cameroun)",
     },
     triggerReason: "ALERTE RÉCIDIVE : Tentative de soumission d'un diplôme avec empreinte SHA-256 déjà fichée comme FALSIFIÉE.",
     attemptCount: hashRecord.totalSubmissionAttempts,
@@ -652,7 +674,7 @@ async function seedDefaultUsers(): Promise<void> {
 
   const [adminHash, agentHash, enqueteurHash] = await Promise.all([
     bcrypt.hash("Admin2026!", 12),
-    bcrypt.hash("Sorbonne2026!", 12),
+    bcrypt.hash("Scolarite2026!", 12),
     bcrypt.hash("Enquete2026!", 12),
   ]);
 
@@ -660,14 +682,14 @@ async function seedDefaultUsers(): Promise<void> {
     {
       id: "usr_admin_01",
       username: "admin",
-      email: "admin@verifdiplome.gouv.fr",
+      email: "admin@minesup.gov.cm",
       passwordHash: adminHash,
-      fullName: "Dr. Alexandre Vernier",
+      fullName: "Dr. Paulin EKANGA",
       role: "ADMIN",
-      roleLabel: "Administrateur Central",
-      department: "Direction Centrale de la Sécurité Documentaire",
-      organization: "Ministère de l'Enseignement Supérieur",
-      badgeNumber: "OPR-ADM-8821",
+      roleLabel: "Administrateur National du Registre Académique",
+      department: "Direction des Accréditations & Titres Académiques (DAUQ)",
+      organization: "Ministère de l'Enseignement Supérieur (MINESUP Cameroun)",
+      badgeNumber: "OPR-MINESUP-001",
       status: "ACTIVE",
       isRootAdmin: true,
       createdById: null,
@@ -676,36 +698,36 @@ async function seedDefaultUsers(): Promise<void> {
     },
     {
       id: "usr_agent_02",
-      username: "claire.fontaine",
-      email: "claire.fontaine@sorbonne-universite.fr",
+      username: "jeanne.mvondo",
+      email: "jeanne.mvondo@uy1.cm",
       passwordHash: agentHash,
-      fullName: "Claire Fontaine",
+      fullName: "Jeanne MVONDO",
       role: "VERIFICATEUR",
       roleLabel: "Agent de Scolarité & Vérification",
       department: "Scolarité Centrale & Registres Diplômants",
-      organization: "Sorbonne Université",
-      badgeNumber: "OPR-SORB-4091",
+      organization: "Université de Yaoundé I (UY1)",
+      badgeNumber: "OPR-UY1-4091",
       status: "ACTIVE",
       isRootAdmin: false,
       createdById: "usr_admin_01",
-      createdByName: "Dr. Alexandre Vernier",
+      createdByName: "Dr. Paulin EKANGA",
       createdAt: "2026-02-15T09:30:00.000Z",
     },
     {
       id: "usr_enqueteur_03",
-      username: "marc.dupuis",
-      email: "marc.dupuis@police-nationale.gouv.fr",
+      username: "joseph.essomba",
+      email: "joseph.essomba@police.gov.cm",
       passwordHash: enqueteurHash,
-      fullName: "Marc-Antoine Dupuis",
+      fullName: "Capitaine Joseph ESSOMBA",
       role: "ANALYSTE",
-      roleLabel: "Analyste Anti-Fraude & Enquêteur",
-      department: "Brigade des Fraudes Identitaires et Numériques",
-      organization: "Police Nationale - DCPJ",
-      badgeNumber: "OPR-DCPJ-1104",
+      roleLabel: "Analyste Forensique & Enquêteur Judiciaire",
+      department: "Division Spéciale de la Cybercriminalité & Faux Documents",
+      organization: "Délégation Générale à la Sûreté Nationale (DGSN Cameroun)",
+      badgeNumber: "OPR-DGSN-1104",
       status: "ACTIVE",
       isRootAdmin: false,
       createdById: "usr_admin_01",
-      createdByName: "Dr. Alexandre Vernier",
+      createdByName: "Dr. Paulin EKANGA",
       createdAt: "2026-03-01T14:15:00.000Z",
     },
   ];
@@ -1073,36 +1095,36 @@ const ACCREDITED_INSTITUTIONS: AccreditedInstitutionRecord[] = [
   },
   {
     id: "INST-002",
-    code: "SORB",
-    name: "Sorbonne Université",
-    country: "France",
-    accreditationNumber: "MESR-FR-75-01-UNIV",
+    code: "UY1",
+    name: "Université de Yaoundé I (UY1)",
+    country: "Cameroun",
+    accreditationNumber: "MINESUP/UY1/1962/DEC-01",
     accreditationStatus: "ACTIVE",
-    contactEmail: "scolarite.centrale@sorbonne-universite.fr",
-    officialRectoratUrl: "https://www.sorbonne-universite.fr",
-    registeredDiplomasCount: 1,
+    contactEmail: "rectorat@uy1.uninet.cm",
+    officialRectoratUrl: "https://www.uy1.uninet.cm",
+    registeredDiplomasCount: 2,
     authorizedSignatories: [
-      { name: "Pr. Nathalie Drach-Temam", title: "Présidente de Sorbonne Université" },
-      { name: "M. Christophe Kerrero", title: "Recteur de l'Académie de Paris" }
+      { name: "Pr. Remy Sylvestre BOUELET", title: "Recteur de l'Université de Yaoundé I" },
+      { name: "Pr. Jean-Bosco TALLA", title: "Doyen de la Faculté des Sciences" }
     ],
-    officialSealDescription: "Grand sceau officiel de l'Académie de Paris et Marianne républicaine",
+    officialSealDescription: "Sceau officiel du Rectorat de l'Université de Yaoundé I et devise Sapientia-Pax-Progressus",
     createdAt: "2020-01-15T10:00:00.000Z",
   },
   {
     id: "INST-003",
-    code: "EP-X",
-    name: "École Polytechnique (Institut Polytechnique de Paris)",
-    country: "France",
-    accreditationNumber: "CTI-FR-91-04-ING",
+    code: "ENSPY",
+    name: "École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)",
+    country: "Cameroun",
+    accreditationNumber: "MINESUP/ENSPY/1971/DEC-02",
     accreditationStatus: "ACTIVE",
-    contactEmail: "diplomes@polytechnique.edu",
-    officialRectoratUrl: "https://www.polytechnique.edu",
+    contactEmail: "direction@polytechnique.cm",
+    officialRectoratUrl: "https://www.polytechnique.cm",
     registeredDiplomasCount: 1,
     authorizedSignatories: [
-      { name: "Laura Chaubard", title: "Directrice Générale de l'École Polytechnique" },
-      { name: "Général de Corps d'Armée", title: "Commandant de l'École" }
+      { name: "Pr. Guy Edgar NOUBISSI", title: "Directeur de l'ENSPY" },
+      { name: "Dr. Thomas TCHAMO", title: "Directeur des Études de l'ENSPY" }
     ],
-    officialSealDescription: "Blason des X croisés et devise 'Pour la Patrie, les Sciences et la Gloire'",
+    officialSealDescription: "Blason officiel de l'ENSPY et devise 'Ingenio et Labore'",
     createdAt: "2019-11-04T09:00:00.000Z",
   },
   {
@@ -1124,34 +1146,34 @@ const ACCREDITED_INSTITUTIONS: AccreditedInstitutionRecord[] = [
   },
   {
     id: "INST-005",
-    code: "UPS",
-    name: "Université Paris-Saclay",
-    country: "France",
-    accreditationNumber: "MESR-FR-91-02-UNIV",
+    code: "UDLA",
+    name: "Université de Douala (UDLA)",
+    country: "Cameroun",
+    accreditationNumber: "MINESUP/UDLA/1993/DEC-03",
     accreditationStatus: "ACTIVE",
-    contactEmail: "registre@universite-paris-saclay.fr",
-    officialRectoratUrl: "https://www.universite-paris-saclay.fr",
+    contactEmail: "scolarite@univ-douala.cm",
+    officialRectoratUrl: "https://www.univ-douala.cm",
     registeredDiplomasCount: 1,
     authorizedSignatories: [
-      { name: "Pr. Camille Galap", title: "Président par intérim Université Paris-Saclay" }
+      { name: "Pr. Magloire ONDOA", title: "Recteur de l'Université de Douala" }
     ],
-    officialSealDescription: "Sceau académique circulaire millésimé",
+    officialSealDescription: "Sceau académique du Rectorat de l'Université de Douala",
     createdAt: "2021-04-12T08:30:00.000Z",
   },
   {
     id: "INST-006",
-    code: "HEC",
-    name: "HEC Paris",
-    country: "France",
-    accreditationNumber: "CCI-PARIS-HEC-78-01",
+    code: "UDS",
+    name: "Université de Dschang (UDs)",
+    country: "Cameroun",
+    accreditationNumber: "MINESUP/UDS/1993/DEC-04",
     accreditationStatus: "ACTIVE",
-    contactEmail: "verification.degrees@hec.edu",
-    officialRectoratUrl: "https://www.hec.edu",
+    contactEmail: "contact@univ-dschang.org",
+    officialRectoratUrl: "https://www.univ-dschang.org",
     registeredDiplomasCount: 1,
     authorizedSignatories: [
-      { name: "Éloïc Peyrache", title: "Directeur Général HEC Paris" }
+      { name: "Pr. Roger TSAFACK NANFOSSO", title: "Recteur de l'Université de Dschang" }
     ],
-    officialSealDescription: "Sceau gaufré de la Chambre de Commerce et d'Industrie de Paris",
+    officialSealDescription: "Sceau officiel du Rectorat de l'Université de Dschang",
     createdAt: "2020-06-20T14:00:00.000Z",
   },
 ];
@@ -1181,7 +1203,7 @@ const ADMIN_AUDIT_LOGS: AdminAuditRecord[] = [
   {
     id: "LOG-ADM-901",
     timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
-    actor: "Dr. Alexandre Vernier",
+    actor: "Dr. Paulin EKANGA",
     actorRole: "ADMIN",
     action: "ACCREDITATION_INSTITUTION",
     target: "IAI-Cameroun (Institut Africain d'Informatique)",
@@ -1192,34 +1214,34 @@ const ADMIN_AUDIT_LOGS: AdminAuditRecord[] = [
   {
     id: "LOG-ADM-902",
     timestamp: new Date(Date.now() - 3600000 * 18).toISOString(),
-    actor: "Dr. Alexandre Vernier",
+    actor: "Dr. Paulin EKANGA",
     actorRole: "ADMIN",
     action: "BLACKLIST_HASH_AJOUT",
-    target: "SHA-256 e3b0c44...b855 (Marc Lefebvre)",
-    details: "Mise à l'index national suite à falsification flagrante par altération de nom sur parchemin Sorbonne.",
+    target: "SHA-256 e3b0c44...b855 (Alain BIKOI)",
+    details: "Mise à l'index national suite à falsification flagrante par altération de nom sur parchemin officiel UY1.",
     ipAddress: "192.168.1.10 (Intranet Sécurisé)",
     severity: "CRITICAL",
   },
   {
     id: "LOG-ADM-903",
     timestamp: new Date(Date.now() - 3600000 * 8).toISOString(),
-    actor: "Claire Fontaine",
+    actor: "Jeanne MVONDO",
     actorRole: "VERIFICATEUR",
     action: "INSPECTION_REGISTRE",
-    target: "Parchemin Thomas Laurent (SORB-2023-M8921)",
+    target: "Parchemin Boris TCHOUA (UY1-2023-M8921)",
     details: "Contrôle de conformité de fin d'année académique. Intégrité confirmée.",
-    ipAddress: "194.254.129.18 (Réseau Sorbonne)",
+    ipAddress: "194.254.129.18 (Réseau UY1)",
     severity: "INFO",
   },
   {
     id: "LOG-ADM-904",
     timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
-    actor: "Marc-Antoine Dupuis",
+    actor: "Capitaine Joseph ESSOMBA",
     actorRole: "ANALYSTE",
     action: "TRANSMISSION_JUDICIAIRE",
     target: "Dossier Fraude n°PQ-FRAUD-28941",
-    details: "Procès-verbal de récidive transmis au Procureur de la République pour tentative de tromperie.",
-    ipAddress: "10.42.0.88 (Réseau Judiciaire DCPJ)",
+    details: "Procès-verbal de récidive transmis au Procureur de la République près le TPI de Yaoundé pour tentative de faux.",
+    ipAddress: "10.42.0.88 (Réseau Judiciaire DGSN)",
     severity: "WARNING",
   },
 ];
@@ -1329,7 +1351,7 @@ app.post("/api/admin/institutions", (req, res) => {
   };
 
   ACCREDITED_INSTITUTIONS.unshift(newInst);
-  logAdminAction("Dr. Alexandre Vernier", "ADMIN", "ACCREDITATION_INSTITUTION", newInst.name, `Création et accréditation officielle sous le code ${newInst.code}.`, "INFO");
+  logAdminAction("Dr. Paulin EKANGA", "ADMIN", "ACCREDITATION_INSTITUTION", newInst.name, `Création et accréditation officielle sous le code ${newInst.code}.`, "INFO");
 
   res.json({ success: true, institution: newInst });
 });
@@ -1345,7 +1367,7 @@ app.patch("/api/admin/institutions/:id", (req, res) => {
 
   if (accreditationStatus) {
     inst.accreditationStatus = accreditationStatus;
-    logAdminAction("Dr. Alexandre Vernier", "ADMIN", "MODIF_STATUT_INSTITUTION", inst.name, `Statut mis à jour vers: ${accreditationStatus}`, "WARNING");
+    logAdminAction("Dr. Paulin EKANGA", "ADMIN", "MODIF_STATUT_INSTITUTION", inst.name, `Statut mis à jour vers: ${accreditationStatus}`, "WARNING");
   }
   if (contactEmail) inst.contactEmail = contactEmail;
   if (officialRectoratUrl) inst.officialRectoratUrl = officialRectoratUrl;
@@ -1594,7 +1616,7 @@ app.post("/api/admin/registry/batch", (req, res) => {
   });
 
   logAdminAction(
-    "Dr. Alexandre Vernier",
+    "Dr. Paulin EKANGA",
     "ADMIN",
     "IMPORT_MASSIF_REGISTRE",
     institutionName || "Établissement Universitaire",
@@ -1622,11 +1644,11 @@ app.patch("/api/admin/registry/:id/revoke", (req, res) => {
   diploma.isRevoked = true;
   diploma.revocationReason = reason || "Annulation administrative pour fraude académique ou sanction disciplinaire.";
   diploma.revokedAt = new Date().toISOString();
-  diploma.revokedBy = revokedBy || "Dr. Alexandre Vernier (Administrateur Central)";
+  diploma.revokedBy = revokedBy || "Dr. Paulin EKANGA (Administrateur National MINESUP)";
   diploma.accredited = false;
 
   logAdminAction(
-    revokedBy || "Dr. Alexandre Vernier",
+    revokedBy || "Dr. Paulin EKANGA",
     "ADMIN",
     "REVOCATION_DIPLOME",
     `${diploma.studentName} (${diploma.documentId})`,
@@ -1653,7 +1675,7 @@ app.post("/api/admin/config", (req, res) => {
   if (typeof maintenanceMode === "boolean") ADMIN_SYSTEM_CONFIG.maintenanceMode = maintenanceMode;
 
   logAdminAction(
-    "Dr. Alexandre Vernier",
+    "Dr. Paulin EKANGA",
     "ADMIN",
     "MISE_A_JOUR_PARAMETRES",
     "Configuration Système VerifDiplôme",
@@ -1760,7 +1782,7 @@ function classifyDocumentContent(
     "université", "universite", "university", "faculté", "faculte", "faculty", "académie",
     "academie", "ministère", "ministere", "rectorat", "recteur", "doyen", "président de l'université",
     "president de l'universite", "office du baccalauréat", "office du baccalaureat", "iai",
-    "école", "ecole", "institut", "polytechnique", "sorbonne", "dauphine", "paris-saclay",
+    "école", "ecole", "institut", "polytechnique", "enspy", "essec", "iut", "yaounde", "douala", "dschang", "buea", "maroua", "bamenda", "ngaoundere",
     "minesup", "minesec", "enseignement supérieur", "enseignement superieur", "grande école",
     "grande ecole", "jury", "scolarité centrale"
   ];
@@ -1910,26 +1932,26 @@ app.post("/api/verify", async (req, res) => {
     // ----------------------------------------------------
     let matchedFalsifiedRecord = KNOWN_FALSIFIED_HASHES.get(documentSha256.toLowerCase());
 
-    // Also detect if payload corresponds to known Marc Lefebvre forged sample
-    const isMarcLefebvreForgedSample =
-      cleanBase64.includes("TEVGRUJ") ||
-      cleanBase64.includes("Marc LEFEBVRE") ||
-      cleanBase64.includes("Marc Lefebvre") ||
-      fileName?.toLowerCase().includes("lefebvre");
+    // Also detect if payload corresponds to known Alain BIKOI forged sample
+    const isAlainBikoiForgedSample =
+      cleanBase64.includes("QklLT0k") ||
+      cleanBase64.includes("Alain BIKOI") ||
+      cleanBase64.includes("Alain Bikoi") ||
+      fileName?.toLowerCase().includes("bikoi");
 
-    if (!matchedFalsifiedRecord && (isMarcLefebvreForgedSample || documentSha256 === "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")) {
+    if (!matchedFalsifiedRecord && (isAlainBikoiForgedSample || documentSha256 === "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855")) {
       matchedFalsifiedRecord = KNOWN_FALSIFIED_HASHES.get("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855") || {
         sha256: documentSha256,
         flaggedDate: "2026-09-08T10:14:00.000Z",
         reason: "Falsification avérée : altération typographique (Arial au lieu de Times) et calque de retouche sur le nom du titulaire.",
         originalDocumentTitle: "Master en Informatique et Systèmes Décisionnels",
-        originalStudentName: "Marc Lefebvre (Usurpateur)",
-        originalInstitution: "Sorbonne Université",
+        originalStudentName: "Alain BIKOI (Usurpateur)",
+        originalInstitution: "Université de Yaoundé I (UY1)",
         detectionSource: "AUDIT_SYSTEM",
         totalSubmissionAttempts: 1,
         lastAttemptDate: new Date().toISOString(),
         threatLevel: "MAXIMAL",
-        notes: "Document volé à Thomas Laurent (SORB-2023-M8921). Récidive surveillée.",
+        notes: "Document volé à Boris TCHOUA (UY1-2023-M8921). Récidive surveillée.",
       };
       KNOWN_FALSIFIED_HASHES.set(documentSha256.toLowerCase(), matchedFalsifiedRecord);
     }
@@ -1948,10 +1970,10 @@ app.post("/api/verify", async (req, res) => {
         hashRecord: { ...matchedFalsifiedRecord },
         submittedDocument: {
           fileName: fileName || "diplome_soumis.pdf",
-          studentName: matchedFalsifiedRecord.originalStudentName || "Marc LEFEBVRE",
-          institution: matchedFalsifiedRecord.originalInstitution || "Sorbonne Université",
-          degreeTitle: matchedFalsifiedRecord.originalDocumentTitle || "Master en Informatique",
-          documentId: "SORB-2023-M8921",
+          studentName: matchedFalsifiedRecord.originalStudentName || "Alain BIKOI",
+          institution: matchedFalsifiedRecord.originalInstitution || "Université de Yaoundé I (UY1)",
+          degreeTitle: matchedFalsifiedRecord.originalDocumentTitle || "Master en Informatique et Systèmes Décisionnels",
+          documentId: "UY1-2023-M8921",
           ipOrigin: (req.headers["x-forwarded-for"] as string) || req.socket.remoteAddress || "194.254.129.18",
         },
         triggerReason: `ALERTE RÉCIDIVE : Tentative de soumission d'un diplôme dont le hash SHA-256 a déjà été répertorié comme FALSIFIÉ (${matchedFalsifiedRecord.reason}).`,
@@ -2111,7 +2133,7 @@ Tu dois évaluer les critères suivants :
          "observations": "Analyse physique détaillée de la pression de trait et du dépôt d'encre"
        },
        "comparisonWithReference": {
-         "matchedModelId": "REF-SORB-MARTINEZ" | "REF-SORB-BERNARD" | "REF-X-LABAYE" | "REF-X-LASZLO" | "REF-AUTRE",
+         "matchedModelId": "REF-UY1-BOUELET" | "REF-UY1-TALLA" | "REF-ENSPY-NOUBISSI" | "REF-ENSPY-MBALLA" | "REF-AUTRE",
          "signatoryName": "Nom du modèle de référence officiel",
          "signatoryTitle": "Titre officiel dans le registre",
          "institution": "Établissement rattaché",
@@ -2198,7 +2220,7 @@ Réponds uniquement en JSON valide conforme au format suivant :
         "observations": "string"
       },
       "comparisonWithReference": {
-        "matchedModelId": "REF-SORB-MARTINEZ",
+        "matchedModelId": "REF-UY1-BOUELET",
         "signatoryName": "string",
         "signatoryTitle": "string",
         "institution": "string",
@@ -2346,43 +2368,45 @@ Réponds uniquement en JSON valide conforme au format suivant :
         const isFalsified =
           lowerFileName.includes("sample-2") ||
           lowerFileName.includes("falsifi") ||
-          lowerFileName.includes("lefebvre") ||
-          (svgContent && svgContent.includes("Marc LEFEBVRE"));
+          lowerFileName.includes("bikoi") ||
+          (svgContent && svgContent.includes("Alain BIKOI"));
 
         const isPolytechnique =
           lowerFileName.includes("sample-3") ||
           lowerFileName.includes("polytechnique") ||
-          lowerFileName.includes("dupont") ||
-          (svgContent && (svgContent.includes("Camille DUPONT") || svgContent.includes("Polytechnique")));
+          lowerFileName.includes("enspy") ||
+          lowerFileName.includes("mballa") ||
+          (svgContent && (svgContent.includes("MBALLA ESSOMBA") || svgContent.includes("Polytechnique")));
 
-        const isSorbonneAuthentic =
+        const isUy1Authentic =
           lowerFileName.includes("sample-1") ||
           lowerFileName.includes("authentic") ||
-          lowerFileName.includes("laurent") ||
-          (svgContent && svgContent.includes("Thomas LAURENT"));
+          lowerFileName.includes("tchoua") ||
+          lowerFileName.includes("yaounde") ||
+          (svgContent && (svgContent.includes("Boris TCHOUA") || svgContent.includes("YAOUNDÉ")));
 
         if (isFalsified) {
         parsedAiResult = {
           diplomaData: {
-            studentName: "Marc LEFEBVRE",
-            birthDate: "12 août 1997",
-            institution: "Sorbonne Université",
+            studentName: "Alain BIKOI",
+            birthDate: "12 août 1997 à Douala",
+            institution: "Université de Yaoundé I (UY1)",
             degreeTitle: "Diplôme de Master",
             fieldOfStudy: "Informatique et Systèmes Décisionnels",
             graduationDate: "2023-06-28",
             honors: "Félicitations du Jury",
-            documentId: "SORB-2023-M8921",
-            signatories: ["Pr. Jean-Luc Martinez (Président)", "Mme Hélène Bernard (Recteur)"],
+            documentId: "UY1-2023-M8921",
+            signatories: ["Pr. Remy Sylvestre BOUELET (Recteur)", "Pr. Jean-Bosco TALLA (Doyen)"],
             academicYear: "2022-2023",
-            rawExtractedText: "RÉPUBLIQUE FRANÇAISE - SORBONNE UNIVERSITÉ - DIPLÔME DE MASTER - Est conféré à Monsieur Marc LEFEBVRE. N° ENREGISTREMENT : SORB-2023-M8921.",
+            rawExtractedText: "RÉPUBLIQUE DU CAMEROUN - UNIVERSITÉ DE YAOUNDÉ I - DIPLÔME DE MASTER - Est conféré à Monsieur Alain BIKOI. N° ENREGISTREMENT : UY1-2023-M8921.",
           },
           forensicAnalysis: {
             hasOfficialSealOrStamp: true,
-            sealDetails: "Sceau officiel de la Sorbonne présent mais document altéré.",
+            sealDetails: "Sceau officiel de l'Université de Yaoundé I présent mais document altéré.",
             hasSignatures: true,
             signaturesCount: 2,
             fontInconsistenciesDetected: true,
-            fontDetails: "Alerte critique : Le nom 'Marc LEFEBVRE' est incrusté en police Arial sans empattement, en rupture totale avec la typographie Times New Roman officielle du document.",
+            fontDetails: "Alerte critique : Le nom 'Alain BIKOI' est incrusté en police Arial sans empattement, en rupture totale avec la typographie Times New Roman officielle du parchemin de l'Université de Yaoundé I.",
             digitalArtifactsDetected: true,
             artifactDetails: "Traces manifestes de retouche numérique : calque masquant rectangulaire (#EAE5D5) superposé au titulaire d'origine avec bordure d'altération détectée.",
             dateInconsistencies: false,
@@ -2398,7 +2422,7 @@ Réponds uniquement en JSON valide conforme au format suivant :
             {
               id: "zone_alteration_nom",
               label: "Altération typographique & Calque masquant",
-              description: "Le nom 'Marc LEFEBVRE' a été incrusté en police Arial sans empattement sur un rectangle de masquage (#EAE5D5) en rupture avec la maquette originale.",
+              description: "Le nom 'Alain BIKOI' a été incrusté en police Arial sans empattement sur un rectangle de masquage (#EAE5D5) en rupture avec la maquette originale.",
               severity: "CRITICAL",
               boundingBox: {
                 top: 54.0,
@@ -2411,7 +2435,7 @@ Réponds uniquement en JSON valide conforme au format suivant :
             {
               id: "zone_conflit_registre",
               label: "Usurpation de numéro d'enregistrement",
-              description: "Le matricule 'SORB-2023-M8921' appartient officiellement à Thomas Laurent dans le registre national.",
+              description: "Le matricule 'UY1-2023-M8921' appartient officiellement à Boris TCHOUA dans le registre national du MINESUP.",
               severity: "CRITICAL",
               boundingBox: {
                 top: 71.0,
@@ -2438,9 +2462,9 @@ Réponds uniquement en JSON valide conforme au format suivant :
           signatureForensics: [
             {
               id: "sig_1",
-              label: "Signature 1 (Président)",
-              signatoryName: "Pr. Jean-Luc Martinez",
-              role: "Président de l'Université",
+              label: "Signature 1 (Recteur)",
+              signatoryName: "Pr. Remy Sylvestre BOUELET",
+              role: "Recteur de l'Université",
               boundingBox: { top: 82, left: 18, width: 22, height: 12 },
               strokePressure: {
                 averagePressure: 72,
@@ -2456,11 +2480,11 @@ Réponds uniquement en JSON valide conforme au format suivant :
                 observations: "Alerte pression : Largeur de trait figée (2.5px constant). Absence totale de modulation physiologique des pleins et déliés. Caractéristique typique d'une reproduction numérique vectorielle ou d'un calque copié-collé.",
               },
               comparisonWithReference: {
-                matchedModelId: "REF-SORB-MARTINEZ",
-                signatoryName: "Pr. Jean-Luc Martinez",
-                signatoryTitle: "Président de Sorbonne Université",
-                institution: "Sorbonne Université",
-                referenceRegistryId: "ARCH-SIG-SORB-001",
+                matchedModelId: "REF-UY1-BOUELET",
+                signatoryName: "Pr. Remy Sylvestre BOUELET",
+                signatoryTitle: "Recteur de l'Université de Yaoundé I",
+                institution: "Université de Yaoundé I (UY1)",
+                referenceRegistryId: "ARCH-SIG-UY1-001",
                 morphologicalSimilarityScore: 68.4,
                 slantAngleDegrees: 14,
                 referenceSlantAngleDegrees: 14,
@@ -2473,9 +2497,9 @@ Réponds uniquement en JSON valide conforme au format suivant :
             },
             {
               id: "sig_2",
-              label: "Signature 2 (Chancelier)",
-              signatoryName: "Mme Hélène Bernard",
-              role: "Recteur de l'Académie",
+              label: "Signature 2 (Doyen)",
+              signatoryName: "Pr. Jean-Bosco TALLA",
+              role: "Doyen de la Faculté des Sciences",
               boundingBox: { top: 82, left: 68, width: 22, height: 12 },
               strokePressure: {
                 averagePressure: 64,
@@ -2491,11 +2515,11 @@ Réponds uniquement en JSON valide conforme au format suivant :
                 observations: "Anomalie de tracé : profil de pression anormalement plat avec micro-artefacts de découpage logiciel.",
               },
               comparisonWithReference: {
-                matchedModelId: "REF-SORB-BERNARD",
-                signatoryName: "Mme Hélène Bernard",
-                signatoryTitle: "Recteur de l'Académie, Chancelier des Universités",
-                institution: "Académie de Paris (Sorbonne)",
-                referenceRegistryId: "ARCH-SIG-RECT-002",
+                matchedModelId: "REF-UY1-TALLA",
+                signatoryName: "Pr. Jean-Bosco TALLA",
+                signatoryTitle: "Doyen de la Faculté des Sciences",
+                institution: "Université de Yaoundé I (UY1)",
+                referenceRegistryId: "ARCH-SIG-UY1-002",
                 morphologicalSimilarityScore: 64.1,
                 slantAngleDegrees: 18,
                 referenceSlantAngleDegrees: 18,
@@ -2511,39 +2535,39 @@ Réponds uniquement en JSON valide conforme au format suivant :
       } else if (isPolytechnique) {
         parsedAiResult = {
           diplomaData: {
-            studentName: "Camille DUPONT",
-            birthDate: "21 novembre 1999",
-            institution: "École Polytechnique",
-            degreeTitle: "Diplôme d'Ingénieur",
-            fieldOfStudy: "Mathématiques Appliquées et Science des Données",
+            studentName: "Danielle MBALLA ESSOMBA",
+            birthDate: "21 novembre 1999 à Douala",
+            institution: "École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)",
+            degreeTitle: "Diplôme d'Ingénieur de Conception",
+            fieldOfStudy: "Génie Informatique & Télécommunications",
             graduationDate: "2022-07-15",
             honors: "Félicitations du Jury",
-            documentId: "X-2022-ING-0412",
-            signatories: ["Pr. Éric Labaye (Président)", "Dr. Yves Laszlo (Directeur)"],
+            documentId: "ENSPY-2022-ING-0412",
+            signatories: ["Pr. Guy Edgar NOUBISSI (Directeur)", "Dr. Thomas TCHAMO (Directeur des Études)"],
             academicYear: "2021-2022",
-            rawExtractedText: "RÉPUBLIQUE FRANÇAISE - ÉCOLE POLYTECHNIQUE - DIPLÔME D'INGÉNIEUR - Conférant le grade de Master à Madame Camille DUPONT. N° X-2022-ING-0412.",
+            rawExtractedText: "RÉPUBLIQUE DU CAMEROUN - ÉCOLE NATIONALE SUPÉRIEURE POLYTECHNIQUE DE YAOUNDÉ - DIPLÔME D'INGÉNIEUR DE CONCEPTION - Délivré à Madame Danielle MBALLA ESSOMBA. N° ENSPY-2022-ING-0412.",
           },
           forensicAnalysis: {
             hasOfficialSealOrStamp: true,
-            sealDetails: "Sceau officiel de l'École Polytechnique net et conforme avec devise d'État.",
+            sealDetails: "Sceau officiel de l'ENSPY net et conforme avec devise 'Ingenio et Labore'.",
             hasSignatures: true,
             signaturesCount: 2,
             fontInconsistenciesDetected: false,
             fontDetails: "Polices et graisses uniformes conformes aux standards de l'Imprimerie Nationale.",
             digitalArtifactsDetected: false,
-            artifactDetails: "Intégrité des pixels 100% validée, texture de parchemin homogène.",
+            artifactDetails: "Intégrité des pixels 100% validée, texture de parchemin académique homogène.",
             dateInconsistencies: false,
             dateDetails: "Calendrier académique régulier et conforme.",
-            securityFeaturesDetected: ["Sceau officiel d'État", "Devise républicaine", "Double signature certifiée", "Numéro de matricule central"],
+            securityFeaturesDetected: ["Sceau officiel de l'ENSPY", "Armoiries nationales", "Double signature certifiée", "Numéro de matricule central"],
             layoutAuthenticityScore: 99,
             ocrConfidence: 99,
           },
           signatureForensics: [
             {
               id: "sig_1",
-              label: "Signature 1 (Président)",
-              signatoryName: "Pr. Éric Labaye",
-              role: "Président de l'École Polytechnique",
+              label: "Signature 1 (Directeur ENSPY)",
+              signatoryName: "Pr. Guy Edgar NOUBISSI",
+              role: "Directeur de l'ENSPY",
               boundingBox: { top: 82, left: 16, width: 22, height: 12 },
               strokePressure: {
                 averagePressure: 74,
@@ -2556,29 +2580,29 @@ Réponds uniquement en JSON valide conforme au format suivant :
                 penLiftsCount: 2,
                 hesitationDetected: false,
                 isDigitalReplication: false,
-                observations: "Modulation de pression vigoureuse et naturelle, conforme au geste manuscrit du Pr. Labaye. Déliés ascendants déchargés et appuis verticaux fermes.",
+                observations: "Modulation de pression vigoureuse et naturelle, conforme au geste manuscrit du Pr. NOUBISSI. Déliés ascendants déchargés et appuis verticaux fermes.",
               },
               comparisonWithReference: {
-                matchedModelId: "REF-X-LABAYE",
-                signatoryName: "Pr. Éric Labaye",
-                signatoryTitle: "Président de l'École Polytechnique",
-                institution: "École Polytechnique",
-                referenceRegistryId: "ARCH-SIG-X-001",
+                matchedModelId: "REF-ENSPY-NOUBISSI",
+                signatoryName: "Pr. Guy Edgar NOUBISSI",
+                signatoryTitle: "Directeur de l'École Nationale Supérieure Polytechnique de Yaoundé",
+                institution: "École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)",
+                referenceRegistryId: "ARCH-SIG-ENSPY-001",
                 morphologicalSimilarityScore: 98.1,
                 slantAngleDegrees: 12,
                 referenceSlantAngleDegrees: 12,
                 proportionsMatchScore: 98.5,
                 strokeTrajectoryAlignment: 97.4,
                 verdict: "AUTHENTIQUE_CONFORME",
-                technicalDetails: "Concordance biométrique parfaite avec le modèle de commandement déposé au Ministère des Armées.",
+                technicalDetails: "Concordance biométrique parfaite avec le modèle de commandement déposé au Ministère de l'Enseignement Supérieur.",
               },
               status: "CONFORME",
             },
             {
               id: "sig_2",
-              label: "Signature 2 (Directeur Enseignement)",
-              signatoryName: "Dr. Yves Laszlo",
-              role: "Directeur de l'Enseignement",
+              label: "Signature 2 (Directeur des Études)",
+              signatoryName: "Dr. Thomas TCHAMO",
+              role: "Directeur des Études",
               boundingBox: { top: 82, left: 68, width: 22, height: 12 },
               strokePressure: {
                 averagePressure: 68,
@@ -2594,11 +2618,11 @@ Réponds uniquement en JSON valide conforme au format suivant :
                 observations: "Dépôt d'encre régulier et modulation continue des pleins et déliés.",
               },
               comparisonWithReference: {
-                matchedModelId: "REF-X-LASZLO",
-                signatoryName: "Dr. Yves Laszlo",
-                signatoryTitle: "Directeur de l'Enseignement et de la Recherche",
-                institution: "École Polytechnique",
-                referenceRegistryId: "ARCH-SIG-X-002",
+                matchedModelId: "REF-ENSPY-TCHAMO",
+                signatoryName: "Dr. Thomas TCHAMO",
+                signatoryTitle: "Directeur des Études de l'ENSPY",
+                institution: "École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)",
+                referenceRegistryId: "ARCH-SIG-ENSPY-002",
                 morphologicalSimilarityScore: 96.6,
                 slantAngleDegrees: 16,
                 referenceSlantAngleDegrees: 16,
@@ -2612,26 +2636,26 @@ Réponds uniquement en JSON valide conforme au format suivant :
           ],
           aiVerdict: "VALIDE",
           aiConfidenceScore: 99,
-          aiSummaryObservation: "Diplôme d'ingénieur authentique et intègre. Sceau d'État, signatures manuscrites à pression dynamique conforme et matricule régulier.",
+          aiSummaryObservation: "Diplôme d'ingénieur authentique et intègre délivré par l'ENSPY Yaoundé. Sceau d'État, signatures manuscrites à pression dynamique conforme et matricule régulier.",
         };
-      } else if (isSorbonneAuthentic) {
+      } else if (isUy1Authentic) {
         parsedAiResult = {
           diplomaData: {
-            studentName: "Thomas LAURENT",
-            birthDate: "14 mai 1999",
-            institution: "Sorbonne Université",
+            studentName: "Boris TCHOUA",
+            birthDate: "14 mai 1999 à Yaoundé",
+            institution: "Université de Yaoundé I (UY1)",
             degreeTitle: "Diplôme de Master",
             fieldOfStudy: "Informatique et Systèmes Décisionnels",
             graduationDate: "2023-06-28",
             honors: "Mention Très Bien",
-            documentId: "SORB-2023-M8921",
-            signatories: ["Pr. Jean-Luc Martinez (Président)", "Mme Hélène Bernard (Recteur)"],
+            documentId: "UY1-2023-M8921",
+            signatories: ["Pr. Remy Sylvestre BOUELET (Recteur)", "Pr. Jean-Bosco TALLA (Doyen)"],
             academicYear: "2022-2023",
-            rawExtractedText: "RÉPUBLIQUE FRANÇAISE - SORBONNE UNIVERSITÉ - DIPLÔME DE MASTER - Est conféré à Monsieur Thomas LAURENT. N° ENREGISTREMENT : SORB-2023-M8921.",
+            rawExtractedText: "RÉPUBLIQUE DU CAMEROUN - UNIVERSITÉ DE YAOUNDÉ I - DIPLÔME DE MASTER - Est décerné à Monsieur Boris TCHOUA. N° ENREGISTREMENT : UY1-2023-M8921.",
           },
           forensicAnalysis: {
             hasOfficialSealOrStamp: true,
-            sealDetails: "Sceau officiel Sorbonne Université intact et certifié.",
+            sealDetails: "Sceau officiel Université de Yaoundé I intact et certifié au Grand Registre National.",
             hasSignatures: true,
             signaturesCount: 2,
             fontInconsistenciesDetected: false,
@@ -2640,16 +2664,16 @@ Réponds uniquement en JSON valide conforme au format suivant :
             artifactDetails: "Fond guilloché continu, absence d'altération.",
             dateInconsistencies: false,
             dateDetails: "Date de délivrance conforme à la session d'examens de juin.",
-            securityFeaturesDetected: ["Sceau officiel doré", "Motifs guillochés de sécurité", "Double signature autorité", "Numéro d'enregistrement officiel"],
+            securityFeaturesDetected: ["Sceau officiel vert et or", "Motifs guillochés de sécurité", "Double signature autorité", "Numéro d'enregistrement officiel"],
             layoutAuthenticityScore: 98,
             ocrConfidence: 98,
           },
           signatureForensics: [
             {
               id: "sig_1",
-              label: "Signature 1 (Président)",
-              signatoryName: "Pr. Jean-Luc Martinez",
-              role: "Président de l'Université",
+              label: "Signature 1 (Recteur)",
+              signatoryName: "Pr. Remy Sylvestre BOUELET",
+              role: "Recteur de l'Université",
               boundingBox: { top: 82, left: 18, width: 22, height: 12 },
               strokePressure: {
                 averagePressure: 68,
@@ -2665,11 +2689,11 @@ Réponds uniquement en JSON valide conforme au format suivant :
                 observations: "Modulation de pression hautement dynamique. Accélération naturelle en entrée de trait, fort appui sur la hampe descendante et effilement continu de l'encre sur les déliés ascendants.",
               },
               comparisonWithReference: {
-                matchedModelId: "REF-SORB-MARTINEZ",
-                signatoryName: "Pr. Jean-Luc Martinez",
-                signatoryTitle: "Président de Sorbonne Université",
-                institution: "Sorbonne Université",
-                referenceRegistryId: "ARCH-SIG-SORB-001",
+                matchedModelId: "REF-UY1-BOUELET",
+                signatoryName: "Pr. Remy Sylvestre BOUELET",
+                signatoryTitle: "Recteur de l'Université de Yaoundé I",
+                institution: "Université de Yaoundé I (UY1)",
+                referenceRegistryId: "ARCH-SIG-UY1-001",
                 morphologicalSimilarityScore: 97.4,
                 slantAngleDegrees: 14,
                 referenceSlantAngleDegrees: 14,
@@ -2682,9 +2706,9 @@ Réponds uniquement en JSON valide conforme au format suivant :
             },
             {
               id: "sig_2",
-              label: "Signature 2 (Chancelier)",
-              signatoryName: "Mme Hélène Bernard",
-              role: "Recteur de l'Académie",
+              label: "Signature 2 (Doyen)",
+              signatoryName: "Pr. Jean-Bosco TALLA",
+              role: "Doyen de la Faculté des Sciences",
               boundingBox: { top: 82, left: 68, width: 22, height: 12 },
               strokePressure: {
                 averagePressure: 66,
@@ -2700,11 +2724,11 @@ Réponds uniquement en JSON valide conforme au format suivant :
                 observations: "Geste d'écriture authentique attesté. Modulation sinusoïdale de la pression parfaitement concordante avec la dynamique naturelle du signataire.",
               },
               comparisonWithReference: {
-                matchedModelId: "REF-SORB-BERNARD",
-                signatoryName: "Mme Hélène Bernard",
-                signatoryTitle: "Recteur de l'Académie, Chancelier des Universités",
-                institution: "Académie de Paris (Sorbonne)",
-                referenceRegistryId: "ARCH-SIG-RECT-002",
+                matchedModelId: "REF-UY1-TALLA",
+                signatoryName: "Pr. Jean-Bosco TALLA",
+                signatoryTitle: "Doyen de la Faculté des Sciences",
+                institution: "Université de Yaoundé I (UY1)",
+                referenceRegistryId: "ARCH-SIG-UY1-002",
                 morphologicalSimilarityScore: 96.2,
                 slantAngleDegrees: 18,
                 referenceSlantAngleDegrees: 18,
@@ -2718,7 +2742,7 @@ Réponds uniquement en JSON valide conforme au format suivant :
           ],
           aiVerdict: "VALIDE",
           aiConfidenceScore: 98,
-          aiSummaryObservation: "Document authentique de grade de Master délivré par Sorbonne Université. Signatures manuscrites certifiées conformes.",
+          aiSummaryObservation: "Document authentique de grade de Master délivré par l'Université de Yaoundé I. Signatures manuscrites certifiées conformes.",
         };
       } else {
         // NON-SAMPLE DOCUMENT: Strict check if academic terms are present via OCR
@@ -2896,9 +2920,9 @@ Réponds uniquement en JSON valide conforme au format suivant :
               : "Modulation de pression hautement dynamique avec pleins descendants appuyés et déliés ascendants effilés.",
           },
           comparisonWithReference: {
-            matchedModelId: isFirst ? "REF-SORB-MARTINEZ" : "REF-SORB-BERNARD",
+            matchedModelId: isFirst ? "REF-UY1-BOUELET" : "REF-UY1-TALLA",
             signatoryName: sigStr.replace(/\(.*?\)/g, "").trim(),
-            signatoryTitle: isFirst ? "Président d'Université" : "Recteur d'Académie",
+            signatoryTitle: isFirst ? "Recteur de l'Université" : "Doyen de Faculté",
             institution: diplomaData.institution || "Établissement officiel",
             referenceRegistryId: `ARCH-SIG-00${idx + 1}`,
             morphologicalSimilarityScore: isSuspectDoc ? 68.5 : 96.5,
@@ -3252,6 +3276,9 @@ async function startServer() {
     const distPath = path.join(process.cwd(), "dist");
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
+      if (req.path.startsWith("/api/")) {
+        return res.status(404).json({ error: "Endpoint API introuvable." });
+      }
       res.sendFile(path.join(distPath, "index.html"));
     });
   }

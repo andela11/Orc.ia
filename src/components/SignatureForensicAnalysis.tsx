@@ -10,19 +10,82 @@ interface SignatureForensicAnalysisProps {
 
 export const SignatureForensicAnalysis: React.FC<SignatureForensicAnalysisProps> = ({
   signatures,
-  institution = 'Sorbonne Université',
+  institution = 'Université de Yaoundé I (UY1)',
   isFalsifiedDoc = false,
 }) => {
   // Default fallback signatures if not provided by backend
+  const isPoly = institution.includes('Polytechnique') || institution.includes('ENSPY');
+  const isIai = institution.includes('IAI');
+
+  const sig1Name = isPoly
+    ? 'Pr. Guy Edgar NOUBISSI'
+    : isIai
+    ? 'Armand Claude ABANDA'
+    : 'Pr. Remy Sylvestre BOUELET';
+
+  const sig1Role = isPoly
+    ? "Directeur de l'ENSPY"
+    : isIai
+    ? "Représentant Résident IAI"
+    : "Recteur de l'Université";
+
+  const sig1Title = isPoly
+    ? "Directeur de l'École Nationale Supérieure Polytechnique de Yaoundé"
+    : isIai
+    ? "Représentant Résident IAI-Cameroun"
+    : "Recteur de l'Université de Yaoundé I";
+
+  const sig1ModelId = isPoly
+    ? 'REF-ENSPY-NOUBISSI'
+    : isIai
+    ? 'REF-IAI-ABANDA'
+    : 'REF-UY1-BOUELET';
+
+  const sig1RefId = isPoly
+    ? 'ARCH-SIG-ENSPY-001'
+    : isIai
+    ? 'ARCH-SIG-IAI-002'
+    : 'ARCH-SIG-UY1-001';
+
+  const sig2Name = isPoly
+    ? 'Dr. Thomas TCHAMO'
+    : isIai
+    ? 'Pr. Emmanuel KAMGNIA'
+    : 'Pr. Jean-Bosco TALLA';
+
+  const sig2Role = isPoly
+    ? "Directeur des Études"
+    : isIai
+    ? "Président du Jury"
+    : "Doyen de la Faculté des Sciences";
+
+  const sig2Title = isPoly
+    ? "Directeur des Études de l'ENSPY"
+    : isIai
+    ? "Président du Jury Académique"
+    : "Doyen de la Faculté des Sciences (UY1)";
+
+  const sig2ModelId = isPoly
+    ? 'REF-ENSPY-TCHAMO'
+    : isIai
+    ? 'REF-IAI-KAMGNIA'
+    : 'REF-UY1-TALLA';
+
+  const sig2RefId = isPoly
+    ? 'ARCH-SIG-ENSPY-002'
+    : isIai
+    ? 'ARCH-SIG-IAI-003'
+    : 'ARCH-SIG-UY1-002';
+
   const defaultSignatures: ExtractedSignatureAnalysis[] = [
     {
       id: 'sig-1',
-      label: 'Signature 1 (Président)',
-      signatoryName: institution.includes('Polytechnique') ? 'Pr. Éric Labaye' : 'Pr. Jean-Luc Martinez',
-      role: institution.includes('Polytechnique') ? 'Président de l\'École Polytechnique' : 'Président de l\'Université',
+      label: 'Signature 1 (Autorité Principale)',
+      signatoryName: sig1Name,
+      role: sig1Role,
       institution: institution,
       boundingBox: { top: 82, left: 18, width: 22, height: 12 },
-      extractedPathSvg: institution.includes('Polytechnique')
+      extractedPathSvg: isPoly
         ? 'M 5 25 Q 35 10 65 30 T 115 20 Q 135 35 150 15 Q 130 40 100 35 T 70 42 Q 105 48 140 32'
         : isFalsifiedDoc
         ? 'M 10 30 Q 35 5 70 25 T 120 15 Q 140 35 110 40' // Digital copy with no pressure modulation
@@ -56,11 +119,11 @@ export const SignatureForensicAnalysis: React.FC<SignatureForensicAnalysisProps>
           },
       comparisonWithReference: isFalsifiedDoc
         ? {
-            matchedModelId: 'REF-SORB-MARTINEZ',
-            signatoryName: 'Pr. Jean-Luc Martinez',
-            signatoryTitle: 'Président de Sorbonne Université',
-            institution: 'Sorbonne Université',
-            referenceRegistryId: 'ARCH-SIG-SORB-001',
+            matchedModelId: sig1ModelId,
+            signatoryName: sig1Name,
+            signatoryTitle: sig1Title,
+            institution: institution,
+            referenceRegistryId: sig1RefId,
             morphologicalSimilarityScore: 68.4,
             slantAngleDegrees: 14,
             referenceSlantAngleDegrees: 14,
@@ -70,14 +133,14 @@ export const SignatureForensicAnalysis: React.FC<SignatureForensicAnalysisProps>
             technicalDetails: 'Concordance géométrique superficielle mais falsification physique : la pression de trait est totalement plane et dépourvue de la cinématique biométrique du signataire officiel.',
           }
         : {
-            matchedModelId: institution.includes('Polytechnique') ? 'REF-X-LABAYE' : 'REF-SORB-MARTINEZ',
-            signatoryName: institution.includes('Polytechnique') ? 'Pr. Éric Labaye' : 'Pr. Jean-Luc Martinez',
-            signatoryTitle: institution.includes('Polytechnique') ? 'Président de l\'École Polytechnique' : 'Président de Sorbonne Université',
+            matchedModelId: sig1ModelId,
+            signatoryName: sig1Name,
+            signatoryTitle: sig1Title,
             institution: institution,
-            referenceRegistryId: institution.includes('Polytechnique') ? 'ARCH-SIG-X-001' : 'ARCH-SIG-SORB-001',
+            referenceRegistryId: sig1RefId,
             morphologicalSimilarityScore: 97.4,
-            slantAngleDegrees: institution.includes('Polytechnique') ? 12 : 14,
-            referenceSlantAngleDegrees: institution.includes('Polytechnique') ? 12 : 14,
+            slantAngleDegrees: isPoly ? 12 : 14,
+            referenceSlantAngleDegrees: isPoly ? 12 : 14,
             proportionsMatchScore: 98.2,
             strokeTrajectoryAlignment: 96.8,
             verdict: 'AUTHENTIQUE_CONFORME',
@@ -87,12 +150,12 @@ export const SignatureForensicAnalysis: React.FC<SignatureForensicAnalysisProps>
     },
     {
       id: 'sig-2',
-      label: 'Signature 2 (Chancelier / Direction)',
-      signatoryName: institution.includes('Polytechnique') ? 'Dr. Yves Laszlo' : 'Mme Hélène Bernard',
-      role: institution.includes('Polytechnique') ? 'Directeur de l\'Enseignement' : 'Recteur de l\'Académie',
+      label: 'Signature 2 (Direction Académique)',
+      signatoryName: sig2Name,
+      role: sig2Role,
       institution: institution,
       boundingBox: { top: 82, left: 68, width: 22, height: 12 },
-      extractedPathSvg: institution.includes('Polytechnique')
+      extractedPathSvg: isPoly
         ? 'M 5 30 Q 35 45 75 15 T 125 35 Q 145 15 155 30 Q 135 42 110 38 T 80 44 Q 120 48 150 25'
         : 'M 10 25 Q 40 40 80 15 T 130 30 Q 150 10 160 25 Q 145 42 120 38 T 85 45 Q 115 50 155 35',
       strokePressure: {
@@ -113,14 +176,14 @@ export const SignatureForensicAnalysis: React.FC<SignatureForensicAnalysisProps>
           : 'Geste d\'écriture authentique attesté. Modulation sinusoïdale de la pression parfaitement concordante avec la dynamique naturelle du signataire.',
       },
       comparisonWithReference: {
-        matchedModelId: institution.includes('Polytechnique') ? 'REF-X-LASZLO' : 'REF-SORB-BERNARD',
-        signatoryName: institution.includes('Polytechnique') ? 'Dr. Yves Laszlo' : 'Mme Hélène Bernard',
-        signatoryTitle: institution.includes('Polytechnique') ? 'Directeur de l\'Enseignement' : 'Recteur de l\'Académie',
+        matchedModelId: sig2ModelId,
+        signatoryName: sig2Name,
+        signatoryTitle: sig2Title,
         institution: institution,
-        referenceRegistryId: institution.includes('Polytechnique') ? 'ARCH-SIG-X-002' : 'ARCH-SIG-RECT-002',
+        referenceRegistryId: sig2RefId,
         morphologicalSimilarityScore: isFalsifiedDoc ? 64.1 : 96.2,
-        slantAngleDegrees: institution.includes('Polytechnique') ? 16 : 18,
-        referenceSlantAngleDegrees: institution.includes('Polytechnique') ? 16 : 18,
+        slantAngleDegrees: isPoly ? 16 : 18,
+        referenceSlantAngleDegrees: isPoly ? 16 : 18,
         proportionsMatchScore: isFalsifiedDoc ? 78 : 95.8,
         strokeTrajectoryAlignment: isFalsifiedDoc ? 66.5 : 97.1,
         verdict: isFalsifiedDoc ? 'SUSPECT_PRESSION_UNIFORME' : 'AUTHENTIQUE_CONFORME',

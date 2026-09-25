@@ -28,9 +28,9 @@ export const RegistryComparisonModal: React.FC<RegistryComparisonModalProps> = (
     if (falsifiedSample) {
       list.push({
         id: 'REG-FRAUD-SAMPLE',
-        documentId: 'SORB-2023-M8921 (FALSIFIÉ)',
-        studentName: 'Marc Lefebvre (Altéré / Usurpateur)',
-        institution: 'Sorbonne Université',
+        documentId: 'UY1-2023-M8921 (FALSIFIÉ)',
+        studentName: 'Alain BIKOI (Altéré / Usurpateur)',
+        institution: 'Université de Yaoundé I (UY1)',
         degreeTitle: 'Master en Informatique (Typo altérée)',
         fieldOfStudy: 'Informatique Décisionnelle',
         issueDate: '2023-06-28',

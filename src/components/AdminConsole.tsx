@@ -543,9 +543,9 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
         hour: '2-digit',
         minute: '2-digit',
       }),
-      instructeur: user?.fullName || 'Dr. Alexandre Vernier',
+      instructeur: user?.fullName || 'Dr. Paulin EKANGA',
       qualiteInstructeur: user?.role === 'ADMIN' ? 'Administrateur National du Registre Académique' : 'Analyste Médico-Légal',
-      destinataire: 'Monsieur le Procureur de la République près le Tribunal de Grande Instance',
+      destinataire: 'Monsieur le Procureur de la République près le Tribunal de Première Instance de Yaoundé - Centre Administratif',
       sha256: hashRecord.sha256,
       motifFraude: hashRecord.reason,
       tentativesDetectees: hashRecord.totalSubmissionAttempts,
@@ -662,7 +662,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
               Supervision Nationale & Gestion des Établissements Partenaires
             </h2>
             <p className="text-xs text-slate-600 mt-0.5">
-              Contrôle d'accès des universités (IAI, Sorbonne, Polytechnique), registres certifiés, gestion RBAC et réquisitions judiciaires.
+              Contrôle d'accès des universités (IAI-Cameroun, Université de Yaoundé I, ENSPY, OBC), registres certifiés, gestion RBAC et réquisitions judiciaires.
             </p>
           </div>
 
@@ -671,7 +671,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
             <div className="text-right">
               <div className="text-[11px] font-semibold text-slate-900 flex items-center gap-1 justify-end">
                 <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                {user?.fullName || 'Dr. Alexandre Vernier'}
+                {user?.fullName || 'Dr. Paulin EKANGA'}
               </div>
               <div className="text-[10px] text-slate-500">
                 Rôle : <span className="font-bold text-slate-700">{user?.role || 'ADMIN'}</span>
@@ -942,7 +942,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                     <div className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
                     <div>
                       <div className="text-xs font-semibold text-slate-900">Cloisonnement Partenaire Multi-Universités</div>
-                      <div className="text-[11px] text-slate-500">Partitionnement strict : IAI, Sorbonne, Polytechnique, OBC</div>
+                      <div className="text-[11px] text-slate-500">Partitionnement strict : IAI-Cameroun, Université de Yaoundé I, ENSPY, OBC</div>
                     </div>
                   </div>
                   <span className="text-xs font-mono px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 font-semibold">
@@ -2364,7 +2364,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                   <label className="block font-semibold text-slate-700 mb-1">Nom du Titulaire Usurpé</label>
                   <input
                     type="text"
-                    placeholder="Ex: Marc LEFEBVRE"
+                    placeholder="Ex: Alain BIKOI"
                     value={newBlacklistEntry.studentName}
                     onChange={(e) => setNewBlacklistEntry({ ...newBlacklistEntry, studentName: e.target.value })}
                     className="w-full rounded-lg border border-slate-200 p-2 text-xs"
@@ -2374,7 +2374,7 @@ export const AdminConsole: React.FC<AdminConsoleProps> = ({
                   <label className="block font-semibold text-slate-700 mb-1">Établissement Visé</label>
                   <input
                     type="text"
-                    placeholder="Ex: Sorbonne Université"
+                    placeholder="Ex: Université de Yaoundé I"
                     value={newBlacklistEntry.institution}
                     onChange={(e) => setNewBlacklistEntry({ ...newBlacklistEntry, institution: e.target.value })}
                     className="w-full rounded-lg border border-slate-200 p-2 text-xs"

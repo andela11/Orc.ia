@@ -58,7 +58,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   const [regUsername, setRegUsername] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regRole, setRegRole] = useState<UserRole>('VERIFICATEUR');
-  const [regOrganization, setRegOrganization] = useState('Sorbonne Université');
+  const [regOrganization, setRegOrganization] = useState('Université de Yaoundé I (UY1)');
   const [regDepartment, setRegDepartment] = useState('Direction de la Scolarité & Diplômes');
   const [regPassword, setRegPassword] = useState('');
   const [regConfirmPassword, setRegConfirmPassword] = useState('');
@@ -85,10 +85,10 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         onSuccess(res.user.role);
       } else {
         const lower = email.trim().toLowerCase();
-        if (lower.includes('alexandre.vernier') || lower.includes('admin')) {
+        if (lower.includes('ekanga') || lower.includes('admin')) {
           onSuccess('ADMIN');
         } else if (
-          lower.includes('dupuis') ||
+          lower.includes('essomba') ||
           lower.includes('police') ||
           lower.includes('enqueteur') ||
           lower.includes('analyste')
@@ -373,7 +373,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      placeholder="ex: agent@univ.fr ou identifiant officiel"
+                      placeholder="ex: p.ekanga, agent@uy1.cm ou identifiant"
                       className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
                     />
                   </div>
@@ -658,7 +658,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                           required
                           value={forgotIdentifier}
                           onChange={(e) => setForgotIdentifier(e.target.value)}
-                          placeholder="ex: admin, claire.fontaine ou agent@univ.fr"
+                          placeholder="ex: admin, p.ekanga ou agent@minesup.gov.cm"
                           className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all"
                         />
                       </div>

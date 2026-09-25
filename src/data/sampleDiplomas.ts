@@ -72,8 +72,8 @@ export interface SampleDiploma {
   rawSvg: string;
 }
 
-// 1. Diplôme Authentique Conforme (Sorbonne Université)
-const authenticSorbonneSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
+// 1. Diplôme Authentique Conforme (Université de Yaoundé I)
+const authenticUy1Svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
   <defs>
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FCFCFA" />
@@ -94,68 +94,74 @@ const authenticSorbonneSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0
   <rect width="1000" height="700" fill="url(#bgGrad)" />
   <rect x="25" y="25" width="950" height="650" fill="url(#guilloche)" />
 
-  <!-- Bordure Décorative Officielle -->
-  <rect x="20" y="20" width="960" height="660" fill="none" stroke="#8A7338" stroke-width="4" />
-  <rect x="28" y="28" width="944" height="644" fill="none" stroke="#2C3E50" stroke-width="1.5" />
-  <rect x="34" y="34" width="932" height="632" fill="none" stroke="#8A7338" stroke-width="0.8" stroke-dasharray="6,3" />
+  <!-- Bordure Décorative Officielle aux Couleurs Nationales -->
+  <rect x="20" y="20" width="960" height="660" fill="none" stroke="#047857" stroke-width="4" />
+  <rect x="28" y="28" width="944" height="644" fill="none" stroke="#B45309" stroke-width="1.5" />
+  <rect x="34" y="34" width="932" height="632" fill="none" stroke="#047857" stroke-width="0.8" stroke-dasharray="6,3" />
 
   <!-- Coins décoratifs -->
-  <circle cx="28" cy="28" r="6" fill="#AA771C" />
-  <circle cx="972" cy="28" r="6" fill="#AA771C" />
-  <circle cx="28" cy="672" r="6" fill="#AA771C" />
-  <circle cx="972" cy="672" r="6" fill="#AA771C" />
+  <circle cx="28" cy="28" r="6" fill="#B45309" />
+  <circle cx="972" cy="28" r="6" fill="#B45309" />
+  <circle cx="28" cy="672" r="6" fill="#B45309" />
+  <circle cx="972" cy="672" r="6" fill="#B45309" />
 
-  <!-- En-tête de la République -->
-  <text x="500" y="75" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="15" letter-spacing="4" fill="#555" font-weight="bold">RÉPUBLIQUE FRANÇAISE</text>
-  <text x="500" y="98" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="13" letter-spacing="2" fill="#777">MINISTÈRE DE L'ENSEIGNEMENT SUPÉRIEUR ET DE LA RECHERCHE</text>
+  <!-- En-tête Officiel Bilingue République du Cameroun -->
+  <text x="230" y="65" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="11" font-weight="bold" fill="#1E293B">RÉPUBLIQUE DU CAMEROUN</text>
+  <text x="230" y="80" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="9" fill="#64748B">Paix - Travail - Patrie</text>
+
+  <text x="770" y="65" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="11" font-weight="bold" fill="#1E293B">REPUBLIC OF CAMEROON</text>
+  <text x="770" y="80" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="9" fill="#64748B">Peace - Work - Fatherland</text>
+
+  <text x="500" y="102" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="12" letter-spacing="1.5" fill="#475569" font-weight="bold">MINISTÈRE DE L'ENSEIGNEMENT SUPÉRIEUR (MINESUP)</text>
 
   <!-- Université Émettrice -->
-  <text x="500" y="150" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="34" font-weight="bold" fill="#0C2340" letter-spacing="3">SORBONNE UNIVERSITÉ</text>
-  <line x1="320" y1="168" x2="680" y2="168" stroke="#D4AF37" stroke-width="2" />
+  <text x="500" y="148" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="32" font-weight="bold" fill="#047857" letter-spacing="2">UNIVERSITÉ DE YAOUNDÉ I</text>
+  <text x="500" y="170" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="14" fill="#334155" font-style="italic">Faculté des Sciences • Département d'Informatique</text>
+  <line x1="320" y1="182" x2="680" y2="182" stroke="#B45309" stroke-width="2" />
 
-  <text x="500" y="215" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="18" fill="#333" font-style="italic">Le Recteur de l'Académie, Chancelier des Universités</text>
-  <text x="500" y="240" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="14" fill="#444">Vu le Code de l'Éducation et les délibérations du jury réuni le 28 juin 2023,</text>
+  <text x="500" y="215" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="15" fill="#333" font-style="italic">Le Recteur de l'Université et le Doyen de la Faculté des Sciences</text>
+  <text x="500" y="238" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="13" fill="#444">Vu le procès-verbal des délibérations du jury académique réuni le 28 juin 2023,</text>
 
   <!-- Titre du Diplôme -->
-  <text x="500" y="295" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="28" font-weight="bold" fill="#7F1D1D" letter-spacing="2">DIPLÔME DE MASTER</text>
-  <text x="500" y="325" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="16" fill="#222">Domaine : Sciences, Technologies, Santé</text>
-  <text x="500" y="350" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="17" font-weight="bold" fill="#0C2340">Mention : Informatique et Systèmes Décisionnels</text>
+  <text x="500" y="290" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="28" font-weight="bold" fill="#B91C1C" letter-spacing="2">DIPLÔME DE MASTER</text>
+  <text x="500" y="320" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="16" fill="#222">Domaine : Sciences et Technologies</text>
+  <text x="500" y="345" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="17" font-weight="bold" fill="#047857">Mention : Informatique et Systèmes Décisionnels</text>
 
   <!-- Titulaire du Diplôme -->
-  <text x="500" y="405" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="16" fill="#333">Est conféré à :</text>
-  <text x="500" y="445" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="30" font-weight="bold" fill="#111827" letter-spacing="1">Monsieur Thomas LAURENT</text>
-  <text x="500" y="475" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="15" fill="#444">Né le 14 mai 1999 à Paris (75) • Mention : Très Bien</text>
+  <text x="500" y="400" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="15" fill="#333">Est décerné à :</text>
+  <text x="500" y="440" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="30" font-weight="bold" fill="#111827" letter-spacing="1">Monsieur Boris TCHOUA</text>
+  <text x="500" y="470" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="14" fill="#444">Né le 14 mai 1999 à Yaoundé • Matricule : 18U0421 • Mention : Très Bien</text>
 
   <!-- Références et Numéro d'enregistrement -->
-  <text x="120" y="535" font-family="Courier, monospace" font-size="13" font-weight="bold" fill="#334155">N° ENREGISTREMENT : SORB-2023-M8921</text>
-  <text x="120" y="555" font-family="'Times New Roman', Georgia, serif" font-size="13" fill="#64748B">Délivré à Paris, le 28 juin 2023</text>
+  <text x="120" y="535" font-family="Courier, monospace" font-size="13" font-weight="bold" fill="#334155">N° ENREGISTREMENT : UY1-2023-M8921</text>
+  <text x="120" y="555" font-family="'Times New Roman', Georgia, serif" font-size="13" fill="#64748B">Délivré à Yaoundé, le 28 juin 2023</text>
 
   <!-- Sceau Officiel Rouge Doré -->
-  <g transform="translate(500, 570)">
-    <circle cx="0" cy="0" r="50" fill="#991B1B" opacity="0.9" />
-    <circle cx="0" cy="0" r="44" fill="none" stroke="#D4AF37" stroke-width="2" stroke-dasharray="3,2" />
-    <circle cx="0" cy="0" r="38" fill="none" stroke="#D4AF37" stroke-width="1" />
-    <text x="0" y="-18" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8" fill="#FDE68A" font-weight="bold" letter-spacing="1">SORBONNE</text>
-    <text x="0" y="-4" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7" fill="#FDE68A">★ UNIVERSITÉ ★</text>
-    <text x="0" y="10" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8" fill="#FDE68A" font-weight="bold">SCEAU OFFICIEL</text>
-    <text x="0" y="24" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7" fill="#FDE68A">1257 - 2023</text>
+  <g transform="translate(500, 565)">
+    <circle cx="0" cy="0" r="50" fill="#047857" opacity="0.95" />
+    <circle cx="0" cy="0" r="44" fill="none" stroke="#FDE68A" stroke-width="2" stroke-dasharray="3,2" />
+    <circle cx="0" cy="0" r="38" fill="none" stroke="#FDE68A" stroke-width="1" />
+    <text x="0" y="-18" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7.5" fill="#FDE68A" font-weight="bold" letter-spacing="1">UNIVERSITÉ DE YAOUNDÉ I</text>
+    <text x="0" y="-4" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7" fill="#FDE68A">★ RECTORAT ★</text>
+    <text x="0" y="10" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7.5" fill="#FDE68A" font-weight="bold">SCEAU OFFICIEL</text>
+    <text x="0" y="24" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7" fill="#FDE68A">1962 - 2023</text>
   </g>
 
   <!-- Signatures -->
-  <g transform="translate(180, 600)">
-    <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="13" font-weight="bold" fill="#1E293B">Le Président de l'Université</text>
-    <path d="M 10 30 Q 35 5 70 25 T 120 15 Q 140 35 110 40" fill="none" stroke="#1E3A8A" stroke-width="2.5" />
-    <text x="10" y="45" font-family="'Times New Roman', serif" font-size="11" fill="#64748B" font-style="italic">Pr. Jean-Luc Martinez</text>
+  <g transform="translate(180, 595)">
+    <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="12" font-weight="bold" fill="#1E293B">Le Recteur de l'Université</text>
+    <path d="M 10 30 Q 35 5 70 25 T 120 15 Q 140 35 110 40" fill="none" stroke="#047857" stroke-width="2.5" />
+    <text x="10" y="45" font-family="'Times New Roman', serif" font-size="11" fill="#64748B" font-style="italic">Pr. Remy Sylvestre BOUELET</text>
   </g>
 
-  <g transform="translate(720, 600)">
-    <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="13" font-weight="bold" fill="#1E293B">Le Recteur de l'Académie</text>
-    <path d="M 10 25 Q 40 40 80 15 T 130 30 Q 150 10 160 25" fill="none" stroke="#1E3A8A" stroke-width="2.5" />
-    <text x="10" y="45" font-family="'Times New Roman', serif" font-size="11" fill="#64748B" font-style="italic">Mme Hélène Bernard</text>
+  <g transform="translate(720, 595)">
+    <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="12" font-weight="bold" fill="#1E293B">Le Doyen de la Faculté</text>
+    <path d="M 10 25 Q 40 40 80 15 T 130 30 Q 150 10 160 25" fill="none" stroke="#047857" stroke-width="2.5" />
+    <text x="10" y="45" font-family="'Times New Roman', serif" font-size="11" fill="#64748B" font-style="italic">Pr. Jean-Bosco TALLA</text>
   </g>
 </svg>`;
 
-// 2. Diplôme Falsifié (Nom altéré avec police discordante "Marc LEFEBVRE" + Altération ELA)
+// 2. Diplôme Falsifié (Nom altéré avec police discordante "Alain BIKOI" + Usurpation Matricule UY1)
 const falsifiedDiplomaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
   <defs>
     <linearGradient id="bgGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -167,99 +173,111 @@ const falsifiedDiplomaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 
   <rect width="1000" height="700" fill="url(#bgGrad2)" />
 
   <!-- Bordure -->
-  <rect x="20" y="20" width="960" height="660" fill="none" stroke="#8A7338" stroke-width="4" />
-  <rect x="28" y="28" width="944" height="644" fill="none" stroke="#2C3E50" stroke-width="1.5" />
+  <rect x="20" y="20" width="960" height="660" fill="none" stroke="#047857" stroke-width="4" />
+  <rect x="28" y="28" width="944" height="644" fill="none" stroke="#B45309" stroke-width="1.5" />
 
-  <!-- En-tête -->
-  <text x="500" y="75" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="15" letter-spacing="4" fill="#555" font-weight="bold">RÉPUBLIQUE FRANÇAISE</text>
-  <text x="500" y="98" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="13" letter-spacing="2" fill="#777">MINISTÈRE DE L'ENSEIGNEMENT SUPÉRIEUR ET DE LA RECHERCHE</text>
+  <!-- En-tête Bilingue Cameroun -->
+  <text x="230" y="65" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="11" font-weight="bold" fill="#1E293B">RÉPUBLIQUE DU CAMEROUN</text>
+  <text x="230" y="80" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="9" fill="#64748B">Paix - Travail - Patrie</text>
 
-  <text x="500" y="150" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="34" font-weight="bold" fill="#0C2340" letter-spacing="3">SORBONNE UNIVERSITÉ</text>
-  <line x1="320" y1="168" x2="680" y2="168" stroke="#D4AF37" stroke-width="2" />
+  <text x="770" y="65" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="11" font-weight="bold" fill="#1E293B">REPUBLIC OF CAMEROON</text>
+  <text x="770" y="80" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="9" fill="#64748B">Peace - Work - Fatherland</text>
 
-  <text x="500" y="215" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="18" fill="#333" font-style="italic">Le Recteur de l'Académie, Chancelier des Universités</text>
-  <text x="500" y="240" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="14" fill="#444">Vu le Code de l'Éducation et les délibérations du jury réuni le 28 juin 2023,</text>
+  <text x="500" y="102" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="12" letter-spacing="1.5" fill="#475569" font-weight="bold">MINISTÈRE DE L'ENSEIGNEMENT SUPÉRIEUR (MINESUP)</text>
 
-  <text x="500" y="295" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="28" font-weight="bold" fill="#7F1D1D" letter-spacing="2">DIPLÔME DE MASTER</text>
-  <text x="500" y="325" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="16" fill="#222">Domaine : Sciences, Technologies, Santé</text>
-  <text x="500" y="350" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="17" font-weight="bold" fill="#0C2340">Mention : Informatique et Systèmes Décisionnels</text>
+  <text x="500" y="148" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="32" font-weight="bold" fill="#047857" letter-spacing="2">UNIVERSITÉ DE YAOUNDÉ I</text>
+  <text x="500" y="170" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="14" fill="#334155" font-style="italic">Faculté des Sciences • Département d'Informatique</text>
+  <line x1="320" y1="182" x2="680" y2="182" stroke="#B45309" stroke-width="2" />
 
-  <text x="500" y="405" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="16" fill="#333">Est conféré à :</text>
+  <text x="500" y="215" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="15" fill="#333" font-style="italic">Le Recteur de l'Université et le Doyen de la Faculté des Sciences</text>
+  <text x="500" y="238" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="13" fill="#444">Vu le procès-verbal des délibérations du jury académique réuni le 28 juin 2023,</text>
+
+  <text x="500" y="290" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="28" font-weight="bold" fill="#B91C1C" letter-spacing="2">DIPLÔME DE MASTER</text>
+  <text x="500" y="320" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="16" fill="#222">Domaine : Sciences et Technologies</text>
+  <text x="500" y="345" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="17" font-weight="bold" fill="#047857">Mention : Informatique et Systèmes Décisionnels</text>
+
+  <text x="500" y="400" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="15" fill="#333">Est conféré à :</text>
 
   <!-- Zone Altérée avec Artefact Flou & Police Discordante (Arial au lieu de Times) -->
   <rect x="260" y="415" width="480" height="42" fill="#EAE5D5" rx="3" opacity="0.75" />
   <rect x="256" y="412" width="488" height="48" fill="none" stroke="#DC2626" stroke-width="1.5" stroke-dasharray="4,3" opacity="0.8" />
-  <text x="500" y="445" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="bold" fill="#000000" letter-spacing="0">Monsieur Marc LEFEBVRE</text>
+  <text x="500" y="445" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="27" font-weight="bold" fill="#000000" letter-spacing="0">Monsieur Alain BIKOI</text>
 
-  <text x="500" y="475" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="15" fill="#444">Né le 12 août 1997 à Lyon (69) • Mention : Félicitations du Jury</text>
+  <text x="500" y="475" text-anchor="middle" font-family="'Times New Roman', Georgia, serif" font-size="14" fill="#444">Né le 12 août 1997 à Douala • Mention : Félicitations du Jury</text>
 
-  <!-- Numéro d'enregistrement volé à Thomas Laurent -->
-  <text x="120" y="535" font-family="Courier, monospace" font-size="13" font-weight="bold" fill="#334155">N° ENREGISTREMENT : SORB-2023-M8921</text>
-  <text x="120" y="555" font-family="'Times New Roman', Georgia, serif" font-size="13" fill="#64748B">Délivré à Paris, le 28 juin 2023</text>
+  <!-- Numéro d'enregistrement volé à Boris TCHOUA -->
+  <text x="120" y="535" font-family="Courier, monospace" font-size="13" font-weight="bold" fill="#334155">N° ENREGISTREMENT : UY1-2023-M8921</text>
+  <text x="120" y="555" font-family="'Times New Roman', Georgia, serif" font-size="13" fill="#64748B">Délivré à Yaoundé, le 28 juin 2023</text>
 
   <!-- Sceau -->
-  <g transform="translate(500, 570)">
-    <circle cx="0" cy="0" r="50" fill="#991B1B" opacity="0.9" />
-    <circle cx="0" cy="0" r="44" fill="none" stroke="#D4AF37" stroke-width="2" stroke-dasharray="3,2" />
+  <g transform="translate(500, 565)">
+    <circle cx="0" cy="0" r="50" fill="#047857" opacity="0.95" />
+    <circle cx="0" cy="0" r="44" fill="none" stroke="#FDE68A" stroke-width="2" stroke-dasharray="3,2" />
     <text x="0" y="5" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8" fill="#FDE68A" font-weight="bold">SCEAU OFFICIEL</text>
   </g>
 
   <!-- Signatures -->
-  <g transform="translate(180, 600)">
-    <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="13" font-weight="bold" fill="#1E293B">Le Président de l'Université</text>
-    <path d="M 10 30 Q 35 5 70 25 T 120 15 Q 140 35 110 40" fill="none" stroke="#1E3A8A" stroke-width="2.5" />
+  <g transform="translate(180, 595)">
+    <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="12" font-weight="bold" fill="#1E293B">Le Recteur de l'Université</text>
+    <path d="M 10 30 Q 35 5 70 25 T 120 15 Q 140 35 110 40" fill="none" stroke="#047857" stroke-width="2.5" />
   </g>
 
-  <g transform="translate(720, 600)">
-    <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="13" font-weight="bold" fill="#1E293B">Le Recteur de l'Académie</text>
-    <path d="M 10 25 Q 40 40 80 15 T 130 30 Q 150 10 160 25" fill="none" stroke="#1E3A8A" stroke-width="2.5" />
+  <g transform="translate(720, 595)">
+    <text x="0" y="0" font-family="'Times New Roman', Georgia, serif" font-size="12" font-weight="bold" fill="#1E293B">Le Doyen de la Faculté</text>
+    <path d="M 10 25 Q 40 40 80 15 T 130 30 Q 150 10 160 25" fill="none" stroke="#047857" stroke-width="2.5" />
   </g>
 </svg>`;
 
-// 3. Diplôme Polytechnique (Authentique Ingénieur - Camille Dupont)
+// 3. Diplôme Polytechnique (Authentique Ingénieur ENSPY Yaoundé - Danielle MBALLA ESSOMBA)
 const authenticPolytechniqueSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
   <rect width="1000" height="700" fill="#FAF9F6" />
   <rect x="25" y="25" width="950" height="650" fill="none" stroke="#B45309" stroke-width="3" />
   <rect x="32" y="32" width="936" height="636" fill="none" stroke="#1E3A8A" stroke-width="1.5" />
 
-  <text x="500" y="80" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" letter-spacing="4" fill="#666" font-weight="bold">RÉPUBLIQUE FRANÇAISE</text>
-  <text x="500" y="105" text-anchor="middle" font-family="'Times New Roman', serif" font-size="12" letter-spacing="2" fill="#888">MINISTÈRE DES ARMÉES & MINISTÈRE DE L'ENSEIGNEMENT SUPÉRIEUR</text>
+  <!-- En-tête Bilingue Cameroun -->
+  <text x="230" y="65" text-anchor="middle" font-family="'Times New Roman', serif" font-size="11" font-weight="bold" fill="#1E293B">RÉPUBLIQUE DU CAMEROUN</text>
+  <text x="230" y="80" text-anchor="middle" font-family="'Times New Roman', serif" font-size="9" fill="#64748B">Paix - Travail - Patrie</text>
 
-  <text x="500" y="160" text-anchor="middle" font-family="'Times New Roman', serif" font-size="32" font-weight="bold" fill="#0B1325" letter-spacing="2">ÉCOLE POLYTECHNIQUE</text>
-  <text x="500" y="185" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" fill="#4B5563" letter-spacing="1">INSTITUT POLYTECHNIQUE DE PARIS</text>
-  <line x1="350" y1="200" x2="650" y2="200" stroke="#B45309" stroke-width="2" />
+  <text x="770" y="65" text-anchor="middle" font-family="'Times New Roman', serif" font-size="11" font-weight="bold" fill="#1E293B">REPUBLIC OF CAMEROON</text>
+  <text x="770" y="80" text-anchor="middle" font-family="'Times New Roman', serif" font-size="9" fill="#64748B">Peace - Work - Fatherland</text>
 
-  <text x="500" y="260" text-anchor="middle" font-family="'Times New Roman', serif" font-size="26" font-weight="bold" fill="#1E3A8A">DIPLÔME D'INGÉNIEUR</text>
-  <text x="500" y="295" text-anchor="middle" font-family="'Times New Roman', serif" font-size="16" fill="#374151">Conférant le grade de Master</text>
-  <text x="500" y="325" text-anchor="middle" font-family="'Times New Roman', serif" font-size="17" font-weight="bold" fill="#0B1325">Spécialité : Mathématiques Appliquées et Science des Données</text>
+  <text x="500" y="100" text-anchor="middle" font-family="'Times New Roman', serif" font-size="12" letter-spacing="2" fill="#4B5563">MINISTÈRE DE L'ENSEIGNEMENT SUPÉRIEUR • UNIVERSITÉ DE YAOUNDÉ I</text>
 
-  <text x="500" y="380" text-anchor="middle" font-family="'Times New Roman', serif" font-size="15" fill="#4B5563">Délivré à :</text>
-  <text x="500" y="420" text-anchor="middle" font-family="'Times New Roman', serif" font-size="29" font-weight="bold" fill="#111827">Madame Camille DUPONT</text>
-  <text x="500" y="450" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" fill="#4B5563">Née le 21 novembre 1999 • Promotion X2019 • Félicitations du Jury</text>
+  <text x="500" y="150" text-anchor="middle" font-family="'Times New Roman', serif" font-size="26" font-weight="bold" fill="#0B1325" letter-spacing="1.5">ÉCOLE NATIONALE SUPÉRIEURE POLYTECHNIQUE DE YAOUNDÉ</text>
+  <text x="500" y="175" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" fill="#B45309" letter-spacing="1">ENSPY — INGENIO ET LABORE</text>
+  <line x1="320" y1="190" x2="680" y2="190" stroke="#B45309" stroke-width="2" />
 
-  <text x="120" y="520" font-family="Courier, monospace" font-size="13" font-weight="bold" fill="#334155">NUMÉRO D'ENREGISTREMENT : X-2022-ING-0412</text>
-  <text x="120" y="540" font-family="'Times New Roman', serif" font-size="13" fill="#64748B">Fait à Palaiseau, le 15 juillet 2022</text>
+  <text x="500" y="245" text-anchor="middle" font-family="'Times New Roman', serif" font-size="26" font-weight="bold" fill="#1E3A8A">DIPLÔME D'INGÉNIEUR DE CONCEPTION</text>
+  <text x="500" y="275" text-anchor="middle" font-family="'Times New Roman', serif" font-size="15" fill="#374151">Grade conféré : Master en Sciences de l'Ingénieur</text>
+  <text x="500" y="305" text-anchor="middle" font-family="'Times New Roman', serif" font-size="16" font-weight="bold" fill="#0B1325">Spécialité : Génie Informatique &amp; Télécommunications</text>
 
-  <!-- Sceau Polytechnique -->
+  <text x="500" y="365" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" fill="#4B5563">Délivré à :</text>
+  <text x="500" y="405" text-anchor="middle" font-family="'Times New Roman', serif" font-size="28" font-weight="bold" fill="#111827">Madame Danielle MBALLA ESSOMBA</text>
+  <text x="500" y="435" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" fill="#4B5563">Née le 21 novembre 1999 à Douala • Promotion ENSPY 2022 • Félicitations du Jury</text>
+
+  <text x="120" y="515" font-family="Courier, monospace" font-size="13" font-weight="bold" fill="#334155">NUMÉRO D'ENREGISTREMENT : ENSPY-2022-ING-0412</text>
+  <text x="120" y="535" font-family="'Times New Roman', serif" font-size="13" fill="#64748B">Fait à Yaoundé, le 15 juillet 2022</text>
+
+  <!-- Sceau Polytechnique ENSPY -->
   <g transform="translate(500, 560)">
     <circle cx="0" cy="0" r="48" fill="#1E3A8A" />
     <circle cx="0" cy="0" r="42" fill="none" stroke="#FDE68A" stroke-width="2" />
-    <text x="0" y="-8" text-anchor="middle" font-family="'Times New Roman', serif" font-size="9" fill="#FFF" font-weight="bold">POUR LA PATRIE</text>
-    <text x="0" y="6" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8" fill="#FDE68A">LES SCIENCES ET LA GLOIRE</text>
-    <text x="0" y="20" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8" fill="#FFF">SCEAU DE L'ÉCOLE</text>
+    <text x="0" y="-8" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8.5" fill="#FFF" font-weight="bold">ENSPY YAOUNDÉ</text>
+    <text x="0" y="6" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7.5" fill="#FDE68A">INGENIO ET LABORE</text>
+    <text x="0" y="20" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7.5" fill="#FFF">SCEAU OFFICIEL</text>
   </g>
 
   <!-- Signatures -->
   <g transform="translate(180, 595)">
-    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="13" font-weight="bold" fill="#1E293B">Le Président de l'École Polytechnique</text>
+    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" fill="#1E293B">Le Directeur de l'ENSPY</text>
     <path d="M 5 25 Q 35 10 65 30 T 115 20 Q 135 35 150 15" fill="none" stroke="#047857" stroke-width="2.5" />
-    <text x="5" y="40" font-family="'Times New Roman', serif" font-size="11" fill="#64748B">Pr. Éric Labaye</text>
+    <text x="5" y="40" font-family="'Times New Roman', serif" font-size="10.5" fill="#64748B">Pr. Guy Edgar NOUBISSI</text>
   </g>
 
   <g transform="translate(700, 595)">
-    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="13" font-weight="bold" fill="#1E293B">Le Directeur de l'Enseignement</text>
+    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" fill="#1E293B">Le Directeur des Études</text>
     <path d="M 5 30 Q 35 45 75 15 T 125 35 Q 145 15 155 30" fill="none" stroke="#047857" stroke-width="2.5" />
-    <text x="5" y="40" font-family="'Times New Roman', serif" font-size="11" fill="#64748B">Dr. Yves Laszlo</text>
+    <text x="5" y="40" font-family="'Times New Roman', serif" font-size="10.5" fill="#64748B">Dr. Thomas TCHAMO</text>
   </g>
 </svg>`;
 
@@ -430,26 +448,26 @@ const medicalCertificateSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="
   <rect x="25" y="25" width="950" height="650" fill="none" stroke="#0284C7" stroke-width="2" />
   <rect x="32" y="32" width="936" height="636" fill="none" stroke="#E2E8F0" stroke-width="1" />
 
-  <!-- En-tête Cabinet Médical -->
+  <!-- En-tête Cabinet Médical Yaoundé Bastos -->
   <g transform="translate(80, 70)">
     <rect x="0" y="8" width="30" height="10" fill="#0284C7" rx="2" />
     <rect x="10" y="-2" width="10" height="30" fill="#0284C7" rx="2" />
-    <text x="45" y="16" font-family="'Times New Roman', serif" font-size="18" font-weight="bold" fill="#0F172A">CABINET MÉDICAL DE CONSULTATION GÉNÉRALE</text>
-    <text x="45" y="34" font-family="sans-serif" font-size="12" fill="#475569">Dr. Antoine DELACROIX — Docteur en Médecine • Ordre des Médecins N° 75/48912</text>
-    <text x="45" y="50" font-family="sans-serif" font-size="11" fill="#64748B">14, Rue de la Santé • 75013 Paris • Tél : 01 42 68 00 19</text>
+    <text x="45" y="16" font-family="'Times New Roman', serif" font-size="18" font-weight="bold" fill="#0F172A">CABINET MÉDICAL DE BASTOS — YAOUNDÉ</text>
+    <text x="45" y="34" font-family="sans-serif" font-size="12" fill="#475569">Dr. Jean-Baptiste FOTSO — Docteur en Médecine • Ordre National des Médecins N° ONMC/3891</text>
+    <text x="45" y="50" font-family="sans-serif" font-size="11" fill="#64748B">Avenue Rosa Parks, Bastos • Yaoundé • Tél : (+237) 222 20 18 45</text>
   </g>
 
   <line x1="80" y1="140" x2="920" y2="140" stroke="#0284C7" stroke-width="2" />
 
   <!-- Titre Document -->
   <text x="500" y="200" text-anchor="middle" font-family="'Times New Roman', serif" font-size="28" font-weight="bold" fill="#0369A1" letter-spacing="2">CERTIFICAT MÉDICAL</text>
-  <text x="500" y="225" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748B">Dispensé en application du Code de la Santé Publique</text>
+  <text x="500" y="225" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#64748B">Délivré en application des dispositions déontologiques en vigueur</text>
 
   <!-- Corps de texte médical -->
   <g transform="translate(100, 280)">
-    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="16" fill="#1E293B">Je soussigné, Docteur Antoine DELACROIX, certifie avoir examiné ce jour :</text>
-    <text x="0" y="45" font-family="'Times New Roman', serif" font-size="18" font-weight="bold" fill="#0F172A">Monsieur Éric DUMONT</text>
-    <text x="0" y="70" font-family="sans-serif" font-size="14" fill="#334155">Né le 12 mai 1994, domicilié à Paris.</text>
+    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="16" fill="#1E293B">Je soussigné, Docteur Jean-Baptiste FOTSO, certifie avoir examiné ce jour :</text>
+    <text x="0" y="45" font-family="'Times New Roman', serif" font-size="18" font-weight="bold" fill="#0F172A">Monsieur Marc ETONG</text>
+    <text x="0" y="70" font-family="sans-serif" font-size="14" fill="#334155">Né le 12 mai 1994, résidant à Yaoundé.</text>
     <text x="0" y="120" font-family="'Times New Roman', serif" font-size="16" fill="#1E293B">Et constate que son état de santé nécessite un :</text>
     <text x="0" y="155" font-family="'Times New Roman', serif" font-size="20" font-weight="bold" fill="#DC2626">REPOS MÉDICAL STRICT DE QUINZE (15) JOURS</text>
     <text x="0" y="190" font-family="'Times New Roman', serif" font-size="15" fill="#334155">avec arrêt de travail et contre-indication absolue à toute activité sportive ou professionnelle.</text>
@@ -458,11 +476,11 @@ const medicalCertificateSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="
 
   <!-- Tampon et signature du médecin -->
   <g transform="translate(680, 520)">
-    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="14" fill="#1E293B">Fait à Paris, le 18 octobre 2024</text>
+    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="14" fill="#1E293B">Fait à Yaoundé, le 18 octobre 2024</text>
     <circle cx="80" cy="65" r="50" fill="none" stroke="#0369A1" stroke-width="2" stroke-dasharray="4,2" />
-    <text x="80" y="55" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="bold" fill="#0369A1">DR. A. DELACROIX</text>
+    <text x="80" y="55" text-anchor="middle" font-family="sans-serif" font-size="9" font-weight="bold" fill="#0369A1">DR. J-B. FOTSO</text>
     <text x="80" y="70" text-anchor="middle" font-family="sans-serif" font-size="8" fill="#0369A1">MÉDECINE GÉNÉRALE</text>
-    <text x="80" y="83" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#0369A1">RPPS : 10003892812</text>
+    <text x="80" y="83" text-anchor="middle" font-family="sans-serif" font-size="7" fill="#0369A1">ONMC : 3891/CMR</text>
     <path d="M40,75 Q80,25 110,65 T140,55" fill="none" stroke="#0F172A" stroke-width="2.2" />
   </g>
 </svg>`;
@@ -482,46 +500,46 @@ export const SAMPLE_DIPLOMAS: SampleDiploma[] = [
   },
   {
     id: 'sample-1-authentic',
-    name: 'Diplôme Authentique Certifié (Sorbonne)',
-    institution: 'Sorbonne Université',
+    name: 'Diplôme Authentique Certifié (Université de Yaoundé I)',
+    institution: 'Université de Yaoundé I (UY1)',
     degreeTitle: 'Master Informatique & Systèmes Décisionnels',
-    studentName: 'Thomas LAURENT',
+    studentName: 'Boris TCHOUA',
     expectedStatus: 'AUTHENTIQUE',
-    scenarioDescription: 'Document original complet avec sceau d\'État, signatures régulières et correspondance 100% dans le registre officiel (SORB-2023-M8921).',
+    scenarioDescription: 'Document original complet avec sceau officiel du Rectorat, signatures régulières et correspondance 100% dans le registre officiel (UY1-2023-M8921).',
     badgeLabel: 'Test Réussite (100% Valide)',
-    svgDataUrl: svgToDataUrl(authenticSorbonneSvg),
-    rawSvg: authenticSorbonneSvg,
+    svgDataUrl: svgToDataUrl(authenticUy1Svg),
+    rawSvg: authenticUy1Svg,
   },
   {
     id: 'sample-2-falsified',
-    name: 'Diplôme Falsifié (Fraude Détectée)',
-    institution: 'Sorbonne Université',
+    name: 'Diplôme Falsifié (Fraude Détectée - Nom Altéré)',
+    institution: 'Université de Yaoundé I (UY1)',
     degreeTitle: 'Master Informatique',
-    studentName: 'Marc LEFEBVRE (Altéré)',
+    studentName: 'Alain BIKOI (Altéré)',
     expectedStatus: 'FALSIFIE',
-    scenarioDescription: 'Altération frauduleuse du nom avec police Arial discordante, flou de calque numérique et usurpation du numéro de série appartenant à Thomas Laurent.',
+    scenarioDescription: 'Altération frauduleuse du nom avec police Arial discordante, flou de calque numérique (#EAE5D5) et usurpation du numéro de série UY1-2023-M8921 appartenant à Boris TCHOUA.',
     badgeLabel: 'Test Fraude (Détection Immédiate)',
     svgDataUrl: svgToDataUrl(falsifiedDiplomaSvg),
     rawSvg: falsifiedDiplomaSvg,
   },
   {
     id: 'sample-3-polytechnique',
-    name: 'Diplôme d\'Ingénieur Grande École',
-    institution: 'École Polytechnique',
-    degreeTitle: 'Diplôme d\'Ingénieur de l\'École Polytechnique',
-    studentName: 'Camille DUPONT',
+    name: 'Diplôme d\'Ingénieur Polytechnique (ENSPY Yaoundé)',
+    institution: 'École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)',
+    degreeTitle: 'Diplôme d\'Ingénieur de Conception (Génie Informatique)',
+    studentName: 'Danielle MBALLA ESSOMBA',
     expectedStatus: 'AUTHENTIQUE',
-    scenarioDescription: 'Titre d\'ingénieur certifié au registre central (X-2022-ING-0412) avec devise républicaine et sceau militaire officiel.',
-    badgeLabel: 'Test Grande École',
+    scenarioDescription: 'Titre d\'ingénieur certifié au registre central (ENSPY-2022-ING-0412) avec armoiries officielles et sceau académique.',
+    badgeLabel: 'Test ENSPY Yaoundé',
     svgDataUrl: svgToDataUrl(authenticPolytechniqueSvg),
     rawSvg: authenticPolytechniqueSvg,
   },
   {
     id: 'sample-5-medical',
     name: 'Document Médical (Certificat Médical)',
-    institution: 'Non applicable (Cabinet Médical)',
+    institution: 'Non applicable (Cabinet Médical Bastos)',
     degreeTitle: 'Aucun diplôme (Santé)',
-    studentName: 'Éric DUMONT (Patient)',
+    studentName: 'Marc ETONG (Patient)',
     expectedStatus: 'NON_CONFORME',
     scenarioDescription: 'Certificat médical de repos. Permet de vérifier que la plateforme rejette formellement tout document non académique conformément à son périmètre exclusif.',
     badgeLabel: 'Test Exclusion (Certificat Médical)',

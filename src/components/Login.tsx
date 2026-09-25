@@ -350,7 +350,7 @@ export const Login: React.FC<LoginProps> = ({
                         required
                         value={regFullName}
                         onChange={(e) => setRegFullName(e.target.value)}
-                        placeholder="Ex: Pr. Éléonore Martin"
+                        placeholder="Ex: Pr. Jeanne MVONDO"
                         className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg text-slate-900 focus:outline-hidden focus:border-emerald-500"
                       />
                     </div>
@@ -365,7 +365,7 @@ export const Login: React.FC<LoginProps> = ({
                           required
                           value={regEmail}
                           onChange={(e) => setRegEmail(e.target.value)}
-                          placeholder="agent@univ.fr"
+                          placeholder="j.mvondo@uy1.cm"
                           className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg text-slate-900 focus:outline-hidden focus:border-emerald-500"
                         />
                       </div>
@@ -378,7 +378,7 @@ export const Login: React.FC<LoginProps> = ({
                           required
                           value={regUsername}
                           onChange={(e) => setRegUsername(e.target.value)}
-                          placeholder="emartin"
+                          placeholder="jmvondo"
                           className="w-full text-xs px-3 py-2 border border-slate-200 rounded-lg text-slate-900 focus:outline-hidden focus:border-emerald-500"
                         />
                       </div>

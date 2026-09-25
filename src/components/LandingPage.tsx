@@ -61,11 +61,11 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
 
   const partnerUniversities = [
     { name: 'IAI-Cameroun', jurisdiction: 'CEMAC / MINESUP', archives: '1 420 titres', hash: 'a8f9...31c0' },
-    { name: 'Sorbonne Université', jurisdiction: 'Académie de Paris', archives: '3 890 titres', hash: 'c39a...38e0' },
-    { name: 'École Polytechnique', jurisdiction: 'CTI / IP Paris', archives: '2 150 titres', hash: 'e51b...44a1' },
+    { name: 'Université de Yaoundé I', jurisdiction: 'UY1 / MINESUP Cameroun', archives: '3 890 titres', hash: 'c39a...38e0' },
+    { name: 'École Polytechnique de Yaoundé', jurisdiction: 'ENSPY / MINESUP Cameroun', archives: '2 150 titres', hash: 'e51b...44a1' },
     { name: 'Office du Baccalauréat', jurisdiction: 'MINESEC Cameroun', archives: '8 400 titres', hash: 'b22d...91ff' },
-    { name: 'Université Paris-Saclay', jurisdiction: 'MESR France', archives: '2 900 titres', hash: 'f709...2810' },
-    { name: 'HEC Paris', jurisdiction: 'CCI Paris Île-de-France', archives: '1 650 titres', hash: 'd64e...55bc' },
+    { name: 'Université de Douala', jurisdiction: 'UDLA / MINESUP Cameroun', archives: '2 900 titres', hash: 'f709...2810' },
+    { name: 'Université de Dschang', jurisdiction: 'UDs / MINESUP Cameroun', archives: '1 650 titres', hash: 'd64e...55bc' },
   ];
 
   const steps = [
@@ -106,7 +106,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
     },
     {
       q: 'Comment est garantie l’étanchéité des données entre universités ?',
-      a: 'Chaque établissement partenaire opère sur une partition SQLite hermétique chiffrée. Une requête sur un diplôme délivré par l’IAI n’a techniquement aucun accès aux données de la Sorbonne ou de Polytechnique, garantissant une souveraineté absolue.',
+      a: 'Chaque établissement partenaire opère sur une partition SQLite hermétique chiffrée. Une requête sur un diplôme délivré par l’IAI-Cameroun n’a techniquement aucun accès aux données de l’Université de Yaoundé I ou de l’ENSPY, garantissant une souveraineté absolue.',
     },
   ];
 
@@ -363,7 +363,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
                     : 'bg-white text-slate-700 border-slate-300 hover:border-slate-800'
                 }`}
               >
-                [ CAS 2 : CONTREFAÇON SORBONNE ]
+                [ CAS 2 : CONTREFAÇON FALSIFIÉE (UY1) ]
               </button>
               <button
                 type="button"
@@ -422,14 +422,17 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
                     className="relative z-10 w-full max-w-sm bg-[#faf8f2] text-slate-900 p-6 border border-red-400 text-center font-serif shadow-lg"
                   >
                     <div className="text-[9px] uppercase tracking-widest font-bold text-red-700">
-                      ACADÉMIE DE PARIS • SORBONNE UNIVERSITÉ
+                      RÉPUBLIQUE DU CAMEROUN • UNIVERSITÉ DE YAOUNDÉ I
                     </div>
                     <div className="text-xs font-bold uppercase tracking-wide text-slate-950 mt-1">
                       MASTER EN SCIENCES INFORMATIQUES
                     </div>
                     <div className="my-2 h-px bg-slate-300 w-20 mx-auto" />
                     <div className="text-[11px] text-slate-800">
-                      Faux matricule : <span className="font-mono text-red-700 font-bold">SORB-9999-FAKE</span>
+                      Titulaire usurpé : <span className="font-bold text-red-700">Alain BIKOI</span>
+                    </div>
+                    <div className="text-[10px] font-mono text-slate-600 mt-0.5">
+                      Matricule usurpé : <span className="font-mono text-red-700 font-bold">UY1-2023-M8921</span>
                     </div>
                     <div className="mt-2 text-[10px] text-red-800 font-sans font-bold bg-red-100/80 p-1 border border-red-300">
                       ANOMALIE : DÉCALAGE TYPOGRAPHIQUE & RETOUCHE FORENSIQUE
@@ -533,7 +536,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
                       Tentative de Falsification Identifiée
                     </div>
                     <p className="text-xs text-red-900 mt-1 leading-relaxed">
-                      Altération vectorielle de la mention d'excellence et absence d'enregistrement dans le registre de la Sorbonne.
+                      Altération vectorielle du nom (Alain BIKOI au lieu de Boris TCHOUA) et conflit d'enregistrement dans le registre central de l'Université de Yaoundé I.
                     </p>
                   </motion.div>
                 )}
@@ -564,13 +567,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onEnterApp, onOpenLogi
                 <div className="p-2.5 flex flex-col xs:flex-row xs:items-center justify-between gap-1 bg-slate-50">
                   <span className="text-slate-500">Établissement émetteur</span>
                   <span className="font-bold text-slate-900 truncate">
-                    {selectedScenario === 'authentic' ? 'IAI-Cameroun' : selectedScenario === 'falsified' ? 'Sorbonne Université (Usurpée)' : 'N/A'}
+                    {selectedScenario === 'authentic' ? 'IAI-Cameroun' : selectedScenario === 'falsified' ? 'Université de Yaoundé I (Usurpée)' : 'N/A'}
                   </span>
                 </div>
                 <div className="p-2.5 flex flex-col xs:flex-row xs:items-center justify-between gap-1">
                   <span className="text-slate-500">Matricule détecté</span>
                   <span className="font-bold text-slate-900 font-mono">
-                    {selectedScenario === 'authentic' ? 'IAI-2023-ING-0412' : selectedScenario === 'falsified' ? 'SORB-9999-FAKE' : 'NON DISPONIBLE'}
+                    {selectedScenario === 'authentic' ? 'IAI-2023-ING-0412' : selectedScenario === 'falsified' ? 'UY1-2023-M8921 (Altéré)' : 'NON DISPONIBLE'}
                   </span>
                 </div>
                 <div className="p-2.5 flex flex-col xs:flex-row xs:items-center justify-between gap-1 bg-slate-50">

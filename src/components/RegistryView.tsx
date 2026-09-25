@@ -65,13 +65,13 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
 
   const handleOpenPresetComparison = (preset: 'fraud' | 'inter-univ') => {
     if (preset === 'fraud') {
-      const sorbonne = registry.find((r) => r.documentId.includes('SORB-2023-M8921')) || registry[0];
-      setComparisonIdA(sorbonne.id);
+      const uy1 = registry.find((r) => r.documentId.includes('UY1-2023-M8921') || r.studentName.toLowerCase().includes('boris')) || registry[0];
+      setComparisonIdA(uy1.id);
       setComparisonIdB('REG-FRAUD-SAMPLE');
     } else {
-      const sorbonne = registry.find((r) => r.institution.includes('Sorbonne')) || registry[0];
-      const poly = registry.find((r) => r.institution.includes('Polytechnique')) || registry[1] || registry[0];
-      setComparisonIdA(sorbonne.id);
+      const uy1 = registry.find((r) => r.institution.toLowerCase().includes('yaoundé') || r.institution.includes('UY1')) || registry[0];
+      const poly = registry.find((r) => r.institution.toLowerCase().includes('polytechnique') || r.institution.includes('ENSPY') || r.institution.includes('IAI')) || registry[1] || registry[0];
+      setComparisonIdA(uy1.id);
       setComparisonIdB(poly.id);
     }
     setIsComparisonOpen(true);
@@ -154,14 +154,14 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
             onClick={() => handleOpenPresetComparison('fraud')}
             className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30 transition-all cursor-pointer shadow-xs"
           >
-            Thomas Laurent (Original) vs Marc Lefebvre (Fraude/Usurpation)
+            Boris TCHOUA (Original) vs Alain BIKOI (Fraude/Usurpation)
           </button>
           <button
             type="button"
             onClick={() => handleOpenPresetComparison('inter-univ')}
             className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-medium text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/30 transition-all cursor-pointer shadow-xs"
           >
-            Sorbonne Université vs École Polytechnique
+            Université de Yaoundé I vs École Polytechnique (ENSPY)
           </button>
         </div>
 
@@ -346,7 +346,7 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
                 <input
                   type="text"
                   required
-                  placeholder="ex: SORB-2024-M9021"
+                  placeholder="ex: UY1-2023-M8921"
                   value={formDocId}
                   onChange={(e) => setFormDocId(e.target.value)}
                   className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-slate-900 focus:outline-none"
@@ -360,7 +360,7 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
                 <input
                   type="text"
                   required
-                  placeholder="ex: Jean Dupont"
+                  placeholder="ex: Boris TCHOUA"
                   value={formStudent}
                   onChange={(e) => setFormStudent(e.target.value)}
                   className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-slate-900 focus:outline-none"
@@ -374,7 +374,7 @@ export const RegistryView: React.FC<RegistryViewProps> = ({
                 <input
                   type="text"
                   required
-                  placeholder="ex: Sorbonne Université, École Polytechnique..."
+                  placeholder="ex: Université de Yaoundé I, ENSPY, IAI-Cameroun..."
                   value={formInstitution}
                   onChange={(e) => setFormInstitution(e.target.value)}
                   className="w-full rounded-lg border border-slate-300 px-3 py-1.5 text-xs text-slate-900 focus:border-slate-900 focus:outline-none"

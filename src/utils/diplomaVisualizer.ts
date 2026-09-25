@@ -15,19 +15,19 @@ function escapeXml(unsafe: string): string {
  * Matches known templates if available, or renders a customized vector diploma.
  */
 export function getDiplomaSvgContent(diploma: RegisteredDiploma): string {
-  // Check if there is an exact match in sample diplomas
+  // Check if there is an exact or template match in sample diplomas
   const sampleMatch = SAMPLE_DIPLOMAS.find(
     (s) =>
+      s.id === diploma.documentId ||
       s.studentName.toLowerCase() === diploma.studentName.toLowerCase() ||
-      s.institution.toLowerCase() === diploma.institution.toLowerCase() &&
-      s.degreeTitle.toLowerCase().includes(diploma.degreeTitle.toLowerCase().substring(0, 10))
+      (s.institution.toLowerCase().includes(diploma.institution.toLowerCase()) &&
+        s.degreeTitle.toLowerCase().includes(diploma.degreeTitle.toLowerCase().substring(0, 10))) ||
+      (diploma.documentId === 'UY1-2023-M8921' && s.id === 'sample-1-authentic') ||
+      (diploma.documentId === 'ENSPY-2022-ING-0412' && s.id === 'sample-3-polytechnique') ||
+      (diploma.documentId.includes('IAI') && s.id === 'sample-iai-cameroun')
   );
 
-  if (sampleMatch && diploma.documentId === 'SORB-2023-M8921') {
-    return sampleMatch.rawSvg;
-  }
-
-  if (sampleMatch && diploma.documentId === 'X-2022-ING-0412') {
+  if (sampleMatch) {
     return sampleMatch.rawSvg;
   }
 
@@ -41,26 +41,35 @@ export function getDiplomaSvgContent(diploma: RegisteredDiploma): string {
   const safeHonors = diploma.honors ? escapeXml(diploma.honors) : 'Mention Bien';
 
   // Palette variation based on institution
-  let primaryColor = '#0F2C59';
-  let accentColor = '#8A7338';
-  let sealColor = '#991B1B';
+  let primaryColor = '#047857';
+  let accentColor = '#B45309';
+  let sealColor = '#047857';
 
-  if (diploma.institution.toLowerCase().includes('polytechnique')) {
+  const instLower = diploma.institution.toLowerCase();
+  if (instLower.includes('polytechnique') || instLower.includes('enspy')) {
     primaryColor = '#0B1325';
     accentColor = '#B45309';
     sealColor = '#1E3A8A';
-  } else if (diploma.institution.toLowerCase().includes('saclay')) {
-    primaryColor = '#1E1B4B';
-    accentColor = '#6366F1';
-    sealColor = '#4338CA';
-  } else if (diploma.institution.toLowerCase().includes('hec')) {
-    primaryColor = '#172554';
+  } else if (instLower.includes('yaoundé') || instLower.includes('uy1')) {
+    primaryColor = '#047857';
+    accentColor = '#B45309';
+    sealColor = '#047857';
+  } else if (instLower.includes('douala')) {
+    primaryColor = '#1E3A8A';
+    accentColor = '#D97706';
+    sealColor = '#1E3A8A';
+  } else if (instLower.includes('buea')) {
+    primaryColor = '#0369A1';
     accentColor = '#CA8A04';
-    sealColor = '#1E40AF';
-  } else if (diploma.institution.toLowerCase().includes('genève')) {
-    primaryColor = '#450A0A';
-    accentColor = '#B91C1C';
-    sealColor = '#991B1B';
+    sealColor = '#0369A1';
+  } else if (instLower.includes('dschang')) {
+    primaryColor = '#15803D';
+    accentColor = '#B45309';
+    sealColor = '#15803D';
+  } else if (instLower.includes('iai')) {
+    primaryColor = '#0F766E';
+    accentColor = '#D97706';
+    sealColor = '#0F766E';
   }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" width="1000" height="700">
@@ -90,15 +99,20 @@ export function getDiplomaSvgContent(diploma: RegisteredDiploma): string {
   <circle cx="27" cy="673" r="5" fill="${accentColor}" />
   <circle cx="973" cy="673" r="5" fill="${accentColor}" />
 
-  <!-- National Heading -->
-  <text x="500" y="76" text-anchor="middle" font-family="'Times New Roman', serif" font-size="14" letter-spacing="4" fill="#4B5563" font-weight="bold">RÉPUBLIQUE FRANÇAISE</text>
-  <text x="500" y="98" text-anchor="middle" font-family="'Times New Roman', serif" font-size="12" letter-spacing="2" fill="#6B7280">MINISTÈRE DE L'ENSEIGNEMENT SUPÉRIEUR ET DE LA RECHERCHE</text>
+  <!-- National Heading (Bilingual Republic of Cameroon) -->
+  <text x="240" y="65" text-anchor="middle" font-family="'Times New Roman', serif" font-size="11" font-weight="bold" fill="#1E293B">RÉPUBLIQUE DU CAMEROUN</text>
+  <text x="240" y="78" text-anchor="middle" font-family="'Times New Roman', serif" font-size="9" fill="#64748B">Paix - Travail - Patrie</text>
+
+  <text x="760" y="65" text-anchor="middle" font-family="'Times New Roman', serif" font-size="11" font-weight="bold" fill="#1E293B">REPUBLIC OF CAMEROON</text>
+  <text x="760" y="78" text-anchor="middle" font-family="'Times New Roman', serif" font-size="9" fill="#64748B">Peace - Work - Fatherland</text>
+
+  <text x="500" y="98" text-anchor="middle" font-family="'Times New Roman', serif" font-size="12" letter-spacing="1.5" fill="#4B5563" font-weight="bold">MINISTÈRE DE L'ENSEIGNEMENT SUPÉRIEUR (MINESUP)</text>
 
   <!-- University / Institution -->
-  <text x="500" y="152" text-anchor="middle" font-family="'Times New Roman', serif" font-size="32" font-weight="bold" fill="${primaryColor}" letter-spacing="2">${safeInst}</text>
+  <text x="500" y="152" text-anchor="middle" font-family="'Times New Roman', serif" font-size="30" font-weight="bold" fill="${primaryColor}" letter-spacing="1.5">${safeInst}</text>
   <line x1="320" y1="168" x2="680" y2="168" stroke="${accentColor}" stroke-width="2" />
 
-  <text x="500" y="215" text-anchor="middle" font-family="'Times New Roman', serif" font-size="16" fill="#374151" font-style="italic">Le Conseil d'Administration et le Jury d'Examen</text>
+  <text x="500" y="215" text-anchor="middle" font-family="'Times New Roman', serif" font-size="15" fill="#374151" font-style="italic">Le Conseil d'Administration et le Jury d'Examen Académique</text>
   <text x="500" y="238" text-anchor="middle" font-family="'Times New Roman', serif" font-size="13" fill="#4B5563">Vu les procès-verbaux de délibérations officiellement arrêtés,</text>
 
   <!-- Degree Title -->
@@ -119,22 +133,22 @@ export function getDiplomaSvgContent(diploma: RegisteredDiploma): string {
     <circle cx="0" cy="0" r="48" fill="${sealColor}" opacity="0.9" />
     <circle cx="0" cy="0" r="42" fill="none" stroke="#FDE68A" stroke-width="1.8" stroke-dasharray="3,2" />
     <circle cx="0" cy="0" r="36" fill="none" stroke="#FDE68A" stroke-width="1" />
-    <text x="0" y="-14" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8" fill="#FDE68A" font-weight="bold" letter-spacing="1">ACADÉMIE OFFICIELLE</text>
-    <text x="0" y="0" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7" fill="#FDE68A">★ RÉPUBLIQUE ★</text>
-    <text x="0" y="14" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8" fill="#FDE68A" font-weight="bold">SCEAU DE L'ÉTAT</text>
+    <text x="0" y="-14" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7.5" fill="#FDE68A" font-weight="bold" letter-spacing="1">RÉPUBLIQUE DU CAMEROUN</text>
+    <text x="0" y="0" text-anchor="middle" font-family="'Times New Roman', serif" font-size="7" fill="#FDE68A">★ MINESUP ★</text>
+    <text x="0" y="14" text-anchor="middle" font-family="'Times New Roman', serif" font-size="8" fill="#FDE68A" font-weight="bold">SCEAU OFFICIEL</text>
   </g>
 
   <!-- Signatures -->
   <g transform="translate(180, 595)">
-    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" fill="#1E293B">Le Président de l'Établissement</text>
-    <path d="M 5 25 Q 35 5 70 25 T 120 15 Q 140 35 110 40" fill="none" stroke="#1E3A8A" stroke-width="2.5" />
+    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" fill="#1E293B">Le Chef d'Établissement</text>
+    <path d="M 5 25 Q 35 5 70 25 T 120 15 Q 140 35 110 40" fill="none" stroke="${primaryColor}" stroke-width="2.5" />
     <text x="5" y="42" font-family="'Times New Roman', serif" font-size="11" fill="#64748B" font-style="italic">Signature officielle</text>
   </g>
 
   <g transform="translate(710, 595)">
-    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" fill="#1E293B">Le Recteur d'Académie</text>
-    <path d="M 5 20 Q 35 40 75 15 T 125 30 Q 145 15 155 25" fill="none" stroke="#1E3A8A" stroke-width="2.5" />
-    <text x="5" y="42" font-family="'Times New Roman', serif" font-size="11" fill="#64748B" font-style="italic">Chancellerie</text>
+    <text x="0" y="0" font-family="'Times New Roman', serif" font-size="12" font-weight="bold" fill="#1E293B">Le Recteur / Tutelle</text>
+    <path d="M 5 20 Q 35 40 75 15 T 125 30 Q 145 15 155 25" fill="none" stroke="${primaryColor}" stroke-width="2.5" />
+    <text x="5" y="42" font-family="'Times New Roman', serif" font-size="11" fill="#64748B" font-style="italic">Chancellerie Académique</text>
   </g>
 </svg>`;
 }

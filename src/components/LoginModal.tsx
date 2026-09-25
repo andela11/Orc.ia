@@ -269,7 +269,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 <input
                   id="register-username-input"
                   type="text"
-                  placeholder="ex: c.fontaine"
+                  placeholder="ex: p.ekanga"
                   value={regUsername}
                   onChange={(e) => setRegUsername(e.target.value)}
                   className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-slate-900 focus:outline-hidden"
@@ -283,7 +283,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                 <input
                   id="register-fullname-input"
                   type="text"
-                  placeholder="ex: Dr. Claire Fontaine"
+                  placeholder="ex: Dr. Paulin EKANGA"
                   value={regFullName}
                   onChange={(e) => setRegFullName(e.target.value)}
                   className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-slate-900 focus:outline-hidden"
@@ -299,7 +299,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <input
                 id="register-email-input"
                 type="email"
-                placeholder="ex: c.fontaine@iai-cameroun.cm"
+                placeholder="ex: p.ekanga@minesup.gov.cm"
                 value={regEmail}
                 onChange={(e) => setRegEmail(e.target.value)}
                 className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 focus:border-slate-900 focus:outline-hidden"
@@ -413,7 +413,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                     required
                     value={resetIdentifier}
                     onChange={(e) => setResetIdentifier(e.target.value)}
-                    placeholder="ex: admin, claire.fontaine ou agent@univ.fr"
+                    placeholder="ex: admin, p.ekanga ou agent@minesup.gov.cm"
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-slate-900 focus:outline-hidden"
                   />
                 </div>

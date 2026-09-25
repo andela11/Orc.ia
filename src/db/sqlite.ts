@@ -3,11 +3,18 @@ import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
 
-// Path for SQLite database file (uses /tmp on serverless environments like Vercel where process.cwd is read-only)
+// Path for SQLite database file (uses /tmp on serverless/read-only environments)
 const isVercel = Boolean(process.env.VERCEL);
-const DB_DIR = isVercel ? path.join('/tmp', 'data') : path.join(process.cwd(), 'data');
-if (!fs.existsSync(DB_DIR)) {
-  fs.mkdirSync(DB_DIR, { recursive: true });
+let DB_DIR = isVercel ? path.join('/tmp', 'data') : path.join(process.cwd(), 'data');
+try {
+  if (!fs.existsSync(DB_DIR)) {
+    fs.mkdirSync(DB_DIR, { recursive: true });
+  }
+} catch {
+  DB_DIR = path.join('/tmp', 'data');
+  if (!fs.existsSync(DB_DIR)) {
+    fs.mkdirSync(DB_DIR, { recursive: true });
+  }
 }
 const DB_PATH = path.join(DB_DIR, 'verifdiplome.sqlite');
 const SEED_PATH = path.join(process.cwd(), 'data', 'verifdiplome.sqlite');
@@ -238,36 +245,36 @@ function seedInitialDataIfEmpty() {
       },
       {
         id: "INST-002",
-        code: "SORB",
-        name: "Sorbonne Université",
-        country: "France",
-        accreditationNumber: "MESR-FR-75-01-UNIV",
+        code: "UY1",
+        name: "Université de Yaoundé I (UY1)",
+        country: "Cameroun",
+        accreditationNumber: "MINESUP/UY1/1962/DEC-01",
         accreditationStatus: "ACTIVE",
-        contactEmail: "scolarite.centrale@sorbonne-universite.fr",
-        officialRectoratUrl: "https://www.sorbonne-universite.fr",
+        contactEmail: "rectorat@uy1.uninet.cm",
+        officialRectoratUrl: "https://www.uy1.uninet.cm",
         registeredDiplomasCount: 2,
         authorizedSignatories: JSON.stringify([
-          { name: "Pr. Nathalie Drach-Temam", title: "Présidente de Sorbonne Université" },
-          { name: "M. Christophe Kerrero", title: "Recteur de l'Académie de Paris" }
+          { name: "Pr. Remy Sylvestre BOUELET", title: "Recteur de l'Université de Yaoundé I" },
+          { name: "Pr. Jean-Bosco TALLA", title: "Doyen de la Faculté des Sciences" }
         ]),
-        officialSealDescription: "Grand sceau officiel de l'Académie de Paris et Marianne républicaine",
+        officialSealDescription: "Sceau officiel du Rectorat de l'Université de Yaoundé I et devise Sapientia-Pax-Progressus",
         createdAt: "2020-01-15T10:00:00.000Z",
       },
       {
         id: "INST-003",
-        code: "EP-X",
-        name: "École Polytechnique (Institut Polytechnique de Paris)",
-        country: "France",
-        accreditationNumber: "CTI-FR-91-04-ING",
+        code: "ENSPY",
+        name: "École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)",
+        country: "Cameroun",
+        accreditationNumber: "MINESUP/ENSPY/1971/DEC-02",
         accreditationStatus: "ACTIVE",
-        contactEmail: "diplomes@polytechnique.edu",
-        officialRectoratUrl: "https://www.polytechnique.edu",
+        contactEmail: "direction@polytechnique.cm",
+        officialRectoratUrl: "https://www.polytechnique.cm",
         registeredDiplomasCount: 1,
         authorizedSignatories: JSON.stringify([
-          { name: "Laura Chaubard", title: "Directrice Générale de l'École Polytechnique" },
-          { name: "Général de Corps d'Armée", title: "Commandant de l'École" }
+          { name: "Pr. Guy Edgar NOUBISSI", title: "Directeur de l'ENSPY" },
+          { name: "Dr. Thomas TCHAMO", title: "Directeur des Études de l'ENSPY" }
         ]),
-        officialSealDescription: "Blason des X croisés et devise 'Pour la Patrie, les Sciences et la Gloire'",
+        officialSealDescription: "Blason officiel de l'ENSPY et devise 'Ingenio et Labore'",
         createdAt: "2019-11-04T09:00:00.000Z",
       },
       {
@@ -289,34 +296,34 @@ function seedInitialDataIfEmpty() {
       },
       {
         id: "INST-005",
-        code: "UPS",
-        name: "Université Paris-Saclay",
-        country: "France",
-        accreditationNumber: "MESR-FR-91-02-UNIV",
+        code: "UDLA",
+        name: "Université de Douala (UDLA)",
+        country: "Cameroun",
+        accreditationNumber: "MINESUP/UDLA/1993/DEC-03",
         accreditationStatus: "ACTIVE",
-        contactEmail: "registre@universite-paris-saclay.fr",
-        officialRectoratUrl: "https://www.universite-paris-saclay.fr",
+        contactEmail: "scolarite@univ-douala.cm",
+        officialRectoratUrl: "https://www.univ-douala.cm",
         registeredDiplomasCount: 1,
         authorizedSignatories: JSON.stringify([
-          { name: "Pr. Camille Galap", title: "Président par intérim Université Paris-Saclay" }
+          { name: "Pr. Magloire ONDOA", title: "Recteur de l'Université de Douala" }
         ]),
-        officialSealDescription: "Sceau académique circulaire millésimé",
+        officialSealDescription: "Sceau académique du Rectorat de l'Université de Douala",
         createdAt: "2021-04-12T08:30:00.000Z",
       },
       {
         id: "INST-006",
-        code: "HEC",
-        name: "HEC Paris",
-        country: "France",
-        accreditationNumber: "CCI-PARIS-HEC-78-01",
+        code: "UDS",
+        name: "Université de Dschang (UDs)",
+        country: "Cameroun",
+        accreditationNumber: "MINESUP/UDS/1993/DEC-04",
         accreditationStatus: "ACTIVE",
-        contactEmail: "verification.degrees@hec.edu",
-        officialRectoratUrl: "https://www.hec.edu",
+        contactEmail: "contact@univ-dschang.org",
+        officialRectoratUrl: "https://www.univ-dschang.org",
         registeredDiplomasCount: 1,
         authorizedSignatories: JSON.stringify([
-          { name: "Éloïc Peyrache", title: "Directeur Général HEC Paris" }
+          { name: "Pr. Roger TSAFACK NANFOSSO", title: "Recteur de l'Université de Dschang" }
         ]),
-        officialSealDescription: "Sceau gaufré de la Chambre de Commerce et d'Industrie de Paris",
+        officialSealDescription: "Sceau officiel du Rectorat de l'Université de Dschang",
         createdAt: "2020-06-20T14:00:00.000Z",
       },
     ];
@@ -382,39 +389,39 @@ function seedInitialDataIfEmpty() {
       },
       {
         id: "REG-003",
-        documentId: "SORB-2023-M8921",
-        studentName: "Thomas Laurent",
-        institution: "Sorbonne Université",
-        degreeTitle: "Master en Informatique Fondamentale",
-        fieldOfStudy: "Intelligence Artificielle & Data Science",
-        issueDate: "2023-09-20",
-        honors: "Très Bien",
+        documentId: "UY1-2023-M8921",
+        studentName: "Boris TCHOUA",
+        institution: "Université de Yaoundé I (UY1)",
+        degreeTitle: "Master en Informatique et Systèmes Décisionnels",
+        fieldOfStudy: "Sciences & Ingénierie Logicielle",
+        issueDate: "2023-06-28",
+        honors: "Mention Très Bien",
         sha256: "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0",
         accredited: 1,
         isRevoked: 0,
-        createdAt: "2023-09-20T12:00:00.000Z",
+        createdAt: "2023-06-28T12:00:00.000Z",
       },
       {
         id: "REG-004",
-        documentId: "EP-2022-ING-0412",
-        studentName: "Émilie Roussel",
-        institution: "École Polytechnique",
-        degreeTitle: "Diplôme d'Ingénieur de l'École Polytechnique",
-        fieldOfStudy: "Mathématiques Appliquées & Physique",
-        issueDate: "2022-07-10",
+        documentId: "ENSPY-2022-ING-0412",
+        studentName: "Danielle MBALLA ESSOMBA",
+        institution: "École Nationale Supérieure Polytechnique de Yaoundé (ENSPY)",
+        degreeTitle: "Diplôme d'Ingénieur de Conception",
+        fieldOfStudy: "Génie Informatique & Télécommunications",
+        issueDate: "2022-07-15",
         honors: "Félicitations du Jury",
         sha256: "f0e1d2c3b4a5968778695a4b3c2d1e0f0123456789abcdef0123456789abcdef",
         accredited: 1,
         isRevoked: 0,
-        createdAt: "2022-07-10T12:00:00.000Z",
+        createdAt: "2022-07-15T12:00:00.000Z",
       },
       {
         id: "REG-005",
-        documentId: "UPS-2024-LIC-3341",
-        studentName: "Maxime Bernard",
-        institution: "Université Paris-Saclay",
-        degreeTitle: "Licence en Sciences des Données",
-        fieldOfStudy: "Mathématiques & Informatique",
+        documentId: "UD-2024-LIC-3341",
+        studentName: "Gaston NDONGO",
+        institution: "Université de Douala (UDLA)",
+        degreeTitle: "Licence en Sciences et Technologies",
+        fieldOfStudy: "Mathématiques & Informatique Décisionnelle",
         issueDate: "2024-06-15",
         honors: "Bien",
         sha256: "7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c",
@@ -438,10 +445,10 @@ function seedInitialDataIfEmpty() {
       },
       {
         id: "REG-007",
-        documentId: "HEC-2023-GE-1190",
-        studentName: "Camille Dupont",
-        institution: "HEC Paris",
-        degreeTitle: "Master in Management - Grande École",
+        documentId: "UDS-2023-MAS-1190",
+        studentName: "Carine ATANGANA",
+        institution: "Université de Dschang (UDs)",
+        degreeTitle: "Master en Sciences Économiques et Gestion",
         fieldOfStudy: "Finance & Stratégie d'Entreprise",
         issueDate: "2023-06-25",
         honors: "Mention Très Bien",
@@ -452,13 +459,13 @@ function seedInitialDataIfEmpty() {
       },
       {
         id: "REG-008",
-        documentId: "SORB-2021-LIC-0082",
-        studentName: "Alice Martin",
-        institution: "Sorbonne Université",
-        degreeTitle: "Licence de Droit et Sciences Politiques",
-        fieldOfStudy: "Droit Public International",
+        documentId: "UB-2021-BSC-0082",
+        studentName: "Chantal BIKOI",
+        institution: "University of Buea",
+        degreeTitle: "Bachelor of Science in Software Engineering",
+        fieldOfStudy: "Computer Science & Networks",
         issueDate: "2021-06-30",
-        honors: "Assez Bien",
+        honors: "First Class Honours",
         sha256: "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
         accredited: 1,
         isRevoked: 0,
@@ -500,35 +507,35 @@ function seedInitialDataIfEmpty() {
     const initialUsers = [
       {
         id: "usr_admin_01",
-        email: "alexandre.vernier@gouv.education.fr",
+        email: "paulin.ekanga@minesup.gov.cm",
         passwordHash: hashPassword("Admin2024!"),
-        fullName: "Dr. Alexandre Vernier",
+        fullName: "Dr. Paulin EKANGA",
         role: "ADMIN",
-        department: "Inspection Générale des Titres & Diplômes",
-        organization: "Ministère de l'Enseignement Supérieur",
-        badgeNumber: "ADM-MIN-001",
+        department: "Direction des Accréditations & Titres Académiques (DAUQ)",
+        organization: "Ministère de l'Enseignement Supérieur (MINESUP Cameroun)",
+        badgeNumber: "ADM-MINESUP-001",
         createdAt: "2023-01-10T08:00:00.000Z",
       },
       {
         id: "usr_verif_01",
-        email: "claire.fontaine@sorbonne-universite.fr",
+        email: "jeanne.mvondo@uy1.cm",
         passwordHash: hashPassword("Scolarite2024!"),
-        fullName: "Claire Fontaine",
+        fullName: "Jeanne MVONDO",
         role: "VERIFICATEUR",
         department: "Direction de la Scolarité & Validation",
-        organization: "Sorbonne Université",
-        badgeNumber: "VER-SORB-042",
+        organization: "Université de Yaoundé I (UY1)",
+        badgeNumber: "VER-UY1-042",
         createdAt: "2023-03-15T09:00:00.000Z",
       },
       {
         id: "usr_analyst_01",
-        email: "marc.dupuis@police-judiciaire.interieur.gouv.fr",
+        email: "joseph.essomba@police.gov.cm",
         passwordHash: hashPassword("Enquete2024!"),
-        fullName: "Marc-Antoine Dupuis",
+        fullName: "Capitaine Joseph ESSOMBA",
         role: "ANALYSTE",
-        department: "Brigade de Répression de la Délinquance Astucieuse (BRDA)",
-        organization: "Direction Centrale Police Judiciaire",
-        badgeNumber: "ENQ-DCPJ-992",
+        department: "Division Spéciale de la Cybercriminalité & Faux Documents",
+        organization: "Délégation Générale à la Sûreté Nationale (DGSN Cameroun)",
+        badgeNumber: "ENQ-DGSN-992",
         createdAt: "2023-05-20T11:00:00.000Z",
       },
     ];
@@ -562,13 +569,13 @@ function seedInitialDataIfEmpty() {
     insertBlacklist.run(
       "BLK-001",
       "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "Falsification de nom par altération graphique sur parchemin Sorbonne",
+      "Falsification de nom par altération graphique sur parchemin officiel UY1",
       new Date(Date.now() - 3600000 * 48).toISOString(),
       new Date(Date.now() - 3600000 * 2).toISOString(),
       3,
-      "Marc Lefebvre",
-      "Sorbonne Université",
-      "Master en Informatique",
+      "Alain BIKOI",
+      "Université de Yaoundé I (UY1)",
+      "Master en Informatique et Systèmes Décisionnels",
       "CRITIQUE"
     );
   }
@@ -586,7 +593,7 @@ function seedInitialDataIfEmpty() {
     insertLog.run(
       "LOG-ADM-901",
       new Date(Date.now() - 3600000 * 24).toISOString(),
-      "Dr. Alexandre Vernier",
+      "Dr. Paulin EKANGA",
       "ADMIN",
       "ACCREDITATION_INSTITUTION",
       "IAI-Cameroun (Institut Africain d'Informatique)",
@@ -598,11 +605,11 @@ function seedInitialDataIfEmpty() {
     insertLog.run(
       "LOG-ADM-902",
       new Date(Date.now() - 3600000 * 18).toISOString(),
-      "Dr. Alexandre Vernier",
+      "Dr. Paulin EKANGA",
       "ADMIN",
       "BLACKLIST_HASH_AJOUT",
-      "SHA-256 e3b0c44...b855 (Marc Lefebvre)",
-      "Mise à l'index national suite à falsification flagrante par altération de nom sur parchemin Sorbonne.",
+      "SHA-256 e3b0c44...b855 (Alain BIKOI)",
+      "Mise à l'index national suite à falsification flagrante par altération de nom sur parchemin officiel UY1.",
       "192.168.1.10 (Intranet Sécurisé)",
       "CRITICAL"
     );

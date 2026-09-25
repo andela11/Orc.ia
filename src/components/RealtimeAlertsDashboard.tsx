@@ -882,7 +882,7 @@ export const RealtimeAlertsDashboard: React.FC<RealtimeAlertsDashboardProps> = (
                         type="text"
                         value={newStudent}
                         onChange={(e) => setNewStudent(e.target.value)}
-                        placeholder="Ex: Marc Lefebvre"
+                        placeholder="Ex: Alain BIKOI"
                         className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none"
                       />
                     </div>
@@ -893,7 +893,7 @@ export const RealtimeAlertsDashboard: React.FC<RealtimeAlertsDashboardProps> = (
                         type="text"
                         value={newInstitution}
                         onChange={(e) => setNewInstitution(e.target.value)}
-                        placeholder="Ex: Sorbonne Université"
+                        placeholder="Ex: Université de Yaoundé I"
                         className="w-full border border-gray-300 rounded-lg px-3 py-1.5 text-xs focus:ring-2 focus:ring-red-500 focus:outline-none"
                       />
                     </div>

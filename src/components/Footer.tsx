@@ -90,17 +90,17 @@ const OFFICIAL_BILLETS: Billet[] = [
     reference: 'BILLET-2026-A06',
     category: 'academique',
     categoryLabel: 'Vie Académique',
-    title: 'Interconnexion des registres universitaires de la zone CEMAC et France',
+    title: 'Interconnexion des registres universitaires nationaux (MINESUP Cameroun)',
     date: '10 Juillet 2026',
-    excerpt: 'Protocole d’échange transfrontalier entre l’IAI-Cameroun, la Sorbonne et les écoles d’ingénieurs partenaires.',
+    excerpt: 'Protocole d’interconnexion sécurisé entre l’IAI-Cameroun, l’Université de Yaoundé I, l’ENSPY et les universités d’État.',
     content: [
-      'Les conventions bilatérales relatives à la reconnaissance réciproque des diplômes d’ingénierie et d’informatique ont été étendues.',
-      'Le nœud VD de Yaoundé est désormais directement interconnecté au hub de Paris, permettant la vérification instantanée des parcours binationaux en moins de 1,2 seconde.',
-      'Plus de 14 000 parchemins d’archives rétroactives ont été indexés sous empreinte cryptographique pérenne.'
+      'Les protocoles d’échange automatisé relatifs à l’indexation certifiée des diplômes d’ingénierie et des grades universitaires ont été déployés.',
+      'Le nœud VD de Yaoundé est directement interconnecté aux rectorats et directions d’écoles supérieures, permettant la vérification d’authenticité en moins de 1,2 seconde.',
+      'Plus de 14 000 parchemins d’archives nationales ont été indexés sous empreinte cryptographique pérenne.'
     ],
-    authority: 'Conférence des Recteurs & Directeurs d’Établissements Supérieurs',
+    authority: 'Conférence des Recteurs & Directeurs d’Établissements Supérieurs du Cameroun',
     status: 'Mise à jour',
-    legalRef: 'Accord bilatéral de coopération universitaire Franco-Camerounaise',
+    legalRef: 'Arrêté ministériel MINESUP / Réglementation CEMAC',
   },
   {
     id: 'billet-5',
@@ -448,16 +448,19 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate, onOpenLoginModal }) 
                 <span>IAI-Cameroun (Système CEMAC)</span>
               </li>
               <li>
-                <span>Sorbonne Université</span>
+                <span>Université de Yaoundé I (UY1)</span>
               </li>
               <li>
-                <span>École Polytechnique (IP Paris)</span>
+                <span>École Polytechnique de Yaoundé (ENSPY)</span>
               </li>
               <li>
-                <span>Office du Baccalauréat</span>
+                <span>Office du Baccalauréat (OBC)</span>
               </li>
               <li>
-                <span>Université Paris-Saclay</span>
+                <span>Université de Douala (UDLA)</span>
+              </li>
+              <li>
+                <span>Université de Dschang (UDs)</span>
               </li>
             </ul>
           </div>
